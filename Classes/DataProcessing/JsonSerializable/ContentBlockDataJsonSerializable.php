@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
 
 use JsonSerializable;
@@ -15,7 +17,7 @@ class ContentBlockDataJsonSerializable implements JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        // Evil code never dies
+        // Access protected _processed property
         $reflection = new ReflectionClass($this->contentBlockData);
         $property = $reflection->getProperty('_processed');
         $property->setAccessible(true);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
 
 use JsonSerializable;
