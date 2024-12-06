@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Netzbewegung\NbHeadlessContentBlocks\:
+    resource: '../Classes/*'
+      
+  Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ContentBlocksJsonDataProcessor:
+    tags:
+        - name: 'data.processor'
+          identifier: 'nb-content-blocks-json'

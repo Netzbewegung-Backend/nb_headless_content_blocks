@@ -1,0 +1,16 @@
+
+# EXT:headless + EXT:content_blocks (NB Solution)
+lib.contentBlock >
+lib.contentBlock < lib.contentElement
+lib.contentBlock {
+    fields {
+        data = TEXT
+        data {
+            dataProcessing {
+                10 = nb-content-blocks-json
+                10.as = data
+            }
+        }
+    }
+}
+

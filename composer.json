@@ -1,0 +1,47 @@
+{
+    "name": "netzbewegung/nb-headless-content-blocks",
+    "type": "typo3-cms-extension",
+    "description": "Connects together EXT:headless and EXT:content_block",
+    "keywords": [
+        "TYPO3",
+        "headless",
+        "content_block",
+        "json"
+    ],
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "authors": [
+        {
+            "name": "Uwe Raabe",
+            "role": "Developer"
+        },
+        {
+            "name": "Christoph Freund",
+            "role": "Developer"
+        },
+        {
+            "name": "Jana Deharde",
+            "role": "Developer"
+        },
+        {
+            "name": "Steffen Maechtel",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^13.4",
+        "friendsoftypo3/content-blocks": "^1.0",
+        "friendsoftypo3/headless": "^4.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Netzbewegung\\NbHeadlessContentBlocks\\": "Classes"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "nb_headless_content_blocks"
+        }
+    }
+}
