@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\ContentBlocks;
 
 use JsonSerializable;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;

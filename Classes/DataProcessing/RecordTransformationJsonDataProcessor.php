@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
-use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\ContentBlocks\ContentBlockDataJsonSerializable;
-use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlocksDataProcessor;
+use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\RecordTransformation\RecordJsonSerializable;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\DataProcessing\RecordTransformationProcessor;
+use function debug;
 
-readonly class ContentBlocksJsonDataProcessor extends ContentBlocksDataProcessor
+readonly class RecordTransformationJsonDataProcessor extends RecordTransformationProcessor
 {
     public function process(
         ContentObjectRenderer $cObj,
@@ -20,6 +21,6 @@ readonly class ContentBlocksJsonDataProcessor extends ContentBlocksDataProcessor
 
         $as = $processorConfiguration['as'] ?? 'data';
 
-        return [$as => new ContentBlockDataJsonSerializable($processedData['data'])];
+        return [$as => new RecordJsonSerializable($processedData['data'])];
     }
 }

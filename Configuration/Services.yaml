@@ -11,3 +11,8 @@ services:
     tags:
         - name: 'data.processor'
           identifier: 'nb-content-blocks-json'
+          
+  Netzbewegung\NbHeadlessContentBlocks\DataProcessing\RecordTransformationJsonDataProcessor:
+    tags:
+        - name: 'data.processor'
+          identifier: 'nb-record-transformation-json'

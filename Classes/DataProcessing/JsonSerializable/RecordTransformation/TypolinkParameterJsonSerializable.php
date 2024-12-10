@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\RecordTransformation;
 
 use JsonSerializable;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;

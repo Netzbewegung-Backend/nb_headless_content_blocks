@@ -11,6 +11,14 @@ lib.contentBlock {
                 10.as = data
             }
         }
+
+        data2 = TEXT
+        data2 {
+            dataProcessing {
+                10 = nb-record-transformation-json
+                10.as = data
+            }
+        }
     }
 }
 
