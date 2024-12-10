@@ -6,6 +6,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\C
 
 use JsonSerializable;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -23,6 +24,9 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
 
         foreach ($this->array as $key => $value) {
             switch (true) {
+                case $value instanceof FlexFormFieldValues:
+                    $data[$key] = $value->toArray();
+                    break;
                 case is_array($value):
                     $data[$key] = new ArrayRecursiveJsonSerializable($value);
                     break;
