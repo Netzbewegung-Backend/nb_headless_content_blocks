@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
 
 use JsonSerializable;
+use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockData;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
@@ -26,6 +27,9 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
             switch (true) {
                 case is_array($value):
                     $data[$key] = new ArrayRecursiveJsonSerializable($value);
+                    break;
+                case $value instanceof ContentBlockData:
+                    $data[$key] = new ContentBlockDataJsonSerializable($value);
                     break;
                 case $value instanceof FlexFormFieldValues:
                     $data[$key] = $value->toArray();
