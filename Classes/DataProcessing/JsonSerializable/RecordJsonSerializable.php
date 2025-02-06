@@ -6,13 +6,13 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
 use JsonSerializable;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
-use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Domain\Record;
 
-class LazyRecordCollectionJsonSerializable implements JsonSerializable
+class RecordJsonSerializable implements JsonSerializable
 {
 
     public function __construct(
-        protected LazyRecordCollection $lazyRecordCollection,
+        protected Record $record,
         protected TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection
     )
@@ -22,10 +22,14 @@ class LazyRecordCollectionJsonSerializable implements JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        $data = [];
-        foreach ($this->lazyRecordCollection as $key => $value) {
-            $data[$key] = new RecordJsonSerializable($value, $this->tableDefinition, $this->tableDefinitionCollection);
+        $array = $this->record->toArray();
+        
+        $remove = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid'];
+        
+        foreach ($remove as $key) {
+            unset($array[$key]);
         }
-        return $data;
+
+        return new ArrayRecursiveJsonSerializable($array, $this->tableDefinition, $this->tableDefinitionCollection);
     }
 }
