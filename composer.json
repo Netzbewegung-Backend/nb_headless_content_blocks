@@ -1,7 +1,8 @@
 {
-    "name": "netzbewegung/nb-headless-content-blocks",
+    "name": "macaw/nb-headless-content-blocks",
     "type": "typo3-cms-extension",
     "description": "Connects together EXT:headless and EXT:content_block",
+    "version": "0.0.5",
     "keywords": [
         "TYPO3",
         "headless",
@@ -26,6 +27,10 @@
         },
         {
             "name": "Steffen Maechtel",
+            "role": "Developer"
+        },
+        {
+            "name": "Carsten Wilhelm",
             "role": "Developer"
         }
     ],

@@ -32,12 +32,18 @@ class TypolinkParameterJsonSerializable implements JsonSerializable
                 'url' => $linkResult->getUrl(),
                 'target' => $linkResult->getTarget(),
                 'type' => $linkResult->getType(),
+                'title' => $linkResult->getLinkText(),
+                'config' => $linkResult->getLinkConfiguration(),
+                "attr" => $linkResult->getAttributes()
             ];
         } catch (UnableToLinkException $e) {
             return [
                 'url' => '',
                 'target' => '',
                 'type' => '',
+                'title' => '',
+                'config' => [],
+                "attr" => [],
                 '__errorMessage' => $e->getMessage()
             ];
         }
