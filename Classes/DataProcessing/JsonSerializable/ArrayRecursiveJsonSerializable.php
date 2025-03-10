@@ -16,6 +16,8 @@ use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use function debug;
 
 class ArrayRecursiveJsonSerializable implements JsonSerializable
@@ -71,7 +73,8 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
                                 break;
                             case $fieldType instanceof TextareaFieldType:
                                 if ($fieldType->getTca()['config']['enableRichtext'] === true) {
-                                    // @todo parse HTML
+                                    $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+                                    $value = $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
                                 }
                                 break;
                             default:
@@ -92,17 +95,17 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
     protected function getTableDefinitionByKey(string $key): TableDefinition
     {
         $tableName = $this->getTableNameByKey($key);
-        
+
         return $this->tableDefinitionCollection->getTable($tableName);
     }
-    
+
     protected function getTableNameByKey(string $key): string
     {
         if ($this->tableDefinitionCollection->hasTable($key)) {
             #debug($table, '$key is table');
             return $key;
-        } 
-        
+        }
+
         if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
             #debug($table, '$field TCA is table');
             $tca = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key)->getFieldType()->getTca();
