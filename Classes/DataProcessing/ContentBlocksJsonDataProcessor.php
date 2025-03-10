@@ -48,8 +48,6 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
             $processedData['data'] = $resolveRecord;
             return $processedData;
         }
-        
-        #$processedData['data'] = $this->contentBlockDataDecorator->decorate($resolveRecord);
 
         $as = $processorConfiguration['as'] ?? 'data';
         
@@ -57,19 +55,4 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         return [$as => new RecordJsonSerializable($resolveRecord, $tableDefinition, $this->tableDefinitionCollection)];
     }
-    /*
-      public function process(
-      ContentObjectRenderer $cObj,
-      array $contentObjectConfiguration,
-      array $processorConfiguration,
-      array $processedData
-      ): array {
-      $processedData = parent::process($cObj, $contentObjectConfiguration, $processorConfiguration, $processedData);
-      debug($processedData); exit;
-      $as = $processorConfiguration['as'] ?? 'data';
-
-      return [$as => new ContentBlockDataJsonSerializable($processedData['data'])];
-      }
-     * 
-     */
 }

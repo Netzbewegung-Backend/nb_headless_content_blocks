@@ -7,18 +7,12 @@ use Exception;
 use JsonSerializable;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
-use TYPO3\CMS\ContentBlocks\FieldType\FileFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ArrayRecursiveJsonSerializable implements JsonSerializable
 {
@@ -73,26 +67,10 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
                     if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
                         $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
                         $fieldType = $tcaFieldDefinition->getFieldType();
-
-                        switch (true) {
-                            case $fieldType instanceof FileFieldType;
-                            case $fieldType instanceof SelectFieldType:
-                            case $fieldType instanceof TextFieldType:
-                                break;
-                            case $fieldType instanceof TextareaFieldType:
-                                if ($fieldType->getTca()['config']['enableRichtext'] === true) {
-                                    $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-                                    $value = $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
-                                }
-                                break;
-                            default:
-                                throw new Exception('Unknown default case in ArrayRecursiveJsonSerializable default case for key "' . $key . '"');
-                        }
-                    } else {
-                        throw new Exception('Unknown has no field in ArrayRecursiveJsonSerializable default case for key "' . $key . '"');
                     }
-
-                    $data[$decoratedKey] = $value;
+                            
+                    $data[$decoratedKey] = new MiscJsonSerializable($value, $fieldType);
+                    break;
             }
         }
 
