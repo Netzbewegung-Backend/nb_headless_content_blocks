@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
 
+use Exception;
 use JsonSerializable;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
@@ -18,7 +19,6 @@ use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use function debug;
 
 class ArrayRecursiveJsonSerializable implements JsonSerializable
 {
@@ -37,29 +37,37 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
         $data = [];
 
         foreach ($this->array as $key => $value) {
+
+            if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
+                $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
+                $decoratedKey = $tcaFieldDefinition->getIdentifier();
+            } else {
+                $decoratedKey = $key;
+            }
+
             switch (true) {
                 case is_array($value):
-                    $data[$key] = new ArrayRecursiveJsonSerializable($value);
+                    $data[$decoratedKey] = new ArrayRecursiveJsonSerializable($value);
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$key] = new RecordJsonSerializable($value, $tableDefinition, $this->tableDefinitionCollection);
+                    $data[$decoratedKey] = new RecordJsonSerializable($value, $tableDefinition, $this->tableDefinitionCollection);
                     break;
                 case $value instanceof FlexFormFieldValues:
-                    $data[$key] = $value->toArray();
+                    $data[$decoratedKey] = $value->toArray();
                     break;
                 case $value instanceof TypolinkParameter:
-                    $data[$key] = new TypolinkParameterJsonSerializable($value);
+                    $data[$decoratedKey] = new TypolinkParameterJsonSerializable($value);
                     break;
                 case $value instanceof LazyRecordCollection:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$key] = new LazyRecordCollectionJsonSerializable($value, $tableDefinition, $this->tableDefinitionCollection);
+                    $data[$decoratedKey] = new LazyRecordCollectionJsonSerializable($value, $tableDefinition, $this->tableDefinitionCollection);
                     break;
                 case $value instanceof LazyFileReferenceCollection:
-                    $data[$key] = new LazyFileReferenceCollectionJsonSerializable($value);
+                    $data[$decoratedKey] = new LazyFileReferenceCollectionJsonSerializable($value);
                     break;
                 case $value instanceof FileReference:
-                    $data[$key] = new FileReferenceJsonSerializable($value);
+                    $data[$decoratedKey] = new FileReferenceJsonSerializable($value);
                     break;
                 default:
                     if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
@@ -78,16 +86,17 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
                                 }
                                 break;
                             default:
-                                debug($value, $key);
-                                debug('DEFAULT');
-                                debug($fieldType, $key);
-                                exit;
+                                throw new Exception('Unknown default case in ArrayRecursiveJsonSerializable default case for key "' . $key . '"');
                         }
+                    } else {
+                        throw new Exception('Unknown has no field in ArrayRecursiveJsonSerializable default case for key "' . $key . '"');
                     }
 
-                    $data[$key] = $value;
+                    $data[$decoratedKey] = $value;
             }
         }
+
+        ksort($data);
 
         return $data;
     }
@@ -102,18 +111,14 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
     protected function getTableNameByKey(string $key): string
     {
         if ($this->tableDefinitionCollection->hasTable($key)) {
-            #debug($table, '$key is table');
             return $key;
         }
 
         if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
-            #debug($table, '$field TCA is table');
             $tca = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key)->getFieldType()->getTca();
             return $tca['config']['foreign_table'];
         }
 
-        debug($key);
-        debug('UNKNOW ELSE getTableByKey');
-        exit;
+        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"');
     }
 }
