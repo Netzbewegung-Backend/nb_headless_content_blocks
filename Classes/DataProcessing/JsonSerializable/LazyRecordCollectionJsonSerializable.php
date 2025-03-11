@@ -26,6 +26,7 @@ class LazyRecordCollectionJsonSerializable implements JsonSerializable
         foreach ($this->lazyRecordCollection as $key => $value) {
             $data[$key] = new RecordJsonSerializable($value, $this->tableDefinition, $this->tableDefinitionCollection);
         }
+
         return $data;
     }
 }

@@ -20,6 +20,7 @@ class LazyFileReferenceCollectionJsonSerializable implements JsonSerializable
         foreach ($this->lazyFileReferenceCollection as $key => $value) {
             $data[$key] = new FileReferenceJsonSerializable($value);
         }
+
         return $data;
     }
 }

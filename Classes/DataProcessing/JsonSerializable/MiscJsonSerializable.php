@@ -37,9 +37,10 @@ class MiscJsonSerializable implements JsonSerializable
                     $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
                     return $contentObject->parseFunc($this->value, null, '< lib.parseFunc_RTE');
                 }
+
                 break;
             default:
-                throw new Exception('Unknown default case in ArrayRecursiveJsonSerializable default case for key "' . $key . '"');
+                throw new Exception('Unknown default case in ArrayRecursiveJsonSerializable default case for key "' . $key . '"', 6848262796);
         }
 
         return $this->value;

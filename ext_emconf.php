@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Netzbewegung Headless Content Blocks',
     'description' => 'Connects together EXT:headless and EXT:content_blocks',

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
+use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\RecordJsonSerializable;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockDataDecorator;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
@@ -25,18 +26,19 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
     }
 
     public function process(
-        ContentObjectRenderer $cObj,
+        ContentObjectRenderer $contentObjectRenderer,
         array $contentObjectConfiguration,
         array $processorConfiguration,
         array $processedData
     ): array
     {
-        $request = $cObj->getRequest();
-        $this->contentBlockDataDecorator->setRequest($request);
-        $table = $cObj->getCurrentTable();
+        $serverRequest = $contentObjectRenderer->getRequest();
+        $this->contentBlockDataDecorator->setRequest($serverRequest);
+        $table = $contentObjectRenderer->getCurrentTable();
         if (!$this->tableDefinitionCollection->hasTable($table)) {
             return $processedData;
         }
+
         $resolveRecord = $this->recordFactory->createResolvedRecordFromDatabaseRow(
             $table,
             $processedData['data'],
@@ -44,7 +46,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $contentTypeDefinition = $this->contentTypeResolver->resolve($resolveRecord);
 
-        if ($contentTypeDefinition === null) {
+        if (!$contentTypeDefinition instanceof ContentTypeInterface) {
             $processedData['data'] = $resolveRecord;
             return $processedData;
         }

@@ -20,7 +20,7 @@ class TypolinkParameterJsonSerializable implements JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        if (!$this->typolinkParameter->url) {
+        if ($this->typolinkParameter->url === '' || $this->typolinkParameter->url === '0') {
             return '';
         }
 
@@ -33,12 +33,12 @@ class TypolinkParameterJsonSerializable implements JsonSerializable
                 'target' => $linkResult->getTarget(),
                 'type' => $linkResult->getType(),
             ];
-        } catch (UnableToLinkException $e) {
+        } catch (UnableToLinkException $unableToLinkException) {
             return [
                 'url' => '',
                 'target' => '',
                 'type' => '',
-                '__errorMessage' => $e->getMessage()
+                '__errorMessage' => $unableToLinkException->getMessage()
             ];
         }
     }

@@ -97,6 +97,6 @@ class ArrayRecursiveJsonSerializable implements JsonSerializable
             return $tca['config']['foreign_table'];
         }
 
-        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"');
+        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 5059397727);
     }
 }
