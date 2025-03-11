@@ -32,7 +32,8 @@ class MiscJsonSerializable implements JsonSerializable
             case $this->fieldType instanceof TextFieldType:
                 break;
             case $this->fieldType instanceof TextareaFieldType:
-                if ($this->fieldType->getTca()['config']['enableRichtext'] === true) {
+                $enableRichtext = $this->fieldType->getTca()['config']['enableRichtext'] ?? false;
+                if ($enableRichtext === true) {
                     $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
                     return $contentObject->parseFunc($this->value, null, '< lib.parseFunc_RTE');
                 }
