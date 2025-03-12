@@ -67,25 +67,25 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         return [$as => $data];
     }
 
-    private function processDataWithLocalHeadlessPhp(JsonSerializable $data, ContentTypeInterface $contentTypeDefinition): null|array|stdClass|JsonSerializable
+    private function processDataWithLocalHeadlessPhp(JsonSerializable $jsonSerializable, ContentTypeInterface $contentType): null|array|stdClass|JsonSerializable
     {
-        $contentBlockExtPath = $this->contentBlockRegistry->getContentBlockExtPath($contentTypeDefinition->getName());
+        $contentBlockExtPath = $this->contentBlockRegistry->getContentBlockExtPath($contentType->getName());
 
         $contentBlockExtPathAbsolute = GeneralUtility::getFileAbsFileName($contentBlockExtPath);
 
         $headlessPhpFile = $contentBlockExtPathAbsolute . '/headless.php';
 
         if (file_exists($headlessPhpFile)) {
-            $data = $this->includeLocalHeadlessPhp($data, $headlessPhpFile);
+            return $this->includeLocalHeadlessPhp($jsonSerializable, $headlessPhpFile);
         }
 
-        return $data;
+        return $jsonSerializable;
     }
 
-    private function includeLocalHeadlessPhp(JsonSerializable $data, string $headlessPhpFile): null|array|stdClass|JsonSerializable
+    private function includeLocalHeadlessPhp(JsonSerializable $jsonSerializable, string $headlessPhpFile): null|array|stdClass|JsonSerializable
     {
         // Convert to simple format (arrays, objects, string, etc.)
-        $data = json_decode(json_encode($data));
+        $data = json_decode(json_encode($jsonSerializable));
 
         return require $headlessPhpFile;
     }
