@@ -23,7 +23,7 @@ class RecordJsonSerializable implements JsonSerializable
     public function jsonSerialize(): mixed
     {
         $array = $this->record->toArray();
-        
+
         $remove = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid'];
         
         foreach ($remove as $key) {
