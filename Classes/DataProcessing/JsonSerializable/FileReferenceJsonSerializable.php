@@ -20,7 +20,8 @@ class FileReferenceJsonSerializable implements JsonSerializable
     public function jsonSerialize(): mixed
     {
         // Check if editor has cropped the image in TYPO3 Backend
-        if ($cropString === null && $this->fileReference->hasProperty('crop') && $this->fileReference->getProperty('crop')) {
+        $cropString = '';
+        if ($this->fileReference->hasProperty('crop') && $this->fileReference->getProperty('crop')) {
             $cropString = $this->fileReference->getProperty('crop');
         }
 
