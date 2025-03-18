@@ -12,22 +12,30 @@ and then, include Site Set "Headless Content Blocks", and you are ready to go.
 
 Create headless.php inside each Content Block.
 
-your_extension/ContentBlocks/ContentElements/your_content_block_element/headless.php
+your_extension/ContentBlocks/ContentElements/your-content-block-element/headless.php
 
 ```
 <?php
 
 use TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper;
 
-$generateThumbail = function (array $arguments): string {
+$generateThumbnail = function (array $arguments): string {
     if (array_key_exists('absolute', $arguments) === false) {
         $arguments['absolute'] = true;
     }
 
-    $imageUriViewHelper = new ImageViewHelper();
-    $imageUriViewHelper->setArguments($arguments);
+    $imageViewHelper = new ImageViewHelper();
 
-    return $imageUriViewHelper->render();
+    foreach ($imageViewHelper->prepareArguments() as $argumentKey => $argumentDefinition) {
+        if (array_key_exists($argumentKey, $arguments) === false) {
+            $arguments[$argumentKey] = $argumentDefinition->getDefaultValue();
+        }
+    }
+
+    $imageViewHelper->setArguments($arguments);
+
+    return $imageViewHelper->initializeArgumentsAndRender();
+
 };
 
 foreach ($data->items ?? [] as $itemKey => $item) {
@@ -36,8 +44,8 @@ foreach ($data->items ?? [] as $itemKey => $item) {
         $image = $item->image;
 
         $data->items[$itemKey]->image->thumbnails = [
-            'mobile' => $generateThumbail(['src' => $image->publicUrl, 'width' => 320]),
-            'desktop' => $generateThumbail(['src' => $image->publicUrl, 'width' => 800]),
+            'mobile' => $generateThumbnail(['src' => $image->id, 'treatIdAsReference' => true, 'width' => 320]),
+            'desktop' => $generateThumbnail(['src' => $image->id, 'treatIdAsReference' => true, 'width' => 800]),
         ];
     }
 }
