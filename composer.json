@@ -27,6 +27,10 @@
         {
             "name": "Steffen Maechtel",
             "role": "Developer"
+        },
+        {
+            "name": "Carsten Wilhelm",
+            "role": "Developer"
         }
     ],
     "require": {
