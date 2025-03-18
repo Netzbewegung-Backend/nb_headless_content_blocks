@@ -1,5 +1,5 @@
 # TYPO3 Extension EXT:nb_headless_content_blocks
-Connects together EXT:headless and EXT:content_blocks
+Connects together EXT:headless (friendsoftypo3/headless) and EXT:content_blocks (friendsoftypo3/content-blocks)
 
 ## TYPO3 Installation
 Install extension using composer
