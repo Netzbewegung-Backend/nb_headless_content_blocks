@@ -53,7 +53,7 @@ foreach ($data->items ?? [] as $itemKey => $item) {
 return $data;
 ```
 
-## Custom Configuration for EXT:headless (b13/container) 
+## Custom Configuration for EXT:container (b13/container) 
 
 ### TypoScript Setup
 
