@@ -52,3 +52,33 @@ foreach ($data->items ?? [] as $itemKey => $item) {
 
 return $data;
 ```
+
+## Custom Configuration for EXT:headless (b13/container) 
+
+### TypoScript Setup
+
+```
+lib.content.select.where = colPos NOT IN (201, 202)
+
+tt_content.b13_2_columns_container =< lib.contentElement
+tt_content.b13_2_columns_container {
+    fields {
+        left = TEXT
+        left {
+            dataProcessing {
+                10 = nb-container-json 
+                10.colPos = 201
+                10.as = left
+            }
+        }
+        right = TEXT
+        right {
+            dataProcessing {
+                10 = nb-container-json 
+                10.colPos = 202
+                10.as = right
+            }
+        }
+    }
+}
+```

@@ -31,7 +31,7 @@ class RecordJsonSerializable implements JsonSerializable
             ];
         }
 
-        $remove = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid'];
+        $remove = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid', 'tx_container_parent'];
 
         foreach ($remove as $key) {
             unset($array[$key]);

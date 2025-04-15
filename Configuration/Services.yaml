@@ -6,8 +6,13 @@ services:
 
   Netzbewegung\NbHeadlessContentBlocks\:
     resource: '../Classes/*'
-      
+
   Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ContentBlocksJsonDataProcessor:
     tags:
         - name: 'data.processor'
           identifier: 'nb-content-blocks-json'
+
+  Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ContainerJsonDataProcessor:
+    tags:
+        - name: 'data.processor'
+          identifier: 'nb-container-json'
