@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
 use JsonSerializable;
-use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable\RecordJsonSerializable;
+use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray\RecordToArray;
+use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockDataDecorator;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
@@ -13,6 +14,7 @@ use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
@@ -60,14 +62,24 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $tableDefinition = $this->tableDefinitionCollection->getTable($resolveRecord->getMainType());
 
-        $data = new RecordJsonSerializable($resolveRecord, $tableDefinition, $this->tableDefinitionCollection);
+        $data = (new RecordToArray($resolveRecord, $tableDefinition, $this->tableDefinitionCollection))->toArray();
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);
+
+        // Process additional DataProcessors
+        if (isset($processorConfiguration['dataProcessing.']) && is_array($processorConfiguration['dataProcessing.'])) {
+            $additionalData = $this->processAdditionalDataProcessors($processedData, $processorConfiguration, $contentObjectRenderer->getRequest());
+
+            unset($additionalData['data']);
+            unset($additionalData['current']);
+
+            $data = array_merge($data, $additionalData);
+        }
 
         return [$as => $data];
     }
 
-    private function processDataWithLocalHeadlessPhp(JsonSerializable $jsonSerializable, ContentTypeInterface $contentType): null|array|stdClass|JsonSerializable
+    private function processDataWithLocalHeadlessPhp(array $data, ContentTypeInterface $contentType): null|array|stdClass|JsonSerializable
     {
         $contentBlockExtPath = $this->contentBlockRegistry->getContentBlockExtPath($contentType->getName());
 
@@ -76,17 +88,26 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         $headlessPhpFile = $contentBlockExtPathAbsolute . '/headless.php';
 
         if (file_exists($headlessPhpFile)) {
-            return $this->includeLocalHeadlessPhp($jsonSerializable, $headlessPhpFile);
+            return $this->includeLocalHeadlessPhp($data, $headlessPhpFile);
         }
 
-        return $jsonSerializable;
+        return $data;
     }
 
-    private function includeLocalHeadlessPhp(JsonSerializable $jsonSerializable, string $headlessPhpFile): null|array|stdClass|JsonSerializable
+    private function includeLocalHeadlessPhp(array $data, string $headlessPhpFile): null|array|stdClass|JsonSerializable
     {
-        // Convert to simple format (arrays, objects, string, etc.)
-        $data = json_decode(json_encode($jsonSerializable));
-
         return require $headlessPhpFile;
+    }
+
+    private function processAdditionalDataProcessors(array $data, array $processorConfiguration, ServerRequestInterface $request): array
+    {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->setRequest($request);
+        $contentObjectRenderer->start([$data], '');
+        return GeneralUtility::makeInstance(ContentDataProcessor::class)->process(
+                $contentObjectRenderer,
+                $processorConfiguration,
+                $data
+            );
     }
 }
