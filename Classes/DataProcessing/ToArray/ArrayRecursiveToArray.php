@@ -126,8 +126,7 @@ class ArrayRecursiveToArray
 
                 break;
             default:
-            # just return value
-            #throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 6848262796);
+                throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 6848262796);
         }
 
         return $value;
