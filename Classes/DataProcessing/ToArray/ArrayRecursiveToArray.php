@@ -12,6 +12,12 @@ use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\ContentBlocks\FieldType\FileFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ArrayRecursiveToArray
 {
@@ -42,6 +48,9 @@ class ArrayRecursiveToArray
                 case is_array($value):
                     $data[$decoratedKey] = (new ArrayRecursiveToArray($value))->toArray();
                     break;
+                case is_string($value):
+                    $data[$decoratedKey] = $this->processStringField($value, $key);
+                    break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
                     $data[$decoratedKey] = (new RecordToArray($value, $tableDefinition, $this->tableDefinitionCollection))->toArray();
@@ -63,12 +72,7 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = (new FileReferenceToArray($value))->toArray();
                     break;
                 default:
-                    if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
-                        $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
-                        $fieldType = $tcaFieldDefinition->getFieldType();
-                    }
-
-                    $data[$decoratedKey] = (new MiscToArray($value, $fieldType))->toArray();
+                    $data[$decoratedKey] = $value;
                     break;
             }
         }
@@ -97,5 +101,35 @@ class ArrayRecursiveToArray
         }
 
         throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 5059397727);
+    }
+
+    protected function processStringField(string $value, string $key): string
+    {
+        if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
+            return $value;
+        }
+
+        $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
+        $fieldType = $tcaFieldDefinition->getFieldType();
+
+        switch (true) {
+            #case $fieldType instanceof FileFieldType;
+            case $fieldType instanceof SelectFieldType:
+            case $fieldType instanceof TextFieldType:
+                break;
+            case $fieldType instanceof TextareaFieldType:
+                $enableRichtext = $fieldType->getTca()['config']['enableRichtext'] ?? false;
+                if ($enableRichtext === true) {
+                    $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+                    return $contentObject->parseFunc($this->value, null, '< lib.parseFunc_RTE');
+                }
+
+                break;
+            default:
+            # just return value
+            #throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 6848262796);
+        }
+
+        return $value;
     }
 }
