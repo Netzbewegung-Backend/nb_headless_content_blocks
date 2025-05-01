@@ -62,7 +62,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $tableDefinition = $this->tableDefinitionCollection->getTable($resolveRecord->getMainType());
 
-        $data = (new RecordToArray($resolveRecord, $tableDefinition, $this->tableDefinitionCollection))->toArray();
+        $data = GeneralUtility::makeInstance(RecordToArray::class, $resolveRecord, $tableDefinition, $this->tableDefinitionCollection)->toArray();
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);
 

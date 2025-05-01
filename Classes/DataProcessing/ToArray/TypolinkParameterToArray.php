@@ -17,10 +17,10 @@ class TypolinkParameterToArray
         
     }
 
-    public function toArray(): array
+    public function toArray(): ?array
     {
         if ($this->typolinkParameter->url === '' || $this->typolinkParameter->url === '0') {
-            return [];
+            return null;
         }
 
         try {

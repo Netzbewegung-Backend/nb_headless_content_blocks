@@ -6,6 +6,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyRecordCollectionToArray
 {
@@ -23,7 +24,7 @@ class LazyRecordCollectionToArray
     {
         $data = [];
         foreach ($this->lazyRecordCollection as $key => $value) {
-            $data[$key] = (new RecordToArray($value, $this->tableDefinition, $this->tableDefinitionCollection))->toArray();
+            $data[$key] = GeneralUtility::makeInstance(RecordToArray::class, $value, $this->tableDefinition, $this->tableDefinitionCollection)->toArray();
         }
 
         return $data;

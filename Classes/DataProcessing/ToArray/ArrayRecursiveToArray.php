@@ -6,16 +6,15 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 use Exception;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\ContentBlocks\FieldType\FileFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
@@ -45,35 +44,39 @@ class ArrayRecursiveToArray
             }
 
             switch (true) {
+                case is_null($value):
+                    $data[$decoratedKey] = $value;
+                    break;
                 case is_array($value):
-                    $data[$decoratedKey] = (new ArrayRecursiveToArray($value))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value)->toArray();
                     break;
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = (new RecordToArray($value, $tableDefinition, $this->tableDefinitionCollection))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(RecordToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
                     break;
                 case $value instanceof FlexFormFieldValues:
                     $data[$decoratedKey] = $value->toArray();
                     break;
                 case $value instanceof TypolinkParameter:
-                    $data[$decoratedKey] = (new TypolinkParameterToArray($value))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(TypolinkParameterToArray::class, $value)->toArray();
                     break;
                 case $value instanceof LazyRecordCollection:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = (new LazyRecordCollectionToArray($value, $tableDefinition, $this->tableDefinitionCollection))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
                     break;
                 case $value instanceof LazyFileReferenceCollection:
-                    $data[$decoratedKey] = (new LazyFileReferenceCollectionToArray($value))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFileReferenceCollectionToArray::class, $value)->toArray();
                     break;
                 case $value instanceof FileReference:
-                    $data[$decoratedKey] = (new FileReferenceToArray($value))->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
                     break;
                 default:
-                    $data[$decoratedKey] = $value;
-                    break;
+                    throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    #$data[$decoratedKey] = $value;
+                    #break;
             }
         }
 
@@ -100,7 +103,7 @@ class ArrayRecursiveToArray
             return $tca['config']['foreign_table'];
         }
 
-        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 5059397727);
+        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
     protected function processStringField(string $value, string $key): string
@@ -126,7 +129,7 @@ class ArrayRecursiveToArray
 
                 break;
             default:
-                throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 6848262796);
+                throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 1746095966);
         }
 
         return $value;

@@ -7,6 +7,7 @@ use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class RecordToArray
 {
@@ -36,6 +37,6 @@ class RecordToArray
             unset($array[$key]);
         }
 
-        return (new ArrayRecursiveToArray($array, $this->tableDefinition, $this->tableDefinitionCollection))->toArray();
+        return GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $array, $this->tableDefinition, $this->tableDefinitionCollection)->toArray();
     }
 }
