@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use JsonSerializable;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class RecordJsonSerializable implements JsonSerializable
+class RecordToArray
 {
 
     public function __construct(
@@ -21,7 +21,7 @@ class RecordJsonSerializable implements JsonSerializable
         
     }
 
-    public function jsonSerialize(): mixed
+    public function toArray(): array
     {
         try {
             $array = $this->record->toArray();
@@ -37,6 +37,6 @@ class RecordJsonSerializable implements JsonSerializable
             unset($array[$key]);
         }
 
-        return new ArrayRecursiveJsonSerializable($array, $this->tableDefinition, $this->tableDefinitionCollection);
+        return GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $array, $this->tableDefinition, $this->tableDefinitionCollection)->toArray();
     }
 }

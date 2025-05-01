@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use JsonSerializable;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class LazyRecordCollectionJsonSerializable implements JsonSerializable
+class LazyRecordCollectionToArray
 {
 
     public function __construct(
@@ -20,11 +20,11 @@ class LazyRecordCollectionJsonSerializable implements JsonSerializable
         
     }
 
-    public function jsonSerialize(): mixed
+    public function toArray(): array
     {
         $data = [];
         foreach ($this->lazyRecordCollection as $key => $value) {
-            $data[$key] = new RecordJsonSerializable($value, $this->tableDefinition, $this->tableDefinitionCollection);
+            $data[$key] = GeneralUtility::makeInstance(RecordToArray::class, $value, $this->tableDefinition, $this->tableDefinitionCollection)->toArray();
         }
 
         return $data;

@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use JsonSerializable;
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Service\ImageService;
 
-class FileReferenceJsonSerializable implements JsonSerializable
+class FileReferenceToArray
 {
 
     public function __construct(protected FileReference $fileReference)
@@ -17,7 +16,7 @@ class FileReferenceJsonSerializable implements JsonSerializable
         
     }
 
-    public function jsonSerialize(): mixed
+    public function toArray(): array
     {
         // Check if editor has cropped the image in TYPO3 Backend
         $cropString = '';

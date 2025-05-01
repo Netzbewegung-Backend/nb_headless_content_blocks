@@ -1,27 +1,26 @@
 <?php
-
 declare(strict_types=1);
 
-namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\JsonSerializable;
+namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use JsonSerializable;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Typolink\LinkFactory;
 use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
 
-class TypolinkParameterJsonSerializable implements JsonSerializable
+class TypolinkParameterToArray
 {
+
     public function __construct(protected TypolinkParameter $typolinkParameter)
     {
-
+        
     }
 
-    public function jsonSerialize(): mixed
+    public function toArray(): ?array
     {
         if ($this->typolinkParameter->url === '' || $this->typolinkParameter->url === '0') {
-            return '';
+            return null;
         }
 
         try {

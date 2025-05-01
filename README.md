@@ -38,19 +38,33 @@ $generateThumbnail = function (array $arguments): string {
 
 };
 
-foreach ($data->items ?? [] as $itemKey => $item) {
+foreach ($data['items'] ?? [] as $itemKey => $item) {
 
-    if ($item->image) {
-        $image = $item->image;
+    if ($item['image']) {
+        $image = $item['image'];
 
-        $data->items[$itemKey]->image->thumbnails = [
-            'mobile' => $generateThumbnail(['src' => $image->id, 'treatIdAsReference' => true, 'width' => 320]),
-            'desktop' => $generateThumbnail(['src' => $image->id, 'treatIdAsReference' => true, 'width' => 800]),
+        $data['items'][$itemKey]['image']['thumbnails'] = [
+            'mobile' => $generateThumbnail(['src' => $image['id'], 'treatIdAsReference' => true, 'width' => 320]),
+            'desktop' => $generateThumbnail(['src' => $image['id'], 'treatIdAsReference' => true, 'width' => 800]),
         ];
     }
 }
 
 return $data;
+```
+
+## Additional Data via Sub DataProcessing
+
+```
+tt_content.vendor_yourcontentblockelement.fields.data.dataProcessing.10 {
+    dataProcessing {
+        10 = menu
+        10 {
+            levels = 2
+            as = navigation
+        }
+    }
+}
 ```
 
 ## Custom Configuration for EXT:container (b13/container) 
