@@ -124,7 +124,7 @@ class ArrayRecursiveToArray
                 $enableRichtext = $fieldType->getTca()['config']['enableRichtext'] ?? false;
                 if ($enableRichtext === true) {
                     $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-                    return $contentObject->parseFunc($this->value, null, '< lib.parseFunc_RTE');
+                    return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
                 }
 
                 break;
