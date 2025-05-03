@@ -15,6 +15,7 @@ use TYPO3\CMS\ContentBlocks\FieldType\JsonFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\PassFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\SlugFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
@@ -155,6 +156,7 @@ class ArrayRecursiveToArray {
             case $fieldType instanceof TextFieldType:
             case $fieldType instanceof EmailFieldType:
             case $fieldType instanceof PassFieldType:
+            case $fieldType instanceof SlugFieldType:
                 break;
             case $fieldType instanceof PasswordFieldType:
                 $value = '';
