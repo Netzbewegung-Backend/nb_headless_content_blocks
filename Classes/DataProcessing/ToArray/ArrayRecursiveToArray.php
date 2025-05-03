@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
+use DateTimeImmutable;
 use Exception;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
@@ -53,6 +55,9 @@ class ArrayRecursiveToArray {
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
+                case $value instanceof DateTimeImmutable: 
+                    $data[$decoratedKey] = $value->format(DateTimeImmutable::W3C);
+                    break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
                     $data[$decoratedKey] = GeneralUtility::makeInstance(RecordToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
@@ -79,7 +84,7 @@ class ArrayRecursiveToArray {
                     $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
                     break;
                 default:
-                    debug($value);
+                    #debug($value);
                     throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
@@ -128,7 +133,7 @@ class ArrayRecursiveToArray {
         $fieldType = $tcaFieldDefinition->getFieldType();
 
         switch (true) {
-            #case $fieldType instanceof FileFieldType;
+            case $fieldType instanceof ColorFieldType:
             case $fieldType instanceof SelectFieldType:
             case $fieldType instanceof TextFieldType:
                 break;
@@ -141,6 +146,7 @@ class ArrayRecursiveToArray {
 
                 break;
             default:
+                #debug($fieldType);
                 throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 1746095966);
         }
 
