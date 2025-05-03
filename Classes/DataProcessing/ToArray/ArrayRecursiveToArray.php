@@ -130,14 +130,19 @@ class ArrayRecursiveToArray {
             }
 
             $tca = $fieldType->getTca();
-            return $tca['config']['foreign_table'];
+            if (isset($tca['config']['foreign_table'])) {
+                return $tca['config']['foreign_table'];
+            }
+            if (isset($tca['config']['allowed'])) {
+                return $tca['config']['allowed'];
+            }
         }
 
         throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
     protected function processStringField(string $value, string $key): string {
-        if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
+        if (!$this->tableDefinition || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
             return $value;
         }
 
