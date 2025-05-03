@@ -13,7 +13,7 @@ class LazyRecordCollectionToArray
 
     public function __construct(
         protected LazyRecordCollection $lazyRecordCollection,
-        protected TableDefinition $tableDefinition,
+        protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection
     )
     {

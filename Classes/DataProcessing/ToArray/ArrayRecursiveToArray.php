@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
@@ -6,6 +7,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 use Exception;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
@@ -18,25 +20,22 @@ use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-class ArrayRecursiveToArray
-{
+class ArrayRecursiveToArray {
 
     public function __construct(
-        protected array $array,
-        protected TableDefinition $tableDefinition,
-        protected TableDefinitionCollection $tableDefinitionCollection
-    )
-    {
+            protected array $array,
+            protected ?TableDefinition $tableDefinition,
+            protected TableDefinitionCollection $tableDefinitionCollection
+    ) {
         
     }
 
-    public function toArray(): array
-    {
+    public function toArray(): array {
         $data = [];
 
         foreach ($this->array as $key => $value) {
 
-            if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
+            if ($this->tableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
                 $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
                 $decoratedKey = $tcaFieldDefinition->getIdentifier();
             } else {
@@ -75,8 +74,8 @@ class ArrayRecursiveToArray
                     break;
                 default:
                     throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
-                    #$data[$decoratedKey] = $value;
-                    #break;
+                #$data[$decoratedKey] = $value;
+                #break;
             }
         }
 
@@ -85,29 +84,37 @@ class ArrayRecursiveToArray
         return $data;
     }
 
-    protected function getTableDefinitionByKey(string $key): TableDefinition
-    {
+    protected function getTableDefinitionByKey(string $key): ?TableDefinition {
         $tableName = $this->getTableNameByKey($key);
 
-        return $this->tableDefinitionCollection->getTable($tableName);
+        if ($this->tableDefinitionCollection->hasTable($tableName)) {
+            return $this->tableDefinitionCollection->getTable($tableName);
+        }
+
+        return null;
     }
 
-    protected function getTableNameByKey(string $key): string
-    {
+    protected function getTableNameByKey(string $key): string {
         if ($this->tableDefinitionCollection->hasTable($key)) {
             return $key;
         }
 
-        if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
-            $tca = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key)->getFieldType()->getTca();
+        if ($this->tableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
+            $field = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
+            $fieldType = $field->getFieldType();
+
+            if ($fieldType instanceof CategoryFieldType) {
+                return 'sys_category';
+            }
+
+            $tca = $fieldType->getTca();
             return $tca['config']['foreign_table'];
         }
 
         throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
-    protected function processStringField(string $value, string $key): string
-    {
+    protected function processStringField(string $value, string $key): string {
         if ($this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
             return $value;
         }

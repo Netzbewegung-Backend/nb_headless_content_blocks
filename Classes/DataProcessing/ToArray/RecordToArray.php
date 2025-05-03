@@ -14,7 +14,7 @@ class RecordToArray
 
     public function __construct(
         protected Record $record,
-        protected TableDefinition $tableDefinition,
+        protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection
     )
     {
