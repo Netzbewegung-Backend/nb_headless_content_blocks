@@ -12,6 +12,7 @@ use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\JsonFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\PassFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
@@ -147,6 +148,7 @@ class ArrayRecursiveToArray {
             case $fieldType instanceof SelectFieldType:
             case $fieldType instanceof TextFieldType:
             case $fieldType instanceof EmailFieldType:
+            case $fieldType instanceof PassFieldType:
                 break;
             case $fieldType instanceof TextareaFieldType:
                 $enableRichtext = $fieldType->getTca()['config']['enableRichtext'] ?? false;
