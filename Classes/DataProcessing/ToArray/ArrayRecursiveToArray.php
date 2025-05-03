@@ -11,6 +11,7 @@ use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\JsonFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
@@ -19,6 +20,7 @@ use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
+use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -51,12 +53,16 @@ class ArrayRecursiveToArray {
                     $data[$decoratedKey] = $value;
                     break;
                 case is_array($value):
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value)->toArray();
+                    if ($tcaFieldDefinition && $tcaFieldDefinition->getFieldType() instanceof JsonFieldType) {
+                        $data[$decoratedKey] = $value;
+                    } else {
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
+                    }
                     break;
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
-                case $value instanceof DateTimeImmutable: 
+                case $value instanceof DateTimeImmutable:
                     $data[$decoratedKey] = $value->format(DateTimeImmutable::W3C);
                     break;
                 case $value instanceof Record:
@@ -84,7 +90,7 @@ class ArrayRecursiveToArray {
                 case $value instanceof FileReference:
                     $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
                     break;
-                case $value instanceof \TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection:
+                case $value instanceof LazyFolderCollection:
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
                     break;
                 default:
