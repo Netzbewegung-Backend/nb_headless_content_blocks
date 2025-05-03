@@ -8,13 +8,11 @@ use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class LazyRecordCollectionToArray
+class LazyRecordCollectionSysCategoryToArray
 {
 
     public function __construct(
         protected LazyRecordCollection $lazyRecordCollection,
-        protected ?TableDefinition $tableDefinition,
-        protected TableDefinitionCollection $tableDefinitionCollection
     )
     {
         
@@ -25,7 +23,12 @@ class LazyRecordCollectionToArray
         $data = [];
 
         foreach ($this->lazyRecordCollection as $key => $value) {
-            $data[$key] = GeneralUtility::makeInstance(RecordToArray::class, $value, $this->tableDefinition, $this->tableDefinitionCollection)->toArray();
+            $array = $value->toArray();
+            $data[$key] = [
+                'uid' => $array['uid'],
+                'pid' => $array['pid'],
+                'title' => $array['title'],
+            ];
         }
 
         return $data;

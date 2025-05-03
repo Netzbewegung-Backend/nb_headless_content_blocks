@@ -63,8 +63,13 @@ class ArrayRecursiveToArray {
                     $data[$decoratedKey] = GeneralUtility::makeInstance(TypolinkParameterToArray::class, $value)->toArray();
                     break;
                 case $value instanceof LazyRecordCollection:
-                    $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                    $tableName = $this->getTableNameByKey($key);
+                    if ($tableName === 'sys_category') {
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionSysCategoryToArray::class, $value)->toArray();
+                    } else {
+                        $tableDefinition = $this->getTableDefinitionByKey($key);
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                    }
                     break;
                 case $value instanceof LazyFileReferenceCollection:
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFileReferenceCollectionToArray::class, $value)->toArray();
@@ -74,8 +79,6 @@ class ArrayRecursiveToArray {
                     break;
                 default:
                     throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
-                #$data[$decoratedKey] = $value;
-                #break;
             }
         }
 
