@@ -84,6 +84,9 @@ class ArrayRecursiveToArray {
                 case $value instanceof FileReference:
                     $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
                     break;
+                case $value instanceof \TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection:
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
+                    break;
                 default:
                     #debug($value);
                     throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
