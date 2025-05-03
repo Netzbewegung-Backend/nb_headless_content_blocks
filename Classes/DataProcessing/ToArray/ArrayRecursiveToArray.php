@@ -142,8 +142,8 @@ class ArrayRecursiveToArray {
         throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
-    protected function processStringField(string $value, string $key): string {
-        if (!$this->tableDefinition || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
+    protected function processStringField(string $value, int|string $key): string {
+        if (!$this->tableDefinition || is_int($key) || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
             return $value;
         }
 
