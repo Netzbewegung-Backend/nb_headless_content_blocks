@@ -18,6 +18,7 @@ use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SlugFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\UuidFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
@@ -157,6 +158,7 @@ class ArrayRecursiveToArray {
             case $fieldType instanceof EmailFieldType:
             case $fieldType instanceof PassFieldType:
             case $fieldType instanceof SlugFieldType:
+            case $fieldType instanceof UuidFieldType:
                 break;
             case $fieldType instanceof PasswordFieldType:
                 $value = '';
