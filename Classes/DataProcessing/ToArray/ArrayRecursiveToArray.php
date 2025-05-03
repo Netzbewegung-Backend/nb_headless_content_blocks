@@ -44,6 +44,7 @@ class ArrayRecursiveToArray {
 
             switch (true) {
                 case is_null($value):
+                case is_int($value):
                     $data[$decoratedKey] = $value;
                     break;
                 case is_array($value):
@@ -78,6 +79,7 @@ class ArrayRecursiveToArray {
                     $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
                     break;
                 default:
+                    debug($value);
                     throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
