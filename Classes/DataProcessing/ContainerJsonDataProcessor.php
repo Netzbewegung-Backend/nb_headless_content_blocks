@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
+use B13\Container\DataProcessing\ContainerProcessor;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockDataDecorator;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\Domain\RecordFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use B13\Container\DataProcessing\ContainerProcessor;
 
 readonly class ContainerJsonDataProcessor implements DataProcessorInterface
 {
@@ -21,8 +22,7 @@ readonly class ContainerJsonDataProcessor implements DataProcessorInterface
         protected ContentBlockDataDecorator $contentBlockDataDecorator,
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
-    )
-    {
+    ) {
     }
 
     public function process(
@@ -30,8 +30,7 @@ readonly class ContainerJsonDataProcessor implements DataProcessorInterface
         array $contentObjectConfiguration,
         array $processorConfiguration,
         array $processedData
-    ): array
-    {
+    ): array {
         $processedData = GeneralUtility::makeInstance(ContainerProcessor::class)->process(
             $contentObjectRenderer,
             $contentObjectConfiguration,

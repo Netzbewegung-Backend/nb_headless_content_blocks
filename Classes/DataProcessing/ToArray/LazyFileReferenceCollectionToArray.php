@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
@@ -8,10 +9,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyFileReferenceCollectionToArray
 {
-
     public function __construct(protected LazyFileReferenceCollection $lazyFileReferenceCollection)
     {
-        
+
     }
 
     public function toArray(): array

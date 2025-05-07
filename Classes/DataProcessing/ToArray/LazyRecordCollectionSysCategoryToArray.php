@@ -1,21 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
-use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyRecordCollectionSysCategoryToArray
 {
-
     public function __construct(
         protected LazyRecordCollection $lazyRecordCollection,
-    )
-    {
-        
+    ) {
+
     }
 
     public function toArray(): array

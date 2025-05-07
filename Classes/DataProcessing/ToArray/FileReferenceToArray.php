@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
@@ -10,10 +11,9 @@ use TYPO3\CMS\Extbase\Service\ImageService;
 
 class FileReferenceToArray
 {
-
     public function __construct(protected FileReference $fileReference)
     {
-        
+
     }
 
     public function toArray(): array

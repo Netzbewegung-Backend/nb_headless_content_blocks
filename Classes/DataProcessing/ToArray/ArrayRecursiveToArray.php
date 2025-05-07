@@ -29,17 +29,18 @@ use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-class ArrayRecursiveToArray {
-
+class ArrayRecursiveToArray
+{
     public function __construct(
-            protected array $array,
-            protected ?TableDefinition $tableDefinition,
-            protected TableDefinitionCollection $tableDefinitionCollection
+        protected array $array,
+        protected ?TableDefinition $tableDefinition,
+        protected TableDefinitionCollection $tableDefinitionCollection
     ) {
-        
+
     }
 
-    public function toArray(): array {
+    public function toArray(): array
+    {
         $data = [];
 
         foreach ($this->array as $key => $value) {
@@ -108,7 +109,8 @@ class ArrayRecursiveToArray {
         return $data;
     }
 
-    protected function getTableDefinitionByKey(string $key): ?TableDefinition {
+    protected function getTableDefinitionByKey(string $key): ?TableDefinition
+    {
         $tableName = $this->getTableNameByKey($key);
 
         if ($this->tableDefinitionCollection->hasTable($tableName)) {
@@ -118,7 +120,8 @@ class ArrayRecursiveToArray {
         return null;
     }
 
-    protected function getTableNameByKey(string $key): string {
+    protected function getTableNameByKey(string $key): string
+    {
         if ($this->tableDefinitionCollection->hasTable($key)) {
             return $key;
         }
@@ -143,7 +146,8 @@ class ArrayRecursiveToArray {
         throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
-    protected function processStringField(string $value, int|string $key): string {
+    protected function processStringField(string $value, int|string $key): string
+    {
         if (!$this->tableDefinition || is_int($key) || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
             return $value;
         }
@@ -161,6 +165,8 @@ class ArrayRecursiveToArray {
             case $fieldType instanceof UuidFieldType:
                 break;
             case $fieldType instanceof PasswordFieldType:
+                // Unclear in which case it makes sense to send a password via headless to client.
+                // So we currently unset the value.
                 $value = '';
                 break;
             case $fieldType instanceof TextareaFieldType:
@@ -173,7 +179,7 @@ class ArrayRecursiveToArray {
                 break;
             default:
                 #debug($fieldType);
-                throw new Exception('Unknown default case in ArrayRecursiveToArray default case for key "' . $key . '"', 1746095966);
+                throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
         }
 
         return $value;

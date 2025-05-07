@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
@@ -11,10 +12,9 @@ use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
 
 class TypolinkParameterToArray
 {
-
     public function __construct(protected TypolinkParameter $typolinkParameter)
     {
-        
+
     }
 
     public function toArray(): ?array

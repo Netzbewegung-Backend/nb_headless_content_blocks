@@ -1,17 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
 use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyFolderCollectionToArray
 {
-
     public function __construct(protected LazyFolderCollection $lazyFolderCollection)
     {
-        
+
     }
 
     public function toArray(): array
