@@ -24,9 +24,9 @@ class RecordToArray
     {
         try {
             $array = $this->record->toArray();
-        } catch (FileDoesNotExistException $e) {
+        } catch (FileDoesNotExistException $fileDoesNotExistException) {
             return [
-                '__errorMessage' => $e->getMessage()
+                '__errorMessage' => $fileDoesNotExistException->getMessage()
             ];
         }
 

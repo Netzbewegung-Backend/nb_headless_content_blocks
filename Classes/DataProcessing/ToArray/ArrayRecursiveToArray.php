@@ -45,7 +45,7 @@ class ArrayRecursiveToArray
 
         foreach ($this->array as $key => $value) {
 
-            if ($this->tableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
+            if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
                 $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
                 $decoratedKey = $tcaFieldDefinition->getIdentifier();
             } else {
@@ -63,6 +63,7 @@ class ArrayRecursiveToArray
                     } else {
                         $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
                     }
+
                     break;
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
@@ -88,6 +89,7 @@ class ArrayRecursiveToArray
                         $tableDefinition = $this->getTableDefinitionByKey($key);
                         $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
                     }
+
                     break;
                 case $value instanceof LazyFileReferenceCollection:
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFileReferenceCollectionToArray::class, $value)->toArray();
@@ -126,7 +128,7 @@ class ArrayRecursiveToArray
             return $key;
         }
 
-        if ($this->tableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
+        if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
             $field = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
             $fieldType = $field->getFieldType();
 
@@ -138,6 +140,7 @@ class ArrayRecursiveToArray
             if (isset($tca['config']['foreign_table'])) {
                 return $tca['config']['foreign_table'];
             }
+
             if (isset($tca['config']['allowed'])) {
                 return $tca['config']['allowed'];
             }
@@ -148,7 +151,7 @@ class ArrayRecursiveToArray
 
     protected function processStringField(string $value, int|string $key): string
     {
-        if (!$this->tableDefinition || is_int($key) || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
+        if (!$this->tableDefinition instanceof TableDefinition || is_int($key) || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
             return $value;
         }
 

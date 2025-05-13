@@ -60,7 +60,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         // Process additional DataProcessors
         if (isset($processorConfiguration['dataProcessing.']) && is_array($processorConfiguration['dataProcessing.'])) {
-            $additionalData = $this->processAdditionalDataProcessors($contentObjectRenderer, $processedData, $processorConfiguration, $contentObjectRenderer->getRequest());
+            $additionalData = $this->processAdditionalDataProcessors($contentObjectRenderer, $processedData, $processorConfiguration);
 
             unset($additionalData['data']);
             unset($additionalData['current']);
@@ -91,7 +91,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         return require $headlessPhpFile;
     }
 
-    protected function processAdditionalDataProcessors(ContentObjectRenderer $contentObjectRenderer, array $data, array $processorConfiguration, ServerRequestInterface $request): array
+    protected function processAdditionalDataProcessors(ContentObjectRenderer $contentObjectRenderer, array $data, array $processorConfiguration): array
     {
         return GeneralUtility::makeInstance(ContentDataProcessor::class)->process(
             $contentObjectRenderer,

@@ -17,7 +17,7 @@ class LazyFolderCollectionToArray
     {
         $data = [];
         foreach ($this->lazyFolderCollection as $key => $value) {
-            $path = '/' . $value->getStorage()->getConfiguration()['basePath'] . ltrim($value->getIdentifier(), '/');
+            $path = '/' . $value->getStorage()->getConfiguration()['basePath'] . ltrim((string) $value->getIdentifier(), '/');
             $data[$key] = $path;
         }
 
