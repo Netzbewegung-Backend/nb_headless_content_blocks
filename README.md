@@ -71,6 +71,8 @@ tt_content.vendor_yourcontentblockelement.fields.data.dataProcessing.10 {
 
 ### TypoScript Setup
 
+#### `left`/`right` parallel to `data`
+
 ```
 lib.content.select.where = colPos NOT IN (201, 202)
 
@@ -81,17 +83,43 @@ tt_content.b13_2_columns_container {
         left {
             dataProcessing {
                 10 = nb-container-json 
-                10.colPos = 201
-                10.as = left
+                10 {
+                    colPos = 201
+                    as = left
+                }
             }
         }
         right = TEXT
         right {
             dataProcessing {
                 10 = nb-container-json 
-                10.colPos = 202
-                10.as = right
+                10 {
+                    colPos = 202
+                    as = right
+                }
             }
+        }
+    }
+}
+```
+
+#### `left`/`right` inside `data` (via Sub DataProcessing)
+
+```
+lib.content.select.where = colPos NOT IN (201, 202)
+
+tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
+    dataProcessing {
+        10 = nb-container-json 
+        10 {
+            colPos = 201
+            as = left
+        }
+
+        20 = nb-container-json 
+        20 {
+            colPos = 202
+            as = right
         }
     }
 }
