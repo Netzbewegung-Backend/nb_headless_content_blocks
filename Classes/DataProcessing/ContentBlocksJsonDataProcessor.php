@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
 use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray\RecordToArray;
-use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
 use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;

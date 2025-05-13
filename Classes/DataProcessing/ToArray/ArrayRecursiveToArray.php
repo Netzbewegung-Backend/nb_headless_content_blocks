@@ -58,7 +58,7 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = $value;
                     break;
                 case is_array($value):
-                    if ($tcaFieldDefinition && $tcaFieldDefinition->getFieldType() instanceof JsonFieldType) {
+                    if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->getFieldType() instanceof JsonFieldType) {
                         $data[$decoratedKey] = $value;
                     } else {
                         $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
