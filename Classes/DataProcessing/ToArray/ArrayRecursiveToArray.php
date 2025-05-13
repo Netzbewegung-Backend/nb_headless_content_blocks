@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Exception;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
@@ -58,7 +59,7 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = $value;
                     break;
                 case is_array($value):
-                    if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->getFieldType() instanceof JsonFieldType) {
+                    if (($tcaFieldDefinition instanceof TcaFieldDefinition) && ($tcaFieldDefinition->getFieldType() instanceof JsonFieldType)) {
                         $data[$decoratedKey] = $value;
                     } else {
                         $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
