@@ -8,6 +8,13 @@ Install extension using composer
 
 and then, include Site Set "Headless Content Blocks", and you are ready to go.
 
+## Features
+
+- Converts all complex objects into an array without extra configuration
+- Richtext fields are automaticly converted via `parseFunc($value, null, '< lib.parseFunc_RTE')`
+- Additional thumbnails can be created via headless.php per Content Block
+- Support for EXT:container
+
 ## Custom Configuration per Content Block Type
 
 Create headless.php inside each Content Block.
