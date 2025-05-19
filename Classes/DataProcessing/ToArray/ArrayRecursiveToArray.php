@@ -46,9 +46,9 @@ class ArrayRecursiveToArray
 
         foreach ($this->array as $key => $value) {
 
-            if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
-                $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
-                $decoratedKey = $tcaFieldDefinition->getIdentifier();
+            if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key)) {
+                $tcaFieldDefinition = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
+                $decoratedKey = $tcaFieldDefinition->identifier;
             } else {
                 $tcaFieldDefinition = null;
                 $decoratedKey = $key;
@@ -60,7 +60,7 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = $value;
                     break;
                 case is_array($value):
-                    if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->getFieldType() instanceof JsonFieldType) {
+                    if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->fieldType instanceof JsonFieldType) {
                         $data[$decoratedKey] = $value;
                     } else {
                         $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
@@ -130,9 +130,9 @@ class ArrayRecursiveToArray
             return $key;
         }
 
-        if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key)) {
-            $field = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
-            $fieldType = $field->getFieldType();
+        if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key)) {
+            $field = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
+            $fieldType = $field->fieldType;
 
             if ($fieldType instanceof CategoryFieldType) {
                 return 'sys_category';
@@ -153,12 +153,12 @@ class ArrayRecursiveToArray
 
     protected function processStringField(string $value, int|string $key): string
     {
-        if (!$this->tableDefinition instanceof TableDefinition || is_int($key) || $this->tableDefinition->getTcaFieldDefinitionCollection()->hasField($key) === false) {
+        if (!$this->tableDefinition instanceof TableDefinition || is_int($key) || $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key) === false) {
             return $value;
         }
 
-        $tcaFieldDefinition = $this->tableDefinition->getTcaFieldDefinitionCollection()->getField($key);
-        $fieldType = $tcaFieldDefinition->getFieldType();
+        $tcaFieldDefinition = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
+        $fieldType = $tcaFieldDefinition->fieldType;
 
         switch (true) {
             case $fieldType instanceof ColorFieldType:
