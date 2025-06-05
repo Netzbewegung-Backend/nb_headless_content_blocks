@@ -1,3 +1,5 @@
+[![TYPO3 compatibility](https://img.shields.io/badge/TYPO3-13.4-ff8700?maxAge=3600&logo=typo3)](https://get.typo3.org/)
+
 # TYPO3 Extension EXT:nb_headless_content_blocks
 Connects together EXT:headless (friendsoftypo3/headless) and EXT:content_blocks (friendsoftypo3/content-blocks)
 
