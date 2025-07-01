@@ -133,3 +133,12 @@ tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
     }
 }
 ```
+
+## Testing ##
+
+```
+ddev exec Build/Scripts/runTests.sh -s cgl # Code guidelines check
+ddev exec Build/Scripts/runTests.sh -s phpstan # PHPStan analysis
+ddev exec Build/Scripts/runTests.sh -s unit # Unit tests
+ddev exec Build/Scripts/runTests.sh -s functional # Functional tests
+```
