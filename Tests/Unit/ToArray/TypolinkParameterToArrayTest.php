@@ -13,6 +13,7 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Frontend\Typolink\LinkResult;
+use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
 
 class TypolinkParameterToArrayTest extends UnitTestCase
 {
@@ -88,5 +89,45 @@ class TypolinkParameterToArrayTest extends UnitTestCase
     }
 
     #[Test]
-    public function returnsErrorMessageOnLinkException(): void {}
+    public function returnsErrorMessageOnLinkException(): void {
+        $errorMessage = 'Unable to create link';
+
+        $url = 'https://example.com';
+        $target = '_blank';
+        $type = 'url';
+        $title = 'Example';
+        $config = ['parameter' => '123'];
+        $attr = ['class' => 'link', 'href' => $url, 'target' => $target];
+
+        $typolinkParameter = new TypolinkParameter(
+            $url,
+            $target,
+            'link',
+            $title,
+            '',
+            $config,
+        );
+
+        $linkFactory = $this->getMockBuilder(LinkFactory::class)
+        ->disableOriginalConstructor()
+        ->onlyMethods(['createUri'])
+        ->getMock();
+        $linkFactory->method('createUri')->willThrowException(new UnableToLinkException($errorMessage));
+
+        $subject = new TypolinkParameterToArray(
+            $typolinkParameter, 
+            new TypoLinkCodecService(new NoopEventDispatcher()), 
+            $linkFactory
+        );
+
+        $result = $subject->toArray();
+
+        self::assertIsArray($result);
+        self::assertEquals('', $result['url']);
+        self::assertEquals('', $result['target']);
+        self::assertEquals('', $result['type']);
+        self::assertEquals([], $result['config']);
+        self::assertEquals([], $result['attr']);
+        self::assertEquals($errorMessage, $result['__errorMessage']);
+    }
 }
