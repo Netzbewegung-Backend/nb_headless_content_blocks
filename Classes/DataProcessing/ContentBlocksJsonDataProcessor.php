@@ -22,9 +22,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         protected RecordFactory $recordFactory,
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
-    ) {
-
-    }
+    ) {}
 
     public function process(
         ContentObjectRenderer $contentObjectRenderer,

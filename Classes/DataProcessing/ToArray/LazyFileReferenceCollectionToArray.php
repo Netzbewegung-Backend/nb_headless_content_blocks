@@ -9,10 +9,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyFileReferenceCollectionToArray
 {
-    public function __construct(protected LazyFileReferenceCollection $lazyFileReferenceCollection)
-    {
-
-    }
+    public function __construct(protected LazyFileReferenceCollection $lazyFileReferenceCollection) {}
 
     public function toArray(): array
     {

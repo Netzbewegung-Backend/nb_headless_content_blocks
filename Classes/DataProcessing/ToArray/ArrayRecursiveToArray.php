@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
-use DateTimeImmutable;
-use Exception;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
@@ -36,9 +34,7 @@ class ArrayRecursiveToArray
         protected array $array,
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -70,8 +66,8 @@ class ArrayRecursiveToArray
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
-                case $value instanceof DateTimeImmutable:
-                    $data[$decoratedKey] = $value->format(DateTimeImmutable::W3C);
+                case $value instanceof \DateTimeImmutable:
+                    $data[$decoratedKey] = $value->format(\DateTimeImmutable::W3C);
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
@@ -103,8 +99,7 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
                     break;
                 default:
-                    #debug($value);
-                    throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    throw new \Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
 
@@ -148,7 +143,7 @@ class ArrayRecursiveToArray
             }
         }
 
-        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
+        throw new \Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
     }
 
     protected function processStringField(string $value, int|string $key): string
@@ -183,8 +178,7 @@ class ArrayRecursiveToArray
 
                 break;
             default:
-                #debug($fieldType);
-                throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
+                throw new \Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
         }
 
         return $value;

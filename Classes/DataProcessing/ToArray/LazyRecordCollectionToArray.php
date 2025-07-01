@@ -15,9 +15,7 @@ class LazyRecordCollectionToArray
         protected LazyRecordCollection $lazyRecordCollection,
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {

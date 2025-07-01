@@ -11,10 +11,7 @@ use TYPO3\CMS\Extbase\Service\ImageService;
 
 class FileReferenceToArray
 {
-    public function __construct(protected FileReference $fileReference)
-    {
-
-    }
+    public function __construct(protected FileReference $fileReference) {}
 
     public function toArray(): array
     {
@@ -24,7 +21,7 @@ class FileReferenceToArray
             $cropString = $this->fileReference->getProperty('crop');
         }
 
-        $cropVariantCollection = CropVariantCollection::create((string) $cropString);
+        $cropVariantCollection = CropVariantCollection::create((string)$cropString);
         $cropArea = $cropVariantCollection->getCropArea('default');
 
         $imageService = self::getImageService();
