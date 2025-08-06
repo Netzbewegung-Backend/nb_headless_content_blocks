@@ -117,6 +117,10 @@ class ArrayRecursiveToArray
     {
         $tableName = $this->getTableNameByKey($key);
 
+        if ($tableName === null) {
+            return null;
+        }
+
         if ($this->tableDefinitionCollection->hasTable($tableName)) {
             return $this->tableDefinitionCollection->getTable($tableName);
         }
@@ -124,7 +128,7 @@ class ArrayRecursiveToArray
         return null;
     }
 
-    protected function getTableNameByKey(string $key): string
+    protected function getTableNameByKey(string $key): ?string
     {
         if ($this->tableDefinitionCollection->hasTable($key)) {
             return $key;
@@ -144,11 +148,14 @@ class ArrayRecursiveToArray
             }
 
             if (isset($tca['config']['allowed'])) {
+                if (count(explode(',', $tca['config']['allowed'])) > 1) {
+                    return null;
+                }
                 return $tca['config']['allowed'];
             }
         }
 
-        throw new Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
+        return null;
     }
 
     protected function processStringField(string $value, int|string $key): string
