@@ -134,7 +134,32 @@ tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
 }
 ```
 
-## Testing ##
+## Developing
+
+### Run with DDEV
+
+There is a ddev setup ready to use. Ensure [ddev](https://github.com/ddev/ddev)
+is installed on your machine. Then run:
+
+```
+ddev start
+ddev composer install
+touch .Build/public/FIRST_INSTALL
+ddev launch
+```
+
+The default URL is https://nb-headless-content-blocks.ddev.site/.
+Continue with the TYPO3 installation process.
+
+### Testing
+
+First install the composer dependencies:
+
+```
+composer install
+```
+
+Then run unit or functional tests by executing:
 
 ```
 Build/Scripts/runTests.sh -s cgl # Code guidelines check
@@ -142,3 +167,7 @@ Build/Scripts/runTests.sh -s phpstan # PHPStan analysis
 Build/Scripts/runTests.sh -s unit # Unit tests
 Build/Scripts/runTests.sh -s functional # Functional tests
 ```
+
+#### Hint
+
+Be sure to exclude the `.Build/public/typo3temp` directory from indexing in your IDE (e.g. PhpStorm) before starting the tests.
