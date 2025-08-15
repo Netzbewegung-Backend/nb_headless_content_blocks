@@ -2,6 +2,7 @@ config/system/settings.php
 composer.lock
 .Build
 var
+Build/testing-docker/.env
 .cache
 config
 .phpunit.result.cache
