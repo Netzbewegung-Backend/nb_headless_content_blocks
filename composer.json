@@ -48,7 +48,7 @@
     },
     "require": {
         "friendsoftypo3/content-blocks": ">=1.2.3",
-        "friendsoftypo3/headless": "^4.5"
+        "friendsoftypo3/headless": "^4.5",
         "typo3/cms-core": "^13.4"
     },
     "require-dev": {
