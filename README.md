@@ -76,7 +76,7 @@ tt_content.vendor_yourcontentblockelement.fields.data.dataProcessing.10 {
 }
 ```
 
-## Custom Configuration per FieldType/FieldName/TCA-Configuration in ArrayRecursiveToArray via PSR-14 Event##
+## Custom Configuration per FieldType/FieldName/TCA-Configuration in ArrayRecursiveToArray via PSR-14 Event
 
 Create a PSR-14 Event Listener in your extension.
 Use `$event->setProcessedValue($yourModifiedValueForThisField)` to handle the value for specific fields.
