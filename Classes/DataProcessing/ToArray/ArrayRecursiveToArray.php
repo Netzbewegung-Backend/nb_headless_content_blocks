@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use DateTimeImmutable;
 use Exception;
+use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
@@ -23,6 +24,7 @@ use TYPO3\CMS\ContentBlocks\FieldType\UuidFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
@@ -35,7 +37,8 @@ class ArrayRecursiveToArray
     public function __construct(
         protected array $array,
         protected ?TableDefinition $tableDefinition,
-        protected TableDefinitionCollection $tableDefinitionCollection
+        protected TableDefinitionCollection $tableDefinitionCollection,
+        protected readonly EventDispatcher $eventDispatcher
     ) {
 
     }
@@ -54,6 +57,16 @@ class ArrayRecursiveToArray
                 $decoratedKey = $key;
             }
 
+            // Dispatch event to allow custom processing
+            $event = new ModifyArrayRecursiveToArrayEvent($key, $value, $tcaFieldDefinition);
+            $this->eventDispatcher->dispatch($event);
+
+            // If the event was handled by a listener, use the processed value
+            if ($event->isHandled()) {
+                $data[$decoratedKey] = $event->getProcessedValue();
+                continue;
+            }
+
             switch (true) {
                 case is_null($value):
                 case is_int($value):
@@ -63,7 +76,13 @@ class ArrayRecursiveToArray
                     if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->fieldType instanceof JsonFieldType) {
                         $data[$decoratedKey] = $value;
                     } else {
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(
+                            ArrayRecursiveToArray::class,
+                            $value,
+                            null,
+                            $this->tableDefinitionCollection,
+                            $this->eventDispatcher
+                        )->toArray();
                     }
 
                     break;
@@ -75,7 +94,13 @@ class ArrayRecursiveToArray
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(RecordToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(
+                        RecordToArray::class,
+                        $value,
+                        $tableDefinition,
+                        $this->tableDefinitionCollection,
+                        $this->eventDispatcher
+                    )->toArray();
                     break;
                 case $value instanceof FlexFormFieldValues:
                     $data[$decoratedKey] = $value->toArray();
@@ -89,7 +114,13 @@ class ArrayRecursiveToArray
                         $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionSysCategoryToArray::class, $value)->toArray();
                     } else {
                         $tableDefinition = $this->getTableDefinitionByKey($key);
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(
+                            LazyRecordCollectionToArray::class,
+                            $value,
+                            $tableDefinition,
+                            $this->tableDefinitionCollection,
+                            $this->eventDispatcher
+                        )->toArray();
                     }
 
                     break;

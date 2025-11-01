@@ -7,15 +7,16 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LazyRecordCollectionToArray
 {
-
     public function __construct(
         protected LazyRecordCollection $lazyRecordCollection,
         protected ?TableDefinition $tableDefinition,
-        protected TableDefinitionCollection $tableDefinitionCollection
+        protected TableDefinitionCollection $tableDefinitionCollection,
+        protected readonly EventDispatcher $eventDispatcher
     ) {
 
     }
@@ -29,7 +30,7 @@ class LazyRecordCollectionToArray
                 $tableName = $value->getRawRecord()->getMainType();
                 if ($tableName === 'sys_category') {
                     $tableDefinition = null;
-                } else if ($this->tableDefinitionCollection->hasTable($tableName)) {
+                } elseif ($this->tableDefinitionCollection->hasTable($tableName)) {
                     $tableDefinition = $this->tableDefinitionCollection->getTable($tableName);
                 } else {
                     #debug($this->lazyRecordCollection);
@@ -38,7 +39,13 @@ class LazyRecordCollectionToArray
             } else {
                 $tableDefinition = $this->tableDefinition;
             }
-            $data[$key] = GeneralUtility::makeInstance(RecordToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+            $data[$key] = GeneralUtility::makeInstance(
+                RecordToArray::class,
+                $value,
+                $tableDefinition,
+                $this->tableDefinitionCollection,
+                $this->eventDispatcher
+            )->toArray();
         }
 
         return $data;
