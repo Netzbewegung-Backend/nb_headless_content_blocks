@@ -104,7 +104,7 @@ class ArrayRecursiveToArray
                     break;
                 default:
                     #debug($value);
-                    throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    #throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
 
@@ -191,7 +191,7 @@ class ArrayRecursiveToArray
                 break;
             default:
                 #debug($fieldType);
-                throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
+                #throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
         }
 
         return $value;
