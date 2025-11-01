@@ -76,6 +76,53 @@ tt_content.vendor_yourcontentblockelement.fields.data.dataProcessing.10 {
 }
 ```
 
+## Custom Configuration per FieldType/FieldName/TCA-Configuration in ArrayRecursiveToArray via PSR-14 Event##
+
+Create a PSR-14 Event Listener in your extension.
+Use `$event->setProcessedValue($yourModifiedValueForThisField)` to handle the value for specific fields.
+Any unhandled fields will fall back to the default processing.
+
+```
+<?php
+
+declare(strict_types=1);
+
+namespace MyVendor\MyExtension\EventListener;
+
+use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
+
+#[AsEventListener()]
+final class MyCustomListener {
+    public function __invoke(ModifyArrayRecursiveToArrayEvent $event): void {
+        // Example: Custom handling by field name (tt_content.tx_dev_devbug8_custom_field)
+        if ($event->getKey() === 'tx_my_vendor_field_name') {
+            $value = $event->getValue();
+            // Do your custom processing here
+            $processedValue = strtoupper($value);
+            // $processedValue The value which is returned for this field in json response
+            $event->setProcessedValue($processedValue);
+        }
+        // Example: Custom handling for all text fields
+        if ($event->getTcaFieldDefinition()->fieldType instanceof \TYPO3\CMS\ContentBlocks\FieldType\TextFieldType) {
+            $value = $event->getValue();
+            // Do your custom processing here
+            $processedValue = strtoupper($value);
+            // $processedValue The value which is returned for this field in json response
+            $event->setProcessedValue($processedValue);
+        }
+        // Example: Custom handling for a specific field which have custom field type
+        if ($event->getTcaFieldDefinition()->fieldType instanceof \MyVendor\MyExtension\MyCustomFieldType) {
+            $value = $event->getValue();
+            // Do your custom processing here
+            $processedValue = strtoupper($value);
+            // $processedValue The value which is returned for this field in json response
+            $event->setProcessedValue($processedValue);
+        }
+    }
+}
+```
+
 ## Custom Configuration for EXT:container (b13/container) 
 
 ### TypoScript Setup
