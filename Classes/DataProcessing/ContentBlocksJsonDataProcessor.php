@@ -10,6 +10,7 @@ use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\Domain\RecordFactory;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -22,7 +23,10 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         protected RecordFactory $recordFactory,
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
-    ) {}
+        protected readonly EventDispatcher $eventDispatcher
+    ) {
+
+    }
 
     public function process(
         ContentObjectRenderer $contentObjectRenderer,
@@ -51,7 +55,13 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $tableDefinition = $this->tableDefinitionCollection->getTable($resolveRecord->getMainType());
 
-        $data = GeneralUtility::makeInstance(RecordToArray::class, $resolveRecord, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+        $data = GeneralUtility::makeInstance(
+            RecordToArray::class,
+            $resolveRecord,
+            $tableDefinition,
+            $this->tableDefinitionCollection,
+            $this->eventDispatcher
+        )->toArray();
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);
 

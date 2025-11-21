@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
+use DateTimeImmutable;
+use Exception;
+use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
@@ -21,6 +24,7 @@ use TYPO3\CMS\ContentBlocks\FieldType\UuidFieldType;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Domain\Record;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
 use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
@@ -33,8 +37,11 @@ class ArrayRecursiveToArray
     public function __construct(
         protected array $array,
         protected ?TableDefinition $tableDefinition,
-        protected TableDefinitionCollection $tableDefinitionCollection
-    ) {}
+        protected TableDefinitionCollection $tableDefinitionCollection,
+        protected readonly EventDispatcher $eventDispatcher
+    ) {
+
+    }
 
     public function toArray(): array
     {
@@ -50,6 +57,16 @@ class ArrayRecursiveToArray
                 $decoratedKey = $key;
             }
 
+            // Dispatch event to allow custom processing
+            $event = new ModifyArrayRecursiveToArrayEvent($key, $value, $tcaFieldDefinition);
+            $this->eventDispatcher->dispatch($event);
+
+            // If the event was handled by a listener, use the processed value
+            if ($event->isHandled()) {
+                $data[$decoratedKey] = $event->getProcessedValue();
+                continue;
+            }
+
             switch (true) {
                 case is_null($value):
                 case is_int($value):
@@ -59,19 +76,31 @@ class ArrayRecursiveToArray
                     if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->fieldType instanceof JsonFieldType) {
                         $data[$decoratedKey] = $value;
                     } else {
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(ArrayRecursiveToArray::class, $value, null, $this->tableDefinitionCollection)->toArray();
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(
+                            ArrayRecursiveToArray::class,
+                            $value,
+                            null,
+                            $this->tableDefinitionCollection,
+                            $this->eventDispatcher
+                        )->toArray();
                     }
 
                     break;
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
-                case $value instanceof \DateTimeImmutable:
-                    $data[$decoratedKey] = $value->format(\DateTimeImmutable::W3C);
+                case $value instanceof DateTimeImmutable:
+                    $data[$decoratedKey] = $value->format(DateTimeImmutable::W3C);
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(RecordToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                    $data[$decoratedKey] = GeneralUtility::makeInstance(
+                        RecordToArray::class,
+                        $value,
+                        $tableDefinition,
+                        $this->tableDefinitionCollection,
+                        $this->eventDispatcher
+                    )->toArray();
                     break;
                 case $value instanceof FlexFormFieldValues:
                     $data[$decoratedKey] = $value->toArray();
@@ -85,7 +114,13 @@ class ArrayRecursiveToArray
                         $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionSysCategoryToArray::class, $value)->toArray();
                     } else {
                         $tableDefinition = $this->getTableDefinitionByKey($key);
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionToArray::class, $value, $tableDefinition, $this->tableDefinitionCollection)->toArray();
+                        $data[$decoratedKey] = GeneralUtility::makeInstance(
+                            LazyRecordCollectionToArray::class,
+                            $value,
+                            $tableDefinition,
+                            $this->tableDefinitionCollection,
+                            $this->eventDispatcher
+                        )->toArray();
                     }
 
                     break;
@@ -99,7 +134,8 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
                     break;
                 default:
-                    throw new \Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    #debug($value);
+                    #throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
 
@@ -112,6 +148,10 @@ class ArrayRecursiveToArray
     {
         $tableName = $this->getTableNameByKey($key);
 
+        if ($tableName === null) {
+            return null;
+        }
+
         if ($this->tableDefinitionCollection->hasTable($tableName)) {
             return $this->tableDefinitionCollection->getTable($tableName);
         }
@@ -119,7 +159,7 @@ class ArrayRecursiveToArray
         return null;
     }
 
-    protected function getTableNameByKey(string $key): string
+    protected function getTableNameByKey(string $key): ?string
     {
         if ($this->tableDefinitionCollection->hasTable($key)) {
             return $key;
@@ -139,11 +179,14 @@ class ArrayRecursiveToArray
             }
 
             if (isset($tca['config']['allowed'])) {
+                if (count(explode(',', $tca['config']['allowed'])) > 1) {
+                    return null;
+                }
                 return $tca['config']['allowed'];
             }
         }
 
-        throw new \Exception('Unknown case in ->getTableNameByKey() for key "' . $key . '"', 1746095967);
+        return null;
     }
 
     protected function processStringField(string $value, int|string $key): string
@@ -178,7 +221,8 @@ class ArrayRecursiveToArray
 
                 break;
             default:
-                throw new \Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
+                #debug($fieldType);
+                #throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
         }
 
         return $value;
