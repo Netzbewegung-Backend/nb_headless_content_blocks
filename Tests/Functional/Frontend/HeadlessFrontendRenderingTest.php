@@ -19,7 +19,6 @@ namespace TYPO3\CMS\ContentBlocks\Tests\Functional\Frontend;
 
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Tests\Functional\SiteHandling\SiteBasedTestTrait;
-use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class HeadlessFrontendRenderingTest extends FunctionalTestCase
@@ -27,13 +26,13 @@ final class HeadlessFrontendRenderingTest extends FunctionalTestCase
     use SiteBasedTestTrait;
 
     protected array $testExtensionsToLoad = [
-        #'typo3conf/ext/content_blocks/Tests/Fixtures/Extensions/test_content_blocks_b',
-        #'typo3conf/ext/content_blocks/Tests/Fixtures/Extensions/test_content_blocks_c',
+        //'typo3conf/ext/content_blocks/Tests/Fixtures/Extensions/test_content_blocks_b',
+        //'typo3conf/ext/content_blocks/Tests/Fixtures/Extensions/test_content_blocks_c',
         'typo3conf/ext/headless',
         'typo3conf/ext/content_blocks',
         'typo3conf/ext/nb_headless_content_blocks',
     ];
-    
+
     #[Test]
     public function exampleTest(): void
     {

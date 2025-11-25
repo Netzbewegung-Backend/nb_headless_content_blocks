@@ -18,9 +18,7 @@ class RecordToArray
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection,
         protected readonly EventDispatcher $eventDispatcher
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -28,7 +26,7 @@ class RecordToArray
             $array = $this->record->toArray();
         } catch (FileDoesNotExistException $fileDoesNotExistException) {
             return [
-                '__errorMessage' => $fileDoesNotExistException->getMessage()
+                '__errorMessage' => $fileDoesNotExistException->getMessage(),
             ];
         }
 
