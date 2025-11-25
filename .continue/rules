@@ -1,0 +1,45 @@
+# Extension Architecture
+
+This is a TYPO3 Extension:
+
+- `/.Build` is for testing only and not used for production
+- `/.ddev` is for local development and not used for production
+- `/Build` is used for testing only and not used for production
+- `/Classes` has the main PHP Code of this extension
+- `/Configuration` is used for configuration
+- `/Tests` is used for testing only aand not used for production
+- `/README.md` basic informations and installation instructions
+
+
+## General
+
+- The Extension is build for TYPO3 13.4
+- GIT Repository is on GIThub: https://github.com/Netzbewegung/nb-headless-content-blocks
+- The Extension is build with Composer
+- The Extension uses PHP 8.2 and above
+- The Extension has a composer.json file in the root directory
+
+## Coding Standards
+
+- Use TYPO3 Coding Standards
+- Follow the existing naming conventions
+- Write tests for all new features
+
+
+
+## Development
+
+- The extension runs inside WSL2 on Windows 11 with DDEV
+
+## Testing
+
+- We use typo3/testing-framework
+- We try to have the same Testing functionality as friendsoftypo3/content-blocks GitHub https://github.com/FriendsOfTYPO3/content-blocks
+
+there are already some tests which can be executed locally in WSL with
+ 
+- Build/Scripts/runTests.sh -s cgl # Code guidelines check
+- Build/Scripts/runTests.sh -s phpstan # PHPStan analysis
+- Build/Scripts/runTests.sh -s unit # Unit tests
+- Build/Scripts/runTests.sh -s functional # Functional tests
+
