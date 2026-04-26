@@ -34,8 +34,8 @@
         }
     ],
     "require": {
-        "typo3/cms-core": "^14.3",
-        "friendsoftypo3/content-blocks": "^2.0",
+        "typo3/cms-core": "^13.4 || ^14.3",
+        "friendsoftypo3/content-blocks": ">=1.2.3 || ^2.0",
         "friendsoftypo3/headless": "^4.5 || dev-feature/typo3-v14"
     },
     "autoload": {

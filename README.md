@@ -96,7 +96,7 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 #[AsEventListener()]
 final class MyCustomListener {
     public function __invoke(ModifyArrayRecursiveToArrayEvent $event): void {
-        // Example: Custom handling by field name (tt_content.tx_dev_devbug8_custom_field)
+        // Example: Custom handling by field name (tt_content.tx_my_vendor_field_name)
         if ($event->getKey() === 'tx_my_vendor_field_name') {
             $value = $event->getValue();
             // Do your custom processing here
@@ -104,6 +104,7 @@ final class MyCustomListener {
             // $processedValue The value which is returned for this field in json response
             $event->setProcessedValue($processedValue);
         }
+
         // Example: Custom handling for all text fields
         if ($event->getTcaFieldDefinition()->fieldType instanceof \TYPO3\CMS\ContentBlocks\FieldType\TextFieldType) {
             $value = $event->getValue();
@@ -112,6 +113,7 @@ final class MyCustomListener {
             // $processedValue The value which is returned for this field in json response
             $event->setProcessedValue($processedValue);
         }
+
         // Example: Custom handling for a specific field which have custom field type
         if ($event->getTcaFieldDefinition()->fieldType instanceof \MyVendor\MyExtension\MyCustomFieldType) {
             $value = $event->getValue();
