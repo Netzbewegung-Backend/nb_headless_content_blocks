@@ -38,14 +38,35 @@
         "friendsoftypo3/content-blocks": ">=1.2.3 || ^2.0",
         "friendsoftypo3/headless": "^4.5 || ^5.0"
     },
+    "require-dev": {
+        "typo3/testing-framework": "^9.5",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "bnf/phpstan-psr-container": "^1.1",
+        "friendsofphp/php-cs-fixer": "^3.22",
+        "typo3/coding-standards": "0.8.x-dev"
+    },
     "autoload": {
         "psr-4": {
             "Netzbewegung\\NbHeadlessContentBlocks\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Netzbewegung\\NbHeadlessContentBlocks\\Tests\\": "Tests"
         }
     },
     "extra": {
         "typo3/cms": {
             "extension-key": "nb_headless_content_blocks"
         }
+    },
+    "scripts": {
+        "tests": [
+            "Build/Scripts/runTests.sh -s cgl",
+            "Build/Scripts/runTests.sh -s phpstan",
+            "Build/Scripts/runTests.sh -s unit",
+            "Build/Scripts/runTests.sh -s functional"
+        ]
     }
 }
