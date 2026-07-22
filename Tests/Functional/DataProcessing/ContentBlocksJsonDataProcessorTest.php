@@ -23,6 +23,7 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/simple_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/headless_content_element.csv');
     }
 
     #[Test]
@@ -128,6 +129,19 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
 
         self::assertSame(['a' => 1], $result['data']['my_json']);
+    }
+
+    #[Test]
+    public function processAppliesLocalHeadlessPhp(): void
+    {
+        $row = $this->fetchContentRow(2);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('MODIFY ME', $result['data']['my_text']);
+        self::assertTrue($result['data']['headless_processed']);
     }
 
     #[Test]

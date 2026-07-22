@@ -1,0 +1,7 @@
+name: test/headless
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_text
+    type: Text
