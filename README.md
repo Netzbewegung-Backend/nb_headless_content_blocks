@@ -236,3 +236,36 @@ Tests/
 ├── Unit/                                                   # Unit tests (no TYPO3 context)
 └── Functional/                                             # Functional tests (isolated TYPO3 instance)
 ```
+
+### IDE: temp directories from indexing
+
+Be sure to exclude the temp directories from indexing in your IDE before starting
+the tests. Functional tests create isolated TYPO3 instances in `typo3temp/var/tests`,
+the DDEV web container uses `.Build/public/typo3temp`:
+
+```
+typo3temp
+.Build/public/typo3temp
+```
+
+**PhpStorm**: Right-click the directories → *Mark Directory as* → *Excluded*
+(or *Settings* → *Directories* → add both to *Excluded files*).
+
+**VS Code** (`.vscode/settings.json`):
+
+```json
+{
+    "files.exclude": {
+        "**/typo3temp": true,
+        "**/.Build/public/typo3temp": true
+    },
+    "search.exclude": {
+        "**/typo3temp": true,
+        "**/.Build/public/typo3temp": true
+    },
+    "files.watcherExclude": {
+        "**/typo3temp/**": true,
+        "**/.Build/public/typo3temp/**": true
+    }
+}
+```

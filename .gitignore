@@ -13,4 +13,5 @@ packages
 content-blocks.yaml
 .php-cs-fixer.cache
 node_modules
+typo3temp
 vendor
