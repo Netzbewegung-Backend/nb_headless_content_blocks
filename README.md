@@ -183,3 +183,56 @@ tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
     }
 }
 ```
+
+## Development
+
+### Setup
+
+```bash
+ddev start
+ddev composer install
+```
+
+Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`).
+
+### Testing
+
+Unit and functional tests are based on the TYPO3 Testing Framework.
+
+```bash
+# All checks (via docker, isolated containers)
+Build/Scripts/runTests.sh -s all
+
+# Unit tests
+Build/Scripts/runTests.sh -s unit
+
+# Functional tests (sqlite by default, -d mariadb|mysql|postgres possible)
+Build/Scripts/runTests.sh -s functional
+
+# PHPStan
+Build/Scripts/runTests.sh -s phpstan
+
+# Coding guidelines (php-cs-fixer)
+Build/Scripts/runTests.sh -s cgl
+
+# Specific PHP version
+Build/Scripts/runTests.sh -s unit -p 8.4
+```
+
+Alternatively inside the running DDEV container (unit tests and static analysis only,
+functional tests need the environment variables provided by `runTests.sh`):
+
+```bash
+ddev exec .Build/bin/phpunit -c Build/phpunit/UnitTests.xml
+ddev exec .Build/bin/phpstan analyse -c Build/phpstan/phpstan.neon
+ddev exec .Build/bin/php-cs-fixer fix --config Build/php-cs-fixer/config.php
+```
+
+### Test structure
+
+```
+Tests/
+├── Fixtures/Extensions/test_nb_headless_content_blocks/   # Content Blocks fixtures
+├── Unit/                                                   # Unit tests (no TYPO3 context)
+└── Functional/                                             # Functional tests (isolated TYPO3 instance)
+```

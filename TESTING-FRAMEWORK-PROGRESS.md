@@ -23,17 +23,28 @@
 
 | Prüfung | Ergebnis |
 |---|---|
-| Unit Tests | ✅ 10 Tests, 11 Assertions OK |
-| CGL (php-cs-fixer) | ✅ 13 Dateien korrigiert, jetzt sauber |
+| Unit Tests | ✅ 22 Tests OK (Event, TypolinkParameterToArray, ArrayRecursiveToArray) |
+| Functional Tests | ✅ 13 Tests OK (ContentBlocksJsonDataProcessor, sqlite) |
+| CGL (php-cs-fixer) | ✅ Sauber |
 | PHPStan (Level 5) | ✅ Keine Fehler |
-| DDEV-Ausführung | ✅ `ddev exec .Build/bin/phpunit -c Build/phpunit/UnitTests.xml` |
+| DDEV-Ausführung | ✅ Unit Tests + PHPStan via `ddev exec` |
 
-### Nächste Schritte
+### Abgedeckte Feldtypen (Functional Tests)
 
-1. **Weitere Tests erstellen**:
-   - Utility-Klassen Tests
-   - DataProcessor Functional Tests
-2. **README ergänzen** - Testing-Hinweise
+Text, Number, DateTime, Select, Password (Wert wird geleert), Json, Link, Category, Collection, useExistingField (header/bodytext), headless.php Verarbeitung, `as`-Konfiguration, unbekannte Tabellen.
+
+### Erkenntnisse
+
+- Functional Tests brauchen DB-Credentials als Env-Variablen → immer via `runTests.sh -s functional` ausführen (setzt sqlite), nicht via `ddev exec`
+- `content_blocks` muss in `testExtensionsToLoad` explizit geladen werden, sonst kein ContentBlocks-Schema (SqlGenerator)
+- Link-Felder brauchen `$GLOBALS['TYPO3_REQUEST']` im Test (LinkFactory)
+- PHPStan-Cache (`.cache/phpstan`) kann root-gehörig sein → Container-Runs als User 1000 schlagen fehl
+
+### Nächste Schritte (optional)
+
+1. **ContainerJsonDataProcessor Functional Test** - braucht b13/container Container-Struktur (parent + children)
+2. **File/Feldtyp File Test** - braucht FAL-Fixtures (sys_file, sys_file_reference)
+3. **GitHub Actions Workflow validieren** - `.github/workflows/tests.yaml` auf CI-Erfolg prüfen
 
 ## Dateien die erstellt wurden
 
@@ -76,6 +87,9 @@ TESTING-FRAMEWORK-PROGRESS.md
 - [x] Tests ausführen und validieren
 - [x] PHPStan ausführen (keine Fehler, keine Baseline nötig)
 - [x] CGL ausführen und Fixes anwenden
-- [ ] Weitere Unit Tests für Utility-Klassen
-- [ ] Functional Tests für DataProcessor
-- [ ] README mit Testing-Hinweisen ergänzen
+- [x] Weitere Unit Tests für Utility-Klassen
+- [x] Functional Tests für DataProcessor
+- [x] README mit Testing-Hinweisen ergänzen
+- [ ] Functional Test für ContainerJsonDataProcessor (b13/container)
+- [ ] Functional Test für File-Feldtyp (FAL)
+- [ ] GitHub Actions Workflow auf CI validieren
