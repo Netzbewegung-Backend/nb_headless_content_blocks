@@ -21,11 +21,16 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         'typo3conf/ext/nb_headless_content_blocks',
     ];
 
+    protected array $pathsToProvideInTestInstance = [
+        'typo3conf/ext/nb_headless_content_blocks/Tests/Functional/DataProcessing/Fixtures/Files/' => 'fileadmin/',
+    ];
+
     public function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/simple_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/headless_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/file_reference_content_element.csv');
     }
 
     #[Test]
@@ -202,6 +207,39 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         self::assertSame($processedData, $result);
     }
 
+    #[Test]
+    public function processConvertsFileReferenceOneToOneToArray(): void
+    {
+        $row = $this->fetchContentRow(10);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('my_image', $result['data']);
+        self::assertIsArray($result['data']['my_image']);
+        self::assertSame(1, $result['data']['my_image']['id']);
+        self::assertNotEmpty($result['data']['my_image']['publicUrl']);
+    }
+
+    #[Test]
+    public function processConvertsFileReferenceOneToManyToArray(): void
+    {
+        $row = $this->fetchContentRow(10);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('my_images', $result['data']);
+        self::assertIsArray($result['data']['my_images']);
+        self::assertCount(2, $result['data']['my_images']);
+        self::assertSame(2, $result['data']['my_images'][0]['id']);
+        self::assertSame(3, $result['data']['my_images'][1]['id']);
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -221,7 +259,8 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
      */
     private function createContentObjectRenderer(array $row): ContentObjectRenderer
     {
-        $request = new ServerRequest('https://example.com/', 'GET');
+        $request = (new ServerRequest('https://example.com/', 'GET'))
+            ->withAttribute('applicationType', 1);
         $GLOBALS['TYPO3_REQUEST'] = $request;
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
