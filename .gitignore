@@ -13,5 +13,4 @@ packages
 content-blocks.yaml
 .php-cs-fixer.cache
 node_modules
-public
 vendor
