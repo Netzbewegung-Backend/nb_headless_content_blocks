@@ -39,12 +39,13 @@
         "friendsoftypo3/headless": "^4.5 || ^5.0"
     },
     "require-dev": {
-        "typo3/testing-framework": "^9.5",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-phpunit": "^2.0",
+        "b13/container": "^3.1 || ^4.0",
         "bnf/phpstan-psr-container": "^1.1",
         "friendsofphp/php-cs-fixer": "^3.22",
-        "typo3/coding-standards": "0.8.x-dev"
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "typo3/coding-standards": "0.8.x-dev",
+        "typo3/testing-framework": "^9.5"
     },
     "autoload": {
         "psr-4": {
