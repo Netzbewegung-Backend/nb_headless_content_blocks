@@ -24,27 +24,28 @@
 | Prüfung | Ergebnis |
 |---|---|
 | Unit Tests | ✅ 22 Tests OK (Event, TypolinkParameterToArray, ArrayRecursiveToArray) |
-| Functional Tests | ✅ 13 Tests OK (ContentBlocksJsonDataProcessor, sqlite) |
+| Functional Tests | ✅ 15 Tests OK (ContentBlocksJsonDataProcessor + ContainerJsonDataProcessor, sqlite) |
 | CGL (php-cs-fixer) | ✅ Sauber |
 | PHPStan (Level 5) | ✅ Keine Fehler |
 | DDEV-Ausführung | ✅ Unit Tests + PHPStan via `ddev exec` |
 
 ### Abgedeckte Feldtypen (Functional Tests)
 
-Text, Number, DateTime, Select, Password (Wert wird geleert), Json, Link, Category, Collection, useExistingField (header/bodytext), headless.php Verarbeitung, `as`-Konfiguration, unbekannte Tabellen.
+Text, Number, DateTime, Select, Password (Wert wird geleert), Json, Link, Category, Collection, useExistingField (header/bodytext), headless.php Verarbeitung, `as`-Konfiguration, unbekannte Tabellen, Container (colPos-Auswahl, skipRenderingChildContent, childRendering via dataProcessing stubs).
 
 ### Erkenntnisse
 
-- Functional Tests brauchen DB-Credentials als Env-Variablen → immer via `runTests.sh -s functional` ausführen (setzt sqlite), nicht via `ddev exec`
+- Functional Tests brauchen DB-Credentials als Env-Variablen → immer via `CI=true Build/Scripts/runTests.sh -s functional` oder `ddev exec env typo3DatabaseDriver=pdo_sqlite .Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml`
 - `content_blocks` muss in `testExtensionsToLoad` explizit geladen werden, sonst kein ContentBlocks-Schema (SqlGenerator)
 - Link-Felder brauchen `$GLOBALS['TYPO3_REQUEST']` im Test (LinkFactory)
 - PHPStan-Cache (`.cache/phpstan`) kann root-gehörig sein → Container-Runs als User 1000 schlagen fehl
+- ContainerJsonDataProcessor braucht `PageInformation` Request-Attribut (`frontend.page.information`) für `FrontendContainerFactory::buildContainer()` → `b13/container` nutzt `ContentObjectRenderer::getRecords()` die `$request->getAttribute('frontend.page.information')->getContentFromPid()` aufruft
+- Container-Child-Rendering via `skipRenderingChildContent=1` + Stub-DataProcessor (`test.set-rendered-content`) um Full-TSFE-Bootstrap zu vermeiden
 
 ### Nächste Schritte (optional)
 
-1. **ContainerJsonDataProcessor Functional Test** - braucht b13/container Container-Struktur (parent + children)
-2. **File/Feldtyp File Test** - braucht FAL-Fixtures (sys_file, sys_file_reference)
-3. **GitHub Actions Workflow validieren** - `.github/workflows/tests.yaml` auf CI-Erfolg prüfen
+1. **File/Feldtyp File Test** - braucht FAL-Fixtures (sys_file, sys_file_reference)
+2. **GitHub Actions Workflow validieren** - `.github/workflows/tests.yaml` auf CI-Erfolg prüfen
 
 ## Dateien die erstellt wurden
 
@@ -68,9 +69,31 @@ Build/
     └── tests.yaml
 
 Tests/
-└── Unit/
-    └── Event/
-        └── ModifyArrayRecursiveToArrayEventTest.php
+├── Unit/
+│   ├── Event/
+│   │   └── ModifyArrayRecursiveToArrayEventTest.php
+│   └── DataProcessing/
+│       └── ToArray/
+│           ├── TypolinkParameterToArrayTest.php
+│           └── ArrayRecursiveToArrayTest.php
+└── Functional/
+    └── DataProcessing/
+        ├── ContentBlocksJsonDataProcessorTest.php
+        ├── ContainerJsonDataProcessorTest.php
+        └── Fixtures/
+            └── DataSet/
+                └── container_content_element.csv
+
+Tests/Fixtures/Extensions/test_nb_headless_content_blocks/
+├── composer.json
+├── Configuration/
+│   ├── Services.yaml
+│   └── TCA/Overrides/tt_content.php
+├── Classes/
+│   └── SetRenderedContentProcessor.php
+└── ContentElements/
+    ├── simple/config.yaml + EditorInterface.yaml
+    └── headless/config.yaml + EditorInterface.yaml + headless.php
 
 AGENTS.md
 TESTING-FRAMEWORK.md
@@ -90,6 +113,6 @@ TESTING-FRAMEWORK-PROGRESS.md
 - [x] Weitere Unit Tests für Utility-Klassen
 - [x] Functional Tests für DataProcessor
 - [x] README mit Testing-Hinweisen ergänzen
-- [ ] Functional Test für ContainerJsonDataProcessor (b13/container)
+- [x] Functional Test für ContainerJsonDataProcessor (b13/container)
 - [ ] Functional Test für File-Feldtyp (FAL)
 - [ ] GitHub Actions Workflow auf CI validieren
