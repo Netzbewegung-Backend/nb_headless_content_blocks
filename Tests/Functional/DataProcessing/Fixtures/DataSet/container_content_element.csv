@@ -1,0 +1,5 @@
+"tt_content"
+,"uid","pid","header","colPos","tx_container_parent","CType","tstamp","crdate"
+,10,1,"Container",0,0,"test_2cols_container",1697810925,1697810914
+,11,1,"ChildLeft",201,10,"test_simple",1697810925,1697810914
+,12,1,"ChildRight",202,10,"test_simple",1697810925,1697810914

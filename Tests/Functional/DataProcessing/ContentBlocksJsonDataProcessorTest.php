@@ -16,6 +16,7 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'typo3conf/ext/nb_headless_content_blocks/Tests/Fixtures/Extensions/test_nb_headless_content_blocks',
+        'typo3conf/ext/container',
         'typo3conf/ext/content_blocks',
         'typo3conf/ext/nb_headless_content_blocks',
     ];
@@ -92,7 +93,7 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         $subject = $this->get(ContentBlocksJsonDataProcessor::class);
         $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
 
-        $expected = (new \DateTimeImmutable('@1697810914'))->format(\DateTimeImmutable::W3C);
+        $expected = (new \DateTimeImmutable())->setTimestamp(1697810914)->format(\DateTimeImmutable::W3C);
         self::assertSame($expected, $result['data']['my_datetime']);
     }
 
