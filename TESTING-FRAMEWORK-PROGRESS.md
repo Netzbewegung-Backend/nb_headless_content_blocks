@@ -19,15 +19,21 @@
 | GitHub Actions Workflow erstellt | ✅ Abgeschlossen | Heute |
 | Erster Unit Test erstellt | ✅ Abgeschlossen | Heute |
 
+### Validiert (22.07.2026)
+
+| Prüfung | Ergebnis |
+|---|---|
+| Unit Tests | ✅ 10 Tests, 11 Assertions OK |
+| CGL (php-cs-fixer) | ✅ 13 Dateien korrigiert, jetzt sauber |
+| PHPStan (Level 5) | ✅ Keine Fehler |
+| DDEV-Ausführung | ✅ `ddev exec .Build/bin/phpunit -c Build/phpunit/UnitTests.xml` |
+
 ### Nächste Schritte
 
-1. **composer install ausführen** - Dependencies installieren
-2. **Unit Tests ausführen** - Prüfen ob Tests funktionieren
-3. **Weitere Tests erstellen**:
+1. **Weitere Tests erstellen**:
    - Utility-Klassen Tests
    - DataProcessor Functional Tests
-4. **PHPStan ausführen** - Statische Analyse testen
-5. **CGL ausführen** - Coding Standards prüfen
+2. **README ergänzen** - Testing-Hinweise
 
 ## Dateien die erstellt wurden
 
@@ -66,9 +72,10 @@ TESTING-FRAMEWORK-PROGRESS.md
 
 ## Offene Punkte
 
-- [ ] composer install ausführen
-- [ ] Tests ausführen und validieren
+- [x] composer install ausführen
+- [x] Tests ausführen und validieren
+- [x] PHPStan ausführen (keine Fehler, keine Baseline nötig)
+- [x] CGL ausführen und Fixes anwenden
 - [ ] Weitere Unit Tests für Utility-Klassen
 - [ ] Functional Tests für DataProcessor
-- [ ] PHPStan baseline erstellen
 - [ ] README mit Testing-Hinweisen ergänzen
