@@ -70,6 +70,67 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function processConvertsNumberFieldToInteger(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame(42, $result['data']['my_number']);
+    }
+
+    #[Test]
+    public function processConvertsDateTimeFieldToW3CString(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        $expected = (new \DateTimeImmutable('@1697810914'))->format(\DateTimeImmutable::W3C);
+        self::assertSame($expected, $result['data']['my_datetime']);
+    }
+
+    #[Test]
+    public function processPassesSelectFieldValueThrough(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('one', $result['data']['my_select']);
+    }
+
+    #[Test]
+    public function processEmptiesPasswordFieldValue(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('', $result['data']['my_password']);
+    }
+
+    #[Test]
+    public function processPassesJsonFieldValueThroughAsArray(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame(['a' => 1], $result['data']['my_json']);
+    }
+
+    #[Test]
     public function processReturnsProcessedDataUnchangedForUnknownTable(): void
     {
         $row = ['uid' => 1];

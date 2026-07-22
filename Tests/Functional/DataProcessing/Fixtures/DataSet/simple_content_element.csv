@@ -1,3 +1,3 @@
 "tt_content"
-,"uid","pid","header","bodytext","test_simple_my_text","sys_language_uid","colPos","CType","tstamp","crdate"
-,1,1,"HeaderSimple","BodytextSimple","MyTextSimple",0,0,"test_simple",1697810925,1697810914
+,"uid","pid","header","bodytext","test_simple_my_text","test_simple_my_number","test_simple_my_datetime","test_simple_my_select","test_simple_my_password","test_simple_my_json","sys_language_uid","colPos","CType","tstamp","crdate"
+,1,1,"HeaderSimple","BodytextSimple","MyTextSimple",42,1697810914,"one","secretPassword123","{""a"": 1}",0,0,"test_simple",1697810925,1697810914

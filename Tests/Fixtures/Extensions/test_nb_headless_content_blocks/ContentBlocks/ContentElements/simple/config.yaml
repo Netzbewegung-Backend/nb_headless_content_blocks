@@ -7,3 +7,19 @@ fields:
     useExistingField: true
   - identifier: my_text
     type: Text
+  - identifier: my_number
+    type: Number
+  - identifier: my_datetime
+    type: DateTime
+  - identifier: my_select
+    type: Select
+    renderType: selectSingle
+    items:
+      - label: 'The first'
+        value: one
+      - label: 'The second'
+        value: two
+  - identifier: my_password
+    type: Password
+  - identifier: my_json
+    type: Json
