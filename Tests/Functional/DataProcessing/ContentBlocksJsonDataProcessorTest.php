@@ -7,6 +7,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Tests\Functional\DataProcessing;
 use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ContentBlocksJsonDataProcessor;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -132,6 +133,48 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function processConvertsLinkFieldToArray(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('https://example.com', $result['data']['my_link']['url']);
+        self::assertSame('url', $result['data']['my_link']['type']);
+    }
+
+    #[Test]
+    public function processConvertsCategoriesToReducedArray(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertCount(1, $result['data']['my_categories']);
+        $category = reset($result['data']['my_categories']);
+        self::assertSame(1, $category['uid']);
+        self::assertSame('Category one', $category['title']);
+    }
+
+    #[Test]
+    public function processConvertsCollectionToRecordArray(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertCount(2, $result['data']['my_collection']);
+        self::assertContains('Collection item one', array_column($result['data']['my_collection'], 'text'));
+        self::assertContains('Collection item two', array_column($result['data']['my_collection'], 'text'));
+    }
+
+    #[Test]
     public function processAppliesLocalHeadlessPhp(): void
     {
         $row = $this->fetchContentRow(2);
@@ -177,7 +220,11 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
      */
     private function createContentObjectRenderer(array $row): ContentObjectRenderer
     {
+        $request = new ServerRequest('https://example.com/', 'GET');
+        $GLOBALS['TYPO3_REQUEST'] = $request;
+
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->setRequest($request);
         $contentObjectRenderer->start($row, 'tt_content');
 
         return $contentObjectRenderer;

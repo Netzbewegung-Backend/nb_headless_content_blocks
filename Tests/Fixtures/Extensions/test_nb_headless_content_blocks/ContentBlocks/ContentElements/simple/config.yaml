@@ -23,3 +23,12 @@ fields:
     type: Password
   - identifier: my_json
     type: Json
+  - identifier: my_link
+    type: Link
+  - identifier: my_categories
+    type: Category
+  - identifier: my_collection
+    type: Collection
+    fields:
+      - identifier: text
+        type: Text
