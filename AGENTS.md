@@ -1,23 +1,23 @@
 # AGENTS.md - nb_headless_content_blocks
 
-## Projektübersicht
+## Project Overview
 
-TYPO3 Extension für headless Content Blocks. Konvertiert Content-Block-Daten in JSON-kompatible Arrays für API-Ausgaben.
+TYPO3 Extension for headless Content Blocks. Converts Content Block data into JSON-compatible arrays for API output.
 
-## Technische Details
+## Technical Details
 
 - **Namespace**: `Netzbewegung\NbHeadlessContentBlocks\`
-- **PHP-Version**: 8.2+ (erforderlich durch TYPO3 v13/v14)
+- **PHP-Version**: 8.2+ (required by TYPO3 v13/v14)
 - **TYPO3**: ^13.4 || ^14.3
 - **Dependencies**: `friendsoftypo3/content-blocks`, `friendsoftypo3/headless`
 
-## Verzeichnisstruktur
+## Directory Structure
 
 ```
 Classes/
 ├── DataProcessing/
-│   ├── ContentBlocksJsonDataProcessor.php    # Hauptprocessor für Content Blocks
-│   └── ContainerJsonDataProcessor.php        # Processor für EXT:container
+│   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
+│   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
 ├── DataProcessing/ToArray/
 │   ├── RecordToArray.php
 │   ├── ArrayRecursiveToArray.php
@@ -36,11 +36,11 @@ Configuration/
     └── config.yaml
 ```
 
-## Kernkomponenten
+## Core Components
 
 ### DataProcessor
 
-| Klasse | Service-ID | Zweck |
+| Class | Service ID | Purpose |
 |---|---|---|
 | `ContentBlocksJsonDataProcessor` | `nb-content-blocks-json` | Content Blocks → JSON |
 | `ContainerJsonDataProcessor` | `nb-container-json` | EXT:container → JSON |
@@ -63,39 +63,38 @@ Configuration/
 
 ### PSR-14 Event
 
-`ModifyArrayRecursiveToArrayEvent` - wird beim Konvertieren von Arrays gefeuert.
+`ModifyArrayRecursiveToArrayEvent` - fired when converting arrays.
 
-## Wichtige Hinweise
+## Important Notes
 
-### Git-Workflow
+### Git Workflow
 
-- **Zwischenstände committen**: Kleine, abgeschlossene Schritte einzeln committen – nicht zu viele Änderungen auf einmal sammeln
-- Vor jedem Commit: CGL und PHPStan prüfen (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
+- Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
 
-### Code-Änderungen
+### Code Changes
 
-- `readonly` Klassendeklarationen verwenden (PHP 8.2+)
-- `GeneralUtility::makeInstance()` in Utility-Klassen (kein DI)
+- Use `readonly` class declarations (PHP 8.2+)
+- `GeneralUtility::makeInstance()` in Utility classes (no DI)
 - `autoconfigure: false` in `Services.yaml`
 
-### Externe Abhängigkeiten
+### External Dependencies
 
-- `B13\Container\DataProcessing\ContainerProcessor` (nur in `ContainerJsonDataProcessor`)
+- `B13\Container\DataProcessing\ContainerProcessor` (only in `ContainerJsonDataProcessor`)
 - `TYPO3\CMS\ContentBlocks\*` (Core Content Blocks)
 
 ## Testing Framework
 
 ### Tools
 
-| Tool | Version | Zweck |
+| Tool | Version | Purpose |
 |---|---|---|
-| PHPUnit | 11.x | Test-Ausführung |
-| TYPO3 Testing Framework | ^9.5 | Bootstrap, Test-Basisklassen |
-| PHPStan | ^2.1 (Level 5) | Statische Analyse |
-| PHP-CS-Fixer | ^3.22 | Coding Standards |
-| runTests.sh | Docker | Test-Runner |
+| PHPUnit | 11.x | Test execution |
+| TYPO3 Testing Framework | ^9.5 | Bootstrap, test base classes |
+| PHPStan | ^2.1 (Level 5) | Static analysis |
+| PHP-CS-Fixer | ^3.22 | Coding standards |
+| runTests.sh | Docker | Test runner |
 
-### Verzeichnisstruktur
+### Directory Structure
 
 ```
 Build/
@@ -137,61 +136,53 @@ Tests/
         └── SetRenderedContentProcessor.php  # Stub for container child rendering
 ```
 
-### Befehle
+### Commands
 
 ```bash
-# Alle Tests
-Build/Scripts/runTests.sh -s all
+# All tests
+Build/Scripts/runTests.sh -s unit && Build/Scripts/runTests.sh -s functional
 
-# Nur Unit Tests
+# Unit tests only
 Build/Scripts/runTests.sh -s unit
 
-# Nur Functional Tests
+# Functional tests only
 Build/Scripts/runTests.sh -s functional
 
-# CGL prüfen
+# CGL check
 Build/Scripts/runTests.sh -s cgl
 
-# PHPStan ausführen
+# PHPStan
 Build/Scripts/runTests.sh -s phpstan
 
-# PHP-Version angeben
+# Specify PHP version
 Build/Scripts/runTests.sh -s unit -p 8.4
 ```
 
-### Teststrategie
+### Test Strategy
 
-- **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` - reines Event-Objekt
-- **Functional Tests**: DataProcessor mit TYPO3-Kontext (InMemory-PDO)
+- **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` — pure event object
+- **Functional Tests**: DataProcessor with TYPO3 context (InMemory-PDO)
 
-## Entwicklung
+## Development
 
 ### Setup
 
 ```bash
-# Dependencies installieren
+# Install dependencies
 ddev composer install
 
-# DDEV starten
+# Start DDEV
 ddev start
 ```
 
-### Verzeichnisse
+### Directories
 
-- `.Build/vendor` - Composer Vendor-Directory
+- `.Build/vendor` - Composer Vendor Directory
 - `.Build/bin` - Composer Binaries
-- `.Build/public` - Web-Root (TYPO3)
+- `.Build/public` - Web Root (TYPO3)
 
 ### Workflow
 
-1. `ddev composer install` ausführen
-2. Tests mit `Build/Scripts/runTests.sh` ausführen
-3. Vor Commits: CGL und PHPStan prüfen
-
-## Offene Punkte
-
-- [ ] Unit Tests ausführen und validieren
-- [ ] Weitere Unit Tests für Utility-Klassen
-- [ ] Functional Tests für DataProcessor
-- [ ] PHPStan baseline erstellen
-- [ ] README mit Testing-Hinweisen ergänzen
+1. Run `ddev composer install`
+2. Run tests with `Build/Scripts/runTests.sh`
+3. Before commits: Check CGL and PHPStan
