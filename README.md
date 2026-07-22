@@ -232,10 +232,38 @@ ddev exec .Build/bin/php-cs-fixer fix --config Build/php-cs-fixer/config.php
 
 ```
 Tests/
-├── Fixtures/Extensions/test_nb_headless_content_blocks/   # Content Blocks fixtures
-├── Unit/                                                   # Unit tests (no TYPO3 context)
-└── Functional/                                             # Functional tests (isolated TYPO3 instance)
+├── Unit/                        # Unit tests (no TYPO3 context)
+│   ├── Event/
+│   │   └── ModifyArrayRecursiveToArrayEventTest.php
+│   └── DataProcessing/ToArray/
+│       ├── ArrayRecursiveToArrayTest.php
+│       └── TypolinkParameterToArrayTest.php
+├── Functional/                  # Functional tests (isolated TYPO3 instance)
+│   └── DataProcessing/
+│       ├── ContentBlocksJsonDataProcessorTest.php
+│       ├── ContainerJsonDataProcessorTest.php
+│       └── Fixtures/
+├── Fixtures/Extensions/test_nb_headless_content_blocks/  # Content Block fixtures
+└── Fixtures/Extensions/test_nb_headless_content_blocks/ContentBlocks/ContentElements/
+    ├── simple/       # Text, Number, DateTime, Select, Password, Json, Link, Category, Collection
+    ├── headless/     # headless.php processing
+    └── filetest/     # File/FAL (oneToOne, oneToMany)
 ```
+
+### Test coverage
+
+| Suite | Tests | Coverage |
+|---|---|---|
+| Unit | 22 | Event, ArrayRecursiveToArray, TypolinkParameterToArray |
+| Functional | 17 | ContentBlocksJsonDataProcessor (all field types), ContainerJsonDataProcessor (colPos, child rendering), File/FAL |
+
+### Notes
+
+- Functional tests require DB env vars — always run via `runTests.sh`, not plain `ddev exec`
+- `content_blocks` must be in `testExtensionsToLoad` (SqlGenerator needs it)
+- Link fields need `$GLOBALS['TYPO3_REQUEST']` (LinkFactory)
+- ContainerJsonDataProcessor needs `PageInformation` request attribute for `FrontendContainerFactory::buildContainer()`
+- Container child rendering uses `skipRenderingChildContent=1` + stub DataProcessor to avoid full TSFE bootstrap
 
 ### IDE: temp directories from indexing
 
