@@ -12,10 +12,7 @@ use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
 
 class TypolinkParameterToArray
 {
-    public function __construct(protected TypolinkParameter $typolinkParameter)
-    {
-
-    }
+    public function __construct(protected TypolinkParameter $typolinkParameter) {}
 
     public function toArray(): ?array
     {
@@ -33,7 +30,7 @@ class TypolinkParameterToArray
                 'type' => $linkResult->getType(),
                 'title' => $linkResult->getLinkText(),
                 'config' => $linkResult->getLinkConfiguration(),
-                'attr' => $linkResult->getAttributes()
+                'attr' => $linkResult->getAttributes(),
             ];
         } catch (UnableToLinkException $unableToLinkException) {
             return [
@@ -43,7 +40,7 @@ class TypolinkParameterToArray
                 'title' => '',
                 'config' => [],
                 'attr' => [],
-                '__errorMessage' => $unableToLinkException->getMessage()
+                '__errorMessage' => $unableToLinkException->getMessage(),
             ];
         }
     }

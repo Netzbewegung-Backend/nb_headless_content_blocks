@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use DateTimeImmutable;
 use Exception;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
@@ -39,9 +38,7 @@ class ArrayRecursiveToArray
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection,
         protected readonly EventDispatcher $eventDispatcher
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -89,8 +86,8 @@ class ArrayRecursiveToArray
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
-                case $value instanceof DateTimeImmutable:
-                    $data[$decoratedKey] = $value->format(DateTimeImmutable::W3C);
+                case $value instanceof \DateTimeImmutable:
+                    $data[$decoratedKey] = $value->format(\DateTimeImmutable::W3C);
                     break;
                 case $value instanceof Record:
                     $tableDefinition = $this->getTableDefinitionByKey($key);
@@ -134,8 +131,8 @@ class ArrayRecursiveToArray
                     $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
                     break;
                 default:
-                    #debug($value);
-                    #throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    //debug($value);
+                    //throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
             }
         }
 
@@ -221,8 +218,8 @@ class ArrayRecursiveToArray
 
                 break;
             default:
-                #debug($fieldType);
-                #throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
+                //debug($fieldType);
+                //throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
         }
 
         return $value;

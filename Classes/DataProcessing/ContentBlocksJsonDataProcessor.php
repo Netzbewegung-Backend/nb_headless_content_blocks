@@ -24,9 +24,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
         protected readonly EventDispatcher $eventDispatcher
-    ) {
-
-    }
+    ) {}
 
     public function process(
         ContentObjectRenderer $contentObjectRenderer,

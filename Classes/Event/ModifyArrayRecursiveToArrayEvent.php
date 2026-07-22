@@ -15,8 +15,7 @@ final class ModifyArrayRecursiveToArrayEvent
         private readonly string|int $key,
         private readonly mixed $value,
         private readonly ?TcaFieldDefinition $tcaFieldDefinition
-    ) {
-    }
+    ) {}
 
     public function getKey(): string|int
     {

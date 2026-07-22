@@ -17,9 +17,7 @@ class LazyRecordCollectionToArray
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection,
         protected readonly EventDispatcher $eventDispatcher
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -33,7 +31,7 @@ class LazyRecordCollectionToArray
                 } elseif ($this->tableDefinitionCollection->hasTable($tableName)) {
                     $tableDefinition = $this->tableDefinitionCollection->getTable($tableName);
                 } else {
-                    #debug($this->lazyRecordCollection);
+                    //debug($this->lazyRecordCollection);
                     throw new \Exception('Unknown case in LazyRecordCollectionToArray->toArray() switch for key "' . $key . '"', 1746095968);
                 }
             } else {

@@ -10,9 +10,7 @@ class LazyRecordCollectionSysCategoryToArray
 {
     public function __construct(
         protected LazyRecordCollection $lazyRecordCollection,
-    ) {
-
-    }
+    ) {}
 
     public function toArray(): array
     {
