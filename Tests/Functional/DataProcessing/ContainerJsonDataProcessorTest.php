@@ -10,6 +10,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Page\PageInformation;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class ContainerJsonDataProcessorTest extends FunctionalTestCase
@@ -84,7 +85,12 @@ final class ContainerJsonDataProcessorTest extends FunctionalTestCase
      */
     private function createContentObjectRenderer(array $row): ContentObjectRenderer
     {
-        $request = new ServerRequest('https://example.com/', 'GET');
+        $pageInformation = new PageInformation();
+        $pageInformation->setId((int)($row['pid'] ?? 1));
+        $pageInformation->setContentFromPid((int)($row['pid'] ?? 1));
+
+        $request = (new ServerRequest('https://example.com/', 'GET'))
+            ->withAttribute('frontend.page.information', $pageInformation);
         $GLOBALS['TYPO3_REQUEST'] = $request;
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
