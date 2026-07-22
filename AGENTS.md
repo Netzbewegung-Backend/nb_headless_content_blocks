@@ -106,6 +106,8 @@ Build/
 │   └── FunctionalTestsBootstrap.php
 ├── phpstan/
 │   ├── phpstan.neon
+│   ├── phpstan.local.neon
+│   ├── phpstan.ci.neon
 │   └── phpstan-constants.php
 ├── php-cs-fixer/
 │   └── config.php
@@ -114,9 +116,25 @@ Build/
 
 Tests/
 ├── Unit/
-│   └── Event/
-│       └── ModifyArrayRecursiveToArrayEventTest.php
-└── Functional/
+│   ├── Event/
+│   │   └── ModifyArrayRecursiveToArrayEventTest.php
+│   └── DataProcessing/ToArray/
+│       ├── ArrayRecursiveToArrayTest.php
+│       └── TypolinkParameterToArrayTest.php
+├── Functional/
+│   └── DataProcessing/
+│       ├── ContentBlocksJsonDataProcessorTest.php
+│       ├── ContainerJsonDataProcessorTest.php
+│       └── Fixtures/
+│           ├── DataSet/ (CSV fixtures)
+│           └── Files/ (test images)
+└── Fixtures/Extensions/test_nb_headless_content_blocks/
+    ├── ContentBlocks/ContentElements/
+    │   ├── simple/       # Text, Number, DateTime, Select, Password, Json, Link, Category, Collection
+    │   ├── headless/     # headless.php processing
+    │   └── filetest/     # File/FAL (oneToOne, oneToMany)
+    └── Classes/
+        └── SetRenderedContentProcessor.php  # Stub for container child rendering
 ```
 
 ### Befehle

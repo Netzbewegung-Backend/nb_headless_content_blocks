@@ -1,17 +1,14 @@
-.idea
-config/system/settings.php
-composer.lock
+# Directories
 .Build
-var
-Build/testing-docker/.env
 .cache
-Documentation-GENERATED-temp
-config
-.phpunit.result.cache
-packages
-/Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks
-content-blocks.yaml
-.php-cs-fixer.cache
-node_modules
+.idea
 typo3temp
 vendor
+
+# Files
+.php-cs-fixer.cache
+.phpunit.result.cache
+composer.lock
+
+# Directory patterns
+/Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks
