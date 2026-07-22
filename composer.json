@@ -54,7 +54,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Netzbewegung\\NbHeadlessContentBlocks\\Tests\\": "Tests"
+            "Netzbewegung\\NbHeadlessContentBlocks\\Tests\\": "Tests",
+            "Typo3tests\\TestNbHeadlessContentBlocks\\": "Tests/Fixtures/Extensions/test_nb_headless_content_blocks/Classes"
         }
     },
     "extra": {
