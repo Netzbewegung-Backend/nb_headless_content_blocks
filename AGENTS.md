@@ -67,6 +67,11 @@ Configuration/
 
 ## Wichtige Hinweise
 
+### Git-Workflow
+
+- **Zwischenstände committen**: Kleine, abgeschlossene Schritte einzeln committen – nicht zu viele Änderungen auf einmal sammeln
+- Vor jedem Commit: CGL und PHPStan prüfen (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
+
 ### Code-Änderungen
 
 - `readonly` Klassendeklarationen verwenden (PHP 8.2+)
