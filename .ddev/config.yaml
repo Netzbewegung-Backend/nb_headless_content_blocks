@@ -12,4 +12,5 @@ database:
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
+nodejs_version: "24"
 corepack_enable: false

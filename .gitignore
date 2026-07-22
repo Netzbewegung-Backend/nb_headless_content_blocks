@@ -1,0 +1,17 @@
+.idea
+config/system/settings.php
+composer.lock
+.Build
+var
+Build/testing-docker/.env
+.cache
+Documentation-GENERATED-temp
+config
+.phpunit.result.cache
+packages
+/Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks
+content-blocks.yaml
+.php-cs-fixer.cache
+node_modules
+public
+vendor
