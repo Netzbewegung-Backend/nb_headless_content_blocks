@@ -15,4 +15,3 @@ parameters:
     - ../../Classes
     - ../../Tests
     - ../../Configuration
-    - ../../ext_localconf.php
