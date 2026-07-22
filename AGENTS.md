@@ -67,12 +67,6 @@ Configuration/
 
 ## Wichtige Hinweise
 
-### Testing
-
-- **Keine Tests vorhanden** - Testing Framework muss eingerichtet werden
-- Siehe `TESTING-FRAMEWORK.md` für Details
-- `TESTING-FRAMEWORK-PROGRESS.md` für Fortschritt
-
 ### Code-Änderungen
 
 - `readonly` Klassendeklarationen verwenden (PHP 8.2+)
@@ -86,16 +80,95 @@ Configuration/
 
 ## Testing Framework
 
-```bash
-# Tests ausführen
-Build/Scripts/runTests.sh -s unit
-Build/Scripts/runTests.sh -s functional
-Build/Scripts/runTests.sh -s cgl
-Build/Scripts/runTests.sh -s phpstan
+### Tools
+
+| Tool | Version | Zweck |
+|---|---|---|
+| PHPUnit | 11.x | Test-Ausführung |
+| TYPO3 Testing Framework | ^9.5 | Bootstrap, Test-Basisklassen |
+| PHPStan | ^2.1 (Level 5) | Statische Analyse |
+| PHP-CS-Fixer | ^3.22 | Coding Standards |
+| runTests.sh | Docker | Test-Runner |
+
+### Verzeichnisstruktur
+
 ```
+Build/
+├── phpunit/
+│   ├── UnitTests.xml
+│   ├── UnitTestsBootstrap.php
+│   ├── FunctionalTests.xml
+│   └── FunctionalTestsBootstrap.php
+├── phpstan/
+│   ├── phpstan.neon
+│   └── phpstan-constants.php
+├── php-cs-fixer/
+│   └── config.php
+└── Scripts/
+    └── runTests.sh
+
+Tests/
+├── Unit/
+│   └── Event/
+│       └── ModifyArrayRecursiveToArrayEventTest.php
+└── Functional/
+```
+
+### Befehle
+
+```bash
+# Alle Tests
+Build/Scripts/runTests.sh -s all
+
+# Nur Unit Tests
+Build/Scripts/runTests.sh -s unit
+
+# Nur Functional Tests
+Build/Scripts/runTests.sh -s functional
+
+# CGL prüfen
+Build/Scripts/runTests.sh -s cgl
+
+# PHPStan ausführen
+Build/Scripts/runTests.sh -s phpstan
+
+# PHP-Version angeben
+Build/Scripts/runTests.sh -s unit -p 8.4
+```
+
+### Teststrategie
+
+- **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` - reines Event-Objekt
+- **Functional Tests**: DataProcessor mit TYPO3-Kontext (InMemory-PDO)
 
 ## Entwicklung
 
-1. `composer install` ausführen
+### Setup
+
+```bash
+# Dependencies installieren
+ddev composer install
+
+# DDEV starten
+ddev start
+```
+
+### Verzeichnisse
+
+- `.Build/vendor` - Composer Vendor-Directory
+- `.Build/bin` - Composer Binaries
+- `.Build/public` - Web-Root (TYPO3)
+
+### Workflow
+
+1. `ddev composer install` ausführen
 2. Tests mit `Build/Scripts/runTests.sh` ausführen
 3. Vor Commits: CGL und PHPStan prüfen
+
+## Offene Punkte
+
+- [ ] Unit Tests ausführen und validieren
+- [ ] Weitere Unit Tests für Utility-Klassen
+- [ ] Functional Tests für DataProcessor
+- [ ] PHPStan baseline erstellen
+- [ ] README mit Testing-Hinweisen ergänzen
