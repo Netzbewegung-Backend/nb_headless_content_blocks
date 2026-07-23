@@ -57,7 +57,7 @@ jobs:
             php: "8.2"
           - typo3: "^14.3"
             content-blocks: "^2.0"
-            headless: "^5.0"
+            headless: "^5.0@RC"
             container: "^4.0"
             php: "8.4"
     steps:
@@ -104,7 +104,7 @@ jobs:
             php: "8.2"
           - typo3: "^14.3"
             content-blocks: "^2.0"
-            headless: "^5.0"
+            headless: "^5.0@RC"
             container: "^4.0"
             php: "8.4"
     steps:
