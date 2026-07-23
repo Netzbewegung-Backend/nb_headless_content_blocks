@@ -26,10 +26,14 @@ jobs:
         run: |
           jq '.extra."typo3/cms".version = "${{ env.version }}"' composer.json > tmp.json && mv tmp.json composer.json
 
+      - name: Set version in ext_emconf.php
+        run: |
+          sed -i "s/'version' => '[^']*'/'version' => '${{ env.version }}'/" ext_emconf.php
+
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add composer.json
+          git add composer.json ext_emconf.php
           git commit -m "Set version to ${{ env.version }}"
           git push
