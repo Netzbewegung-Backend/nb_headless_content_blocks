@@ -71,6 +71,10 @@ Configuration/
 
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
 
+### Language
+
+- All documentation and comments in this project are written in **English**.
+
 ### Code Changes
 
 - Use `readonly` class declarations (PHP 8.2+)
