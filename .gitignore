@@ -1,9 +1,9 @@
 # Directories
-.Build
-.cache
-.idea
-typo3temp
-vendor
+/.Build/
+/.cache/
+/.idea/
+/var/
+/config/
 
 # Files
 .php-cs-fixer.cache

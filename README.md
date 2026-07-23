@@ -191,6 +191,8 @@ tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
 ```bash
 ddev start
 ddev composer install
+touch .Build/public/FIRST_INSTALL
+ddev launch
 ```
 
 Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`).
@@ -244,7 +246,6 @@ the tests. Functional tests create isolated TYPO3 instances in `typo3temp/var/te
 the DDEV web container uses `.Build/public/typo3temp`:
 
 ```
-typo3temp
 .Build/public/typo3temp
 ```
 
@@ -256,15 +257,12 @@ typo3temp
 ```json
 {
     "files.exclude": {
-        "**/typo3temp": true,
         "**/.Build/public/typo3temp": true
     },
     "search.exclude": {
-        "**/typo3temp": true,
         "**/.Build/public/typo3temp": true
     },
     "files.watcherExclude": {
-        "**/typo3temp/**": true,
         "**/.Build/public/typo3temp/**": true
     }
 }

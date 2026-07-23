@@ -65,6 +65,9 @@
         }
     },
     "scripts": {
+        "pre-autoload-dump": [
+            "[ -d \"config\" ] || cp -a ./Build/config.example ./config"
+        ],
         "tests": [
             "Build/Scripts/runTests.sh -s cgl",
             "Build/Scripts/runTests.sh -s phpstan",
