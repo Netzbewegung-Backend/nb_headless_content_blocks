@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: false
+    public: false
+
+  Typo3tests\TestNbHeadlessContentBlocks\:
+    resource: '../Classes/*'
+
+  Typo3tests\TestNbHeadlessContentBlocks\SetRenderedContentProcessor:
+    tags:
+      - name: 'data.processor'
+        identifier: 'test.set-rendered-content'

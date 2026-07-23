@@ -1,0 +1,166 @@
+name: Tests
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+jobs:
+  early_cgl:
+    name: CGL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update --no-progress
+
+      - name: PHP CS Fixer
+        run: Build/Scripts/runTests.sh -p 8.2 -s cgl -n
+
+  unit_tests:
+    name: "Unit Tests TYPO3 ${{ matrix.typo3 }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - typo3: "^13.4"
+            content-blocks: "^1.2"
+            headless: "^4.5"
+            container: "^3.1"
+            php: "8.2"
+          - typo3: "^14.3"
+            content-blocks: "^2.0"
+            headless: "^5.0@RC"
+            container: "^4.0"
+            php: "8.4"
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - uses: actions/checkout@v4
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: |
+          composer require --no-update typo3/cms-core:${{ matrix.typo3 }}
+          composer require --no-update friendsoftypo3/content-blocks:${{ matrix.content-blocks }}
+          composer require --no-update friendsoftypo3/headless:${{ matrix.headless }}
+          composer require --no-update b13/container:${{ matrix.container }}
+          composer update --prefer-dist --prefer-stable --no-progress
+
+      - name: Unit
+        run: Build/Scripts/runTests.sh -s unit -p ${{ matrix.php }}
+
+  functional_tests:
+    name: "Functional Tests TYPO3 ${{ matrix.typo3 }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - typo3: "^13.4"
+            content-blocks: "^1.2"
+            headless: "^4.5"
+            container: "^3.1"
+            php: "8.2"
+          - typo3: "^14.3"
+            content-blocks: "^2.0"
+            headless: "^5.0@RC"
+            container: "^4.0"
+            php: "8.4"
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - uses: actions/checkout@v4
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: |
+          composer require --no-update typo3/cms-core:${{ matrix.typo3 }}
+          composer require --no-update friendsoftypo3/content-blocks:${{ matrix.content-blocks }}
+          composer require --no-update friendsoftypo3/headless:${{ matrix.headless }}
+          composer require --no-update b13/container:${{ matrix.container }}
+          composer update --prefer-stable --no-progress
+
+      - name: Functional
+        run: Build/Scripts/runTests.sh -s functional -d sqlite -p ${{ matrix.php }}
+
+  PHPStan:
+    name: PHPStan PHP 8.4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+
+      - uses: actions/checkout@v4
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update --no-progress
+
+      - name: PHPStan
+        run: XDEBUG_MODE="off" .Build/bin/phpstan analyse -c Build/phpstan/phpstan.neon --no-progress --no-interaction --memory-limit 4G

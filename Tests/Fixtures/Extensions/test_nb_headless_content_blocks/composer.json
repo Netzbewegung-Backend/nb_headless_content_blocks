@@ -1,0 +1,11 @@
+{
+    "name": "typo3tests/test-nb-headless-content-blocks",
+    "type": "typo3-cms-extension",
+    "description": "This is a dummy extension to host content blocks for functional tests.",
+    "license": "GPL-2.0-or-later",
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "test_nb_headless_content_blocks"
+        }
+    }
+}

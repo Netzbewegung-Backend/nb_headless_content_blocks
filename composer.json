@@ -35,17 +35,57 @@
     ],
     "require": {
         "typo3/cms-core": "^13.4 || ^14.3",
-        "friendsoftypo3/content-blocks": ">=1.2.3 || ^2.0",
-        "friendsoftypo3/headless": "^4.5 || ^5.0"
+        "friendsoftypo3/content-blocks": "^1.2.3 || ^2.0",
+        "friendsoftypo3/headless": "^4.5 || ^5.0 || dev-master"
+    },
+    "require-dev": {
+        "b13/container": "^3.1 || ^4.0",
+        "bnf/phpstan-psr-container": "^1.1",
+        "friendsofphp/php-cs-fixer": "^3.22",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "typo3/coding-standards": "0.8.x-dev",
+        "typo3/testing-framework": "^9.5"
     },
     "autoload": {
         "psr-4": {
             "Netzbewegung\\NbHeadlessContentBlocks\\": "Classes"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Netzbewegung\\NbHeadlessContentBlocks\\Tests\\": "Tests",
+            "Typo3tests\\TestNbHeadlessContentBlocks\\": "Tests/Fixtures/Extensions/test_nb_headless_content_blocks/Classes"
+        }
+    },
     "extra": {
         "typo3/cms": {
-            "extension-key": "nb_headless_content_blocks"
+            "web-dir": ".Build/public",
+            "extension-key": "nb_headless_content_blocks",
+            "version": "0.0.23",
+            "Package": {
+                "providesPackages": {}
+            }
+        }
+    },
+    "scripts": {
+        "pre-autoload-dump": [
+            "[ -d \"config\" ] || cp -a ./Build/config.example ./config"
+        ],
+        "tests": [
+            "Build/Scripts/runTests.sh -s cgl",
+            "Build/Scripts/runTests.sh -s phpstan",
+            "Build/Scripts/runTests.sh -s unit",
+            "Build/Scripts/runTests.sh -s functional"
+        ]
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "sort-packages": true,
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true
         }
     }
 }

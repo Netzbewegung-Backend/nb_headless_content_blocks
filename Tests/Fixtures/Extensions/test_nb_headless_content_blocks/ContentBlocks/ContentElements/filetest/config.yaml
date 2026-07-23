@@ -1,0 +1,11 @@
+name: test/filetest
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_image
+    type: File
+    relationship: oneToOne
+  - identifier: my_images
+    type: File
+    relationship: oneToMany

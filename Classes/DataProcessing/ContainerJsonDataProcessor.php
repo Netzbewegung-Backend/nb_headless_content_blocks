@@ -22,8 +22,7 @@ readonly class ContainerJsonDataProcessor implements DataProcessorInterface
         protected ContentBlockDataDecorator $contentBlockDataDecorator,
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
-    ) {
-    }
+    ) {}
 
     public function process(
         ContentObjectRenderer $contentObjectRenderer,

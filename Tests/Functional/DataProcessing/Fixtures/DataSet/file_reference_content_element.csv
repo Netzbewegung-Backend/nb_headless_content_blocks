@@ -1,0 +1,11 @@
+"sys_file"
+,"uid","pid","type","storage","identifier","extension","mime_type","name","sha1","size","creation_date","modification_date","missing","metadata","identifier_hash","folder_hash","last_indexed"
+,1,0,2,1,"/test-image.jpg","jpg","image/jpeg","test-image.jpg","da39a3ee5e6b4b0d3255bfef95601890afd80709",1024,1697810925,1697810914,0,0,"abc123hash","def456hash",0
+"sys_file_reference"
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign","t3ver_wsid","t3ver_state","t3ver_stage","t3ver_oid"
+,1,1,1,10,"tt_content","test_filetest_my_image",1,0,0,0,0
+,2,1,1,10,"tt_content","test_filetest_my_images",1,0,0,0,0
+,3,1,1,10,"tt_content","test_filetest_my_images",2,0,0,0,0
+"tt_content"
+,"uid","pid","header","test_filetest_my_image","test_filetest_my_images","sys_language_uid","colPos","CType","tstamp","crdate"
+,10,1,"FileTestHeader",1,2,0,0,"test_filetest",1697810925,1697810914

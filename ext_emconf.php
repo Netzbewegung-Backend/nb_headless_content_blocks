@@ -14,6 +14,6 @@ $EM_CONF[$_EXTKEY] = [
     'constraints' => [
         'depends' => [],
         'conflicts' => [],
-        'suggests' => []
-    ]
+        'suggests' => [],
+    ],
 ];

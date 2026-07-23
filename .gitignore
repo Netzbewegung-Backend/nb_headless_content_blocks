@@ -1,0 +1,14 @@
+# Directories
+/.Build/
+/.cache/
+/.idea/
+/var/
+/config/
+
+# Files
+.php-cs-fixer.cache
+.phpunit.result.cache
+composer.lock
+
+# Directory patterns
+/Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks

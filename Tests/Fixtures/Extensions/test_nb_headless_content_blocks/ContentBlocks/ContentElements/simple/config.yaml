@@ -1,0 +1,34 @@
+name: test/simple
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: bodytext
+    useExistingField: true
+  - identifier: my_text
+    type: Text
+  - identifier: my_number
+    type: Number
+  - identifier: my_datetime
+    type: DateTime
+  - identifier: my_select
+    type: Select
+    renderType: selectSingle
+    items:
+      - label: 'The first'
+        value: one
+      - label: 'The second'
+        value: two
+  - identifier: my_password
+    type: Password
+  - identifier: my_json
+    type: Json
+  - identifier: my_link
+    type: Link
+  - identifier: my_categories
+    type: Category
+  - identifier: my_collection
+    type: Collection
+    fields:
+      - identifier: text
+        type: Text
