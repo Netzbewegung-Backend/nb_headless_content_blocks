@@ -193,6 +193,8 @@ ddev start
 ddev composer install
 touch .Build/public/FIRST_INSTALL
 ddev launch
+
+chmod +x ./Build/Scripts/runTests.sh
 ```
 
 Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`).

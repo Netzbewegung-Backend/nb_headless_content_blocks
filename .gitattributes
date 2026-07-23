@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.php text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.typoscript text eol=lf
+*.ts text eol=lf
