@@ -193,6 +193,8 @@ ddev start
 ddev composer install
 touch .Build/public/FIRST_INSTALL
 ddev launch
+
+chmod +x ./Build/Scripts/runTests.sh
 ```
 
 Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`).
@@ -202,9 +204,6 @@ Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`
 Unit and functional tests are based on the TYPO3 Testing Framework.
 
 ```bash
-# All checks (via docker, isolated containers)
-Build/Scripts/runTests.sh -s all
-
 # Unit tests
 Build/Scripts/runTests.sh -s unit
 
@@ -219,15 +218,6 @@ Build/Scripts/runTests.sh -s cgl
 
 # Specific PHP version
 Build/Scripts/runTests.sh -s unit -p 8.4
-```
-
-Alternatively inside the running DDEV container (unit tests and static analysis only,
-functional tests need the environment variables provided by `runTests.sh`):
-
-```bash
-ddev exec .Build/bin/phpunit -c Build/phpunit/UnitTests.xml
-ddev exec .Build/bin/phpstan analyse -c Build/phpstan/phpstan.neon
-ddev exec .Build/bin/php-cs-fixer fix --config Build/php-cs-fixer/config.php
 ```
 
 ### Test structure

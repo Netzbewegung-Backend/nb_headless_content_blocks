@@ -2,8 +2,10 @@
 /.Build/
 /.cache/
 /.idea/
-/var/
 /config/
+/packages/autoload-tests/
+/var/
+
 
 # Files
 .php-cs-fixer.cache
