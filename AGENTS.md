@@ -156,7 +156,12 @@ Build/Scripts/runTests.sh -s phpstan
 
 # Specify PHP version
 Build/Scripts/runTests.sh -s unit -p 8.4
+
+# Run without TTY (required in non-interactive environments like opencode)
+CI=true Build/Scripts/runTests.sh -s functional -d sqlite -p 8.4
 ```
+
+**Note:** `CI=true` disables the `-it` (interactive TTY) flag in runTests.sh, which is required when running in non-interactive environments.
 
 ### Test Strategy
 

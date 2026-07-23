@@ -197,7 +197,10 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
     public function processReturnsProcessedDataUnchangedForUnknownTable(): void
     {
         $row = ['uid' => 1];
+        $request = (new ServerRequest('https://example.com/', 'GET'))
+            ->withAttribute('applicationType', 1);
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->setRequest($request);
         $contentObjectRenderer->start($row, 'tx_unknown_table');
 
         $subject = $this->get(ContentBlocksJsonDataProcessor::class);
