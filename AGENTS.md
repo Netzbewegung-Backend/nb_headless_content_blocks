@@ -214,6 +214,9 @@ Build/Scripts/runTests.sh -s composer -- require -W \
   "typo3/cms-core:^14.3" \
   "friendsoftypo3/content-blocks:^2.0" \
   "friendsoftypo3/headless:^5.0"
+
+# Restore multi-version constraints in composer.json
+git checkout -- composer.json
 ```
 
 `b13/container` is compatible with both versions and does not need to be changed.

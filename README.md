@@ -238,13 +238,17 @@ Build/Scripts/runTests.sh -s composer -- require -W \
   "typo3/cms-core:^14.3" \
   "friendsoftypo3/content-blocks:^2.0" \
   "friendsoftypo3/headless:^5.0"
+
+# Restore multi-version constraints in composer.json
+git checkout -- composer.json
 ```
 
 `b13/container` is compatible with both versions and does not need to be changed.
 
-**Note:** Some API differences exist between TYPO3 13 and 14 (e.g. `TcaFieldDefinition`
-constructor parameters, `RawRecord` named arguments). Test code may need adjustments
-when switching versions.
+**Note:** `composer require` rewrites the version constraints in `composer.json` to the
+resolved versions. Run `git checkout -- composer.json` after switching to restore the
+multi-version constraints (`^13.4 || ^14.3`). The `composer.lock` is in `.gitignore`
+and does not need to be restored.
 
 ### Test structure
 
