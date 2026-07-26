@@ -16,22 +16,22 @@
 
 ## High Priority (Functional Tests)
 
-- [ ] Textarea field type (plain + RTE)
-- [ ] Additional DataProcessors via `dataProcessing.` config
-- [ ] Empty container (no children)
+- [x] Textarea field type (plain) — RTE omitted, requires TypoScript setup
+- [x] Additional DataProcessors via `dataProcessing.` config
+- [x] Empty container (no children)
 
 ## Medium Priority (Functional Tests)
 
-- [ ] Color field type pass-through
-- [ ] Email field type pass-through
-- [ ] Slug field type pass-through
-- [ ] Empty link value returning null
-- [ ] Missing file reference (`FileDoesNotExistException`)
-- [ ] Default `as` key for container
+- [x] Color field type pass-through
+- [x] Email field type pass-through
+- [x] Slug field type pass-through
+- [x] Empty link value returning null
+- [ ] Missing file reference (`FileDoesNotExistException`) — CSV ready, test not written
+- [x] Default `as` key for container
 
 ## Low Priority (Functional Tests)
 
-- [ ] Multiple categories
+- [x] Multiple categories
 - [ ] Richer collection sub-fields
 - [ ] Link with target and title attributes
 - [ ] DateTime null value
