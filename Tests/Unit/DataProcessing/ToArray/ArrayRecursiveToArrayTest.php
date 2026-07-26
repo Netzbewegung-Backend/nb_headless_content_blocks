@@ -7,7 +7,16 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Tests\Unit\DataProcessing\ToArray
 use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray\ArrayRecursiveToArray;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use Psr\EventDispatcher\ListenerProviderInterface;
+use TYPO3\CMS\ContentBlocks\Definition\Capability\TableDefinitionCapability;
+use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentType;
+use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\PaletteDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\SqlColumnDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
 use TYPO3\CMS\ContentBlocks\Registry\AutomaticLanguageKeysRegistry;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -116,6 +125,35 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
         self::assertSame([['myKey', 'myValue']], $receivedEvents);
     }
 
+    public function testPasswordFieldIsEmptied(): void
+    {
+        $tableDefinition = $this->createTableDefinitionWithPasswordField('secret_password');
+        $subject = $this->createSubjectWithTableDefinition(
+            ['secret_password' => 'mySecretValue'],
+            $tableDefinition
+        );
+
+        self::assertSame(['secret_password' => ''], $subject->toArray());
+    }
+
+    public function testStringWithNoTableDefinitionIsPassedThrough(): void
+    {
+        $subject = $this->createSubject(['key' => 'hello']);
+
+        self::assertSame(['key' => 'hello'], $subject->toArray());
+    }
+
+    public function testStringWithIntKeyIsPassedThrough(): void
+    {
+        $tableDefinition = $this->createTableDefinitionWithPasswordField('myField');
+        $subject = $this->createSubjectWithTableDefinition(
+            ['keep' => 'this string'],
+            $tableDefinition
+        );
+
+        self::assertSame(['keep' => 'this string'], $subject->toArray());
+    }
+
     /**
      * @param callable[] $listeners
      */
@@ -146,5 +184,51 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
         };
 
         return new EventDispatcher($listenerProvider);
+    }
+
+    /**
+     * @param callable[] $listeners
+     */
+    private function createSubjectWithTableDefinition(array $array, TableDefinition $tableDefinition, array $listeners = []): ArrayRecursiveToArray
+    {
+        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
+
+        return new ArrayRecursiveToArray(
+            $array,
+            $tableDefinition,
+            $tableDefinitionCollection,
+            $this->createEventDispatcher($listeners)
+        );
+    }
+
+    private function createTableDefinitionWithPasswordField(string $fieldIdentifier): TableDefinition
+    {
+        $passwordFieldType = new PasswordFieldType();
+
+        $tcaFieldDefinition = new TcaFieldDefinition(
+            parentContentType: ContentType::CONTENT_ELEMENT,
+            identifier: $fieldIdentifier,
+            uniqueIdentifier: $fieldIdentifier,
+            labelPath: '',
+            descriptionPath: '',
+            placeholderPath: '',
+            useExistingField: false,
+            fieldType: $passwordFieldType
+        );
+
+        $tcaFieldDefinitionCollection = TcaFieldDefinitionCollection::createFromArray([], 'tt_content');
+        $tcaFieldDefinitionCollection->addField($tcaFieldDefinition);
+
+        return new TableDefinition(
+            table: 'tt_content',
+            capability: TableDefinitionCapability::createFromArray([]),
+            typeField: 'CType',
+            contentType: ContentType::CONTENT_ELEMENT,
+            contentTypeDefinitionCollection: ContentTypeDefinitionCollection::createFromArray([], 'tt_content'),
+            sqlColumnDefinitionCollection: SqlColumnDefinitionCollection::createFromArray([], 'tt_content'),
+            tcaFieldDefinitionCollection: $tcaFieldDefinitionCollection,
+            paletteDefinitionCollection: PaletteDefinitionCollection::createFromArray([], 'tt_content'),
+            parentReferences: []
+        );
     }
 }
