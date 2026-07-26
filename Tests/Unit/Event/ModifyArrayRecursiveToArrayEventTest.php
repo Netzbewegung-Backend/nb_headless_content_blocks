@@ -49,17 +49,20 @@ final class ModifyArrayRecursiveToArrayEventTest extends TestCase
 
     public function testGetTcaFieldDefinitionReturnsPassedDefinition(): void
     {
-        $tcaFieldDefinition = new TcaFieldDefinition(
-            parentContentType: ContentType::CONTENT_ELEMENT,
-            parentTable: 'tt_content',
-            identifier: 'myField',
-            uniqueIdentifier: 'myField',
-            labelPath: '',
-            descriptionPath: '',
-            placeholderPath: '',
-            useExistingField: false,
-            fieldType: $this->createMock(FieldTypeInterface::class)
-        );
+        $args = [
+            'parentContentType' => ContentType::CONTENT_ELEMENT,
+            'identifier' => 'myField',
+            'uniqueIdentifier' => 'myField',
+            'labelPath' => '',
+            'descriptionPath' => '',
+            'placeholderPath' => '',
+            'useExistingField' => false,
+            'fieldType' => $this->createMock(FieldTypeInterface::class),
+        ];
+        if (property_exists(TcaFieldDefinition::class, 'parentTable')) {
+            $args['parentTable'] = 'tt_content';
+        }
+        $tcaFieldDefinition = new TcaFieldDefinition(...$args);
 
         $event = new ModifyArrayRecursiveToArrayEvent('key', 'value', $tcaFieldDefinition);
 

@@ -205,17 +205,20 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
     {
         $passwordFieldType = new PasswordFieldType();
 
-        $tcaFieldDefinition = new TcaFieldDefinition(
-            parentContentType: ContentType::CONTENT_ELEMENT,
-            parentTable: 'tt_content',
-            identifier: $fieldIdentifier,
-            uniqueIdentifier: $fieldIdentifier,
-            labelPath: '',
-            descriptionPath: '',
-            placeholderPath: '',
-            useExistingField: false,
-            fieldType: $passwordFieldType
-        );
+        $args = [
+            'parentContentType' => ContentType::CONTENT_ELEMENT,
+            'identifier' => $fieldIdentifier,
+            'uniqueIdentifier' => $fieldIdentifier,
+            'labelPath' => '',
+            'descriptionPath' => '',
+            'placeholderPath' => '',
+            'useExistingField' => false,
+            'fieldType' => $passwordFieldType,
+        ];
+        if (property_exists(TcaFieldDefinition::class, 'parentTable')) {
+            $args['parentTable'] = 'tt_content';
+        }
+        $tcaFieldDefinition = new TcaFieldDefinition(...$args);
 
         $tcaFieldDefinitionCollection = TcaFieldDefinitionCollection::createFromArray([], 'tt_content');
         $tcaFieldDefinitionCollection->addField($tcaFieldDefinition);

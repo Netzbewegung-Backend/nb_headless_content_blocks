@@ -220,6 +220,32 @@ Build/Scripts/runTests.sh -s cgl
 Build/Scripts/runTests.sh -s unit -p 8.4
 ```
 
+### Switching TYPO3 version
+
+The extension supports TYPO3 13.4 and 14.3. Switch the installed TYPO3 version by
+updating composer dependencies (the `-W` flag allows dependency resolution across
+all locked packages):
+
+```bash
+# Switch to TYPO3 13
+Build/Scripts/runTests.sh -s composer -- require -W \
+  "typo3/cms-core:^13.4" \
+  "friendsoftypo3/content-blocks:^1.2.3" \
+  "friendsoftypo3/headless:^4.5"
+
+# Switch to TYPO3 14
+Build/Scripts/runTests.sh -s composer -- require -W \
+  "typo3/cms-core:^14.3" \
+  "friendsoftypo3/content-blocks:^2.0" \
+  "friendsoftypo3/headless:^5.0"
+```
+
+`b13/container` is compatible with both versions and does not need to be changed.
+
+**Note:** Some API differences exist between TYPO3 13 and 14 (e.g. `TcaFieldDefinition`
+constructor parameters, `RawRecord` named arguments). Test code may need adjustments
+when switching versions.
+
 ### Test structure
 
 ```

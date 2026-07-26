@@ -18,7 +18,7 @@ final class LazyRecordCollectionToArrayTest extends UnitTestCase
 {
     public function testToArrayThrowsExceptionForUnknownTable(): void
     {
-        $rawRecord = new RawRecord(uid: 1, pid: 0, properties: [], computedProperties: new ComputedProperties(), fullType: 'unknown_table');
+        $rawRecord = $this->createRawRecord('unknown_table');
 
         $record = $this->createMock(RecordInterface::class);
         $record->method('getRawRecord')->willReturn($rawRecord);
@@ -34,5 +34,13 @@ final class LazyRecordCollectionToArrayTest extends UnitTestCase
         $this->expectExceptionCode(1746095968);
 
         $subject->toArray();
+    }
+
+    /**
+     * @return RawRecord
+     */
+    private function createRawRecord(string $table): RawRecord
+    {
+        return new RawRecord(1, 0, [], new ComputedProperties(), $table);
     }
 }

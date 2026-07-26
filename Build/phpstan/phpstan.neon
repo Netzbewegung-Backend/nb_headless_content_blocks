@@ -15,3 +15,25 @@ parameters:
     - ../../Classes
     - ../../Tests
     - ../../Configuration
+
+  ignoreErrors:
+    # Version-compatible test code: TcaFieldDefinition and RawRecord constructors
+    # differ between TYPO3 13 and 14, so these errors only appear on one version
+    -
+      message: '#Unknown parameter \$parentTable in call to TYPO3\\CMS\\ContentBlocks\\Definition\\TcaFieldDefinition constructor\.#'
+      reportUnmatched: false
+    -
+      message: '#Missing parameter \$parentTable \(string\) in call to TYPO3\\CMS\\ContentBlocks\\Definition\\TcaFieldDefinition constructor\.#'
+      reportUnmatched: false
+    -
+      message: '#Unknown parameter \$fullType in call to TYPO3\\CMS\\Core\\Domain\\RawRecord constructor\.#'
+      reportUnmatched: false
+    -
+      message: '#Missing parameter \$fullType \(string\) in call to TYPO3\\CMS\\Core\\Domain\\RawRecord constructor\.#'
+      reportUnmatched: false
+    -
+      message: '#Missing parameter \$type \(string\) in call to TYPO3\\CMS\\Core\\Domain\\RawRecord constructor\.#'
+      reportUnmatched: false
+    -
+      message: '#Unknown parameter \$type in call to TYPO3\\CMS\\Core\\Domain\\RawRecord constructor\.#'
+      reportUnmatched: false
