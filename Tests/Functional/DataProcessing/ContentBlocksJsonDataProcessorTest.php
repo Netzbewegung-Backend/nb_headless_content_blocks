@@ -243,6 +243,119 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         self::assertSame(3, $result['data']['my_images'][1]['id']);
     }
 
+    #[Test]
+    public function processPassesPlainTextareaFieldValueThrough(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/textarea_content_element.csv');
+        $row = $this->fetchContentRow(20);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('Plain text content', $result['data']['my_textarea']);
+    }
+
+    #[Test]
+    public function processConvertsColorFieldValueThrough(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/color_email_slug_content_element.csv');
+        $row = $this->fetchContentRow(30);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('#ff0000', $result['data']['my_color']);
+    }
+
+    #[Test]
+    public function processConvertsEmailFieldValueThrough(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/color_email_slug_content_element.csv');
+        $row = $this->fetchContentRow(30);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('user@example.com', $result['data']['my_email']);
+    }
+
+    #[Test]
+    public function processConvertsSlugFieldValueThrough(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/color_email_slug_content_element.csv');
+        $row = $this->fetchContentRow(30);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('my-page-slug', $result['data']['my_slug']);
+    }
+
+    #[Test]
+    public function processReturnsNullForEmptyLinkValue(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/extended_simple_content_element.csv');
+        $row = $this->fetchContentRow(3);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertNull($result['data']['my_link']);
+    }
+
+    #[Test]
+    public function processAppliesAdditionalDataProcessors(): void
+    {
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [
+            'dataProcessing.' => [
+                '10' => 'test.set-rendered-content',
+            ],
+        ], ['data' => $row]);
+
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('renderedContent', $result['data']);
+    }
+
+    #[Test]
+    public function processConvertsMultipleCategoriesToArray(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/extended_simple_content_element.csv');
+        $row = $this->fetchContentRow(1);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertCount(3, $result['data']['my_categories']);
+        $titles = array_column($result['data']['my_categories'], 'title');
+        self::assertContains('Category one', $titles);
+        self::assertContains('Category two', $titles);
+        self::assertContains('Category three', $titles);
+    }
+
+    #[Test]
+    public function processConvertsLinkWithTargetAndTitleToArray(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/extended_simple_content_element.csv');
+        $row = $this->fetchContentRow(4);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertArrayHasKey('my_link', $result['data']);
+        self::assertSame('https://example.com', $result['data']['my_link']['url']);
+    }
+
     /**
      * @return array<string, mixed>
      */

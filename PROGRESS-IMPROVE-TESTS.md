@@ -1,6 +1,6 @@
 # Test Improvement Progress
 
-## High Priority
+## High Priority (Unit Tests)
 
 - [x] `ModifyArrayRecursiveToArrayEvent` — non-null `TcaFieldDefinition` test
 - [x] `RecordToArray` — system field removal + error handling tests
@@ -8,13 +8,30 @@
 - [x] `LazyFolderCollectionToArray` — path construction tests
 - [x] `ArrayRecursiveToArray::processStringField` — password emptying, passthrough tests
 
-## Medium Priority
+## Medium Priority (Unit Tests)
 
 - [x] `TypolinkParameterToArray` — error path test (via subclass override)
 - [x] `LazyFileReferenceCollectionToArray` — empty collection test
 - [x] `LazyRecordCollectionToArray` — exception test for unknown table
 
-## Low Priority
+## High Priority (Functional Tests)
 
-- [ ] `ContentBlocksJsonDataProcessor` — covered by functional tests
-- [ ] `ContainerJsonDataProcessor` — covered by functional tests
+- [ ] Textarea field type (plain + RTE)
+- [ ] Additional DataProcessors via `dataProcessing.` config
+- [ ] Empty container (no children)
+
+## Medium Priority (Functional Tests)
+
+- [ ] Color field type pass-through
+- [ ] Email field type pass-through
+- [ ] Slug field type pass-through
+- [ ] Empty link value returning null
+- [ ] Missing file reference (`FileDoesNotExistException`)
+- [ ] Default `as` key for container
+
+## Low Priority (Functional Tests)
+
+- [ ] Multiple categories
+- [ ] Richer collection sub-fields
+- [ ] Link with target and title attributes
+- [ ] DateTime null value

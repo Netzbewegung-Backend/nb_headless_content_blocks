@@ -66,6 +66,46 @@ final class ContainerJsonDataProcessorTest extends FunctionalTestCase
         self::assertSame(['STUB:ChildRight'], $result['right']);
     }
 
+    #[Test]
+    public function processHandlesEmptyContainer(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/empty_container.csv');
+        $row = $this->fetchContentRow(20);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContainerJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [
+            'colPos' => 201,
+            'as' => 'left',
+            'skipRenderingChildContent' => 1,
+            'dataProcessing.' => [
+                '10' => 'test.set-rendered-content',
+            ],
+        ], ['data' => $row]);
+
+        self::assertArrayHasKey('left', $result);
+        self::assertEmpty($result['left']);
+    }
+
+    #[Test]
+    public function processUsesDefaultAsKey(): void
+    {
+        $row = $this->fetchContentRow(10);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContainerJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [
+            'colPos' => 201,
+            'skipRenderingChildContent' => 1,
+            'dataProcessing.' => [
+                '10' => 'test.set-rendered-content',
+            ],
+        ], ['data' => $row]);
+
+        self::assertArrayHasKey('children', $result);
+        self::assertArrayNotHasKey('left', $result);
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -1,0 +1,7 @@
+name: test/textarea
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_textarea
+    type: Textarea
