@@ -207,6 +207,7 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
 
         $tcaFieldDefinition = new TcaFieldDefinition(
             parentContentType: ContentType::CONTENT_ELEMENT,
+            parentTable: 'tt_content',
             identifier: $fieldIdentifier,
             uniqueIdentifier: $fieldIdentifier,
             labelPath: '',

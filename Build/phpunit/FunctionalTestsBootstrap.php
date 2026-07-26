@@ -22,4 +22,28 @@
     $testbase->defineOriginalRootPath();
     $testbase->createDirectory(ORIGINAL_ROOT . 'var/tests');
     $testbase->createDirectory(ORIGINAL_ROOT . 'var/transient');
+
+    $packagesOfInterest = [
+        'typo3/cms-core',
+        'friendsoftypo3/content-blocks',
+        'friendsoftypo3/headless',
+        'b13/container',
+    ];
+    $composerLockPath = ORIGINAL_ROOT . '../../composer.lock';
+    if (file_exists($composerLockPath)) {
+        $lockData = json_decode((string)file_get_contents($composerLockPath), true);
+        $allPackages = array_merge($lockData['packages'] ?? [], $lockData['packages-dev'] ?? []);
+        $versions = [];
+        foreach ($allPackages as $package) {
+            if (in_array($package['name'] ?? '', $packagesOfInterest, true)) {
+                $versions[$package['name']] = $package['version'] ?? 'unknown';
+            }
+        }
+        $log = "\n=== Package Versions ===\n";
+        foreach ($packagesOfInterest as $name) {
+            $log .= $name . ': ' . ($versions[$name] ?? 'not installed') . "\n";
+        }
+        $log .= "========================\n\n";
+        file_put_contents(ORIGINAL_ROOT . '../../functional-test.log', $log);
+    }
 })();

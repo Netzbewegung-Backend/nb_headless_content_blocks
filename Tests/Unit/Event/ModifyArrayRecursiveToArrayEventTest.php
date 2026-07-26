@@ -51,6 +51,7 @@ final class ModifyArrayRecursiveToArrayEventTest extends TestCase
     {
         $tcaFieldDefinition = new TcaFieldDefinition(
             parentContentType: ContentType::CONTENT_ELEMENT,
+            parentTable: 'tt_content',
             identifier: 'myField',
             uniqueIdentifier: 'myField',
             labelPath: '',
