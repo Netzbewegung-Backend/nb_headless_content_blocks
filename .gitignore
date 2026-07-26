@@ -11,7 +11,6 @@
 .php-cs-fixer.cache
 .phpunit.result.cache
 composer.lock
-functional-test.log
 
 # Directory patterns
 /Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks
