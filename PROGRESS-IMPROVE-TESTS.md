@@ -10,9 +10,9 @@
 
 ## Medium Priority
 
-- [ ] `TypolinkParameterToArray` — error path test (needs DI refactor or test double)
-- [ ] `LazyFileReferenceCollectionToArray` — 0% coverage (deferred)
-- [ ] `LazyRecordCollectionToArray` — exception test (deferred)
+- [x] `TypolinkParameterToArray` — error path test (via subclass override)
+- [x] `LazyFileReferenceCollectionToArray` — empty collection test
+- [x] `LazyRecordCollectionToArray` — exception test for unknown table
 
 ## Low Priority
 
