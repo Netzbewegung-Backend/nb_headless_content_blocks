@@ -1,0 +1,14 @@
+name: test/collectiontest
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_items
+    type: Collection
+    fields:
+      - identifier: title
+        type: Text
+      - identifier: quantity
+        type: Number
+      - identifier: note
+        type: Textarea

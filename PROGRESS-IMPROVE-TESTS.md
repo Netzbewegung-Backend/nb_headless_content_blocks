@@ -26,12 +26,12 @@
 - [x] Email field type pass-through
 - [x] Slug field type pass-through
 - [x] Empty link value returning null
-- [ ] Missing file reference (`FileDoesNotExistException`) — CSV ready, test not written
+- [x] Missing file reference — graceful handling for non-existent file (empty publicUrl)
 - [x] Default `as` key for container
 
 ## Low Priority (Functional Tests)
 
 - [x] Multiple categories
-- [ ] Richer collection sub-fields
-- [ ] Link with target and title attributes
-- [ ] DateTime null value
+- [x] Richer collection sub-fields
+- [x] Link with target and title attributes
+- [x] DateTime null value
