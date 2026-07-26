@@ -1,0 +1,13 @@
+name: test/color-email-slug
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_color
+    type: Color
+  - identifier: my_email
+    type: Email
+  - identifier: my_slug
+    type: Slug
+    options:
+      prefix: '/'

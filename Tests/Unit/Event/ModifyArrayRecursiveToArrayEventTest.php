@@ -6,6 +6,9 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Tests\Unit\Event;
 
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use PHPUnit\Framework\TestCase;
+use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentType;
+use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
+use TYPO3\CMS\ContentBlocks\FieldType\FieldTypeInterface;
 
 final class ModifyArrayRecursiveToArrayEventTest extends TestCase
 {
@@ -42,6 +45,28 @@ final class ModifyArrayRecursiveToArrayEventTest extends TestCase
         $event = new ModifyArrayRecursiveToArrayEvent('key', 'value', null);
 
         self::assertNull($event->getTcaFieldDefinition());
+    }
+
+    public function testGetTcaFieldDefinitionReturnsPassedDefinition(): void
+    {
+        $args = [
+            'parentContentType' => ContentType::CONTENT_ELEMENT,
+            'identifier' => 'myField',
+            'uniqueIdentifier' => 'myField',
+            'labelPath' => '',
+            'descriptionPath' => '',
+            'placeholderPath' => '',
+            'useExistingField' => false,
+            'fieldType' => $this->createMock(FieldTypeInterface::class),
+        ];
+        if (property_exists(TcaFieldDefinition::class, 'parentTable')) {
+            $args['parentTable'] = 'tt_content';
+        }
+        $tcaFieldDefinition = new TcaFieldDefinition(...$args);
+
+        $event = new ModifyArrayRecursiveToArrayEvent('key', 'value', $tcaFieldDefinition);
+
+        self::assertSame($tcaFieldDefinition, $event->getTcaFieldDefinition());
     }
 
     public function testIsHandledReturnsFalseByDefault(): void

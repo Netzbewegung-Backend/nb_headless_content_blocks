@@ -1,0 +1,13 @@
+"tt_content"
+,"uid","pid","header","test_simple_my_text","test_simple_my_number","test_simple_my_datetime","test_simple_my_select","test_simple_my_password","test_simple_my_json","test_simple_my_link","test_simple_my_categories","test_simple_my_collection","sys_language_uid","colPos","CType","tstamp","crdate"
+,3,1,"EmptyLink","","",0,"","","","","",0,0,0,"test_simple",1697810925,1697810914
+,4,1,"LinkWithTarget","","",0,"","","","https://example.com _blank \"Link Title\"","",0,0,0,"test_simple",1697810925,1697810914
+,5,1,"NullDateTime","","",0,"","","","","",0,0,0,"test_simple",1697810925,1697810914
+"sys_category"
+,"uid","pid","title","sys_language_uid","tstamp","crdate"
+,2,1,"Category two",0,1697810925,1697810914
+,3,1,"Category three",0,1697810925,1697810914
+"sys_category_record_mm"
+,"uid_local","uid_foreign","tablenames","fieldname","sorting"
+,2,1,"tt_content","test_simple_my_categories",2
+,3,1,"tt_content","test_simple_my_categories",3

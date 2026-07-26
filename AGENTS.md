@@ -195,3 +195,45 @@ ddev start
 1. Run `ddev composer install`
 2. Run tests with `Build/Scripts/runTests.sh`
 3. Before commits: Check CGL and PHPStan
+
+## TYPO3 Version Compatibility
+
+**All tests (unit, functional, phpstan) must pass on both TYPO3 13 and TYPO3 14.**
+
+### Switching TYPO3 version
+
+```bash
+# Switch to TYPO3 13
+Build/Scripts/runTests.sh -s composer -- require -W \
+  "typo3/cms-core:^13.4" \
+  "friendsoftypo3/content-blocks:^1.2.3" \
+  "friendsoftypo3/headless:^4.5"
+
+# Switch to TYPO3 14
+Build/Scripts/runTests.sh -s composer -- require -W \
+  "typo3/cms-core:^14.3" \
+  "friendsoftypo3/content-blocks:^2.0" \
+  "friendsoftypo3/headless:^5.0"
+
+# Restore multi-version constraints in composer.json
+git checkout -- composer.json
+```
+
+`b13/container` is compatible with both versions and does not need to be changed.
+
+### API differences between TYPO3 13 and 14
+
+- `TcaFieldDefinition::__construct()` — v14 added `$parentTable` parameter (v13 has no `$parentTable`)
+- `RawRecord::__construct()` — v14 renamed `$type` to `$fullType`
+
+When writing tests that use these classes, use `property_exists()` to detect the version
+at runtime and pass the correct parameters. Add `@phpstan-ignore-line` for the
+version-compatible code since PHPStan analyzes against the currently installed version.
+
+For `RawRecord`: use positional arguments (the 5th param is `$type` in v13, `$fullType` in v14,
+but the position is the same). For `TcaFieldDefinition`: use named arguments with
+`property_exists()` and spread the args array, since `$parentTable` is inserted at a
+different position in v14.
+
+PHPStan version-dependent errors are handled in `Build/phpstan/phpstan.neon` via
+`ignoreErrors` with `reportUnmatched: false`, so the same config works for both versions.
