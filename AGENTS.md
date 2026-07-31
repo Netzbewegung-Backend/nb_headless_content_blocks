@@ -164,9 +164,14 @@ Build/Scripts/runTests.sh -s unit -p 8.4
 # Functional tests on sqlite (e.g. in non-interactive environments)
 Build/Scripts/runTests.sh -s functional -d sqlite -p 8.4
 
-# Code coverage (unit + functional, HTML report + Clover XML in .Build/coverage/)
+# Code coverage (unit + functional, HTML report, Clover XML and raw .cov data in .Build/coverage/)
 Build/Scripts/runTests.sh -s unit -k
 Build/Scripts/runTests.sh -s functional -d sqlite -k
+
+# Merge coverage of both suites into combined HTML report (.Build/coverage/merged/),
+# merged Clover XML and AI-friendly text summary (.Build/coverage/merged.txt).
+# Use the same PHP version (-p) as for the coverage runs.
+Build/Scripts/runTests.sh -s mergeCoverage
 ```
 
 **Note:** `runTests.sh` detects non-interactive shells automatically and drops the
