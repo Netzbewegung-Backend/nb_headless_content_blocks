@@ -317,7 +317,7 @@ Options:
     -k
         Only with -s functional|unit|unitRandom
         Generate code coverage analysis (requires Xdebug). The HTML report and Clover XML are
-        written to Build/coverage/{unit,functional}/. Collecting coverage overrides the
+        written to .Build/coverage/{unit,functional}/. Collecting coverage overrides the
         Xdebug debug mode of -x.
 
     -n
@@ -625,7 +625,7 @@ case ${TEST_SUITE} in
             COMMAND=(.Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml --exclude-group not-${DBMS} "$@")
         fi
         if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
-            COMMAND+=(--coverage-html=Build/coverage/functional --coverage-clover=Build/coverage/functional/clover.xml)
+            COMMAND+=(--coverage-html=.Build/coverage/functional --coverage-clover=.Build/coverage/functional/clover.xml)
         fi
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name redis-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_REDIS} >/dev/null
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name memcached-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_MEMCACHED} >/dev/null
@@ -683,7 +683,7 @@ case ${TEST_SUITE} in
     unit)
         COMMAND=(.Build/bin/phpunit -c Build/phpunit/UnitTests.xml "$@")
         if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
-            COMMAND+=(--coverage-html=Build/coverage/unit --coverage-clover=Build/coverage/unit/clover.xml)
+            COMMAND+=(--coverage-html=.Build/coverage/unit --coverage-clover=.Build/coverage/unit/clover.xml)
         fi
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
@@ -691,7 +691,7 @@ case ${TEST_SUITE} in
     unitRandom)
         COMMAND=(.Build/bin/phpunit -c Build/phpunit/UnitTests.xml --order-by=random "$@")
         if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
-            COMMAND+=(--coverage-html=Build/coverage/unit --coverage-clover=Build/coverage/unit/clover.xml)
+            COMMAND+=(--coverage-html=.Build/coverage/unit --coverage-clover=.Build/coverage/unit/clover.xml)
         fi
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?

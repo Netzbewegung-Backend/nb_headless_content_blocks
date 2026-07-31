@@ -164,7 +164,7 @@ Build/Scripts/runTests.sh -s unit -p 8.4
 # Functional tests on sqlite (e.g. in non-interactive environments)
 Build/Scripts/runTests.sh -s functional -d sqlite -p 8.4
 
-# Code coverage (unit + functional, HTML report + Clover XML in Build/coverage/)
+# Code coverage (unit + functional, HTML report + Clover XML in .Build/coverage/)
 Build/Scripts/runTests.sh -s unit -k
 Build/Scripts/runTests.sh -s functional -d sqlite -k
 ```
