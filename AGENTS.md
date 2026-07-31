@@ -178,6 +178,23 @@ Build/Scripts/runTests.sh -s mergeCoverage
 `-it` flag. `CI=true` is only required when using the CI PHPStan config
 (`phpstan.ci.neon`).
 
+### Testing Gotchas
+
+- **act: run one TYPO3 matrix entry at a time** — `act -j functional_tests` runs all
+  matrix entries in parallel. Each job starts 4 docker containers (redis, memcached,
+  DB, phpunit) on the shared daemon; `runTests.sh`'s `waitFor()` aborts after ~10s,
+  so parallel runs fail with `Can not connect ... Aborting`. Use
+  `act -j functional_tests --matrix typo3:^13.4` and `--matrix typo3:^14.3` separately.
+- **act: composer cache is evicted after 7 days unused** — so workflows that haven't
+  run in a week re-download dependencies. The cache key is `hashFiles('**/composer.json')`,
+  so switching TYPO3 versions also invalidates it.
+- **Root-owned test folders after `act`** — `act` runs its job containers as root, leaving
+  root-owned `.Build/public/typo3temp/var/tests/functional-*` folders. Local
+  `runTests.sh -s functional` then fails with
+  `TYPO3\TestingFramework\Core\Exception: Can not remove folder`. Detect with
+  `find .Build/public/typo3temp/var/tests -maxdepth 1 -user root`. Do NOT run `sudo`
+  yourself — tell the USER (who has root) to run `sudo rm -rf <folders>`.
+
 ### Test Strategy
 
 - **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` — pure event object
