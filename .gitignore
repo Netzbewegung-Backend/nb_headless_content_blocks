@@ -14,3 +14,4 @@ composer.lock
 
 # Directory patterns
 /Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks
+/Build/coverage/

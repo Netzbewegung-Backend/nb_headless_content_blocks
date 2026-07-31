@@ -161,11 +161,17 @@ Build/Scripts/runTests.sh -s phpstan
 # Specify PHP version
 Build/Scripts/runTests.sh -s unit -p 8.4
 
-# Run without TTY (required in non-interactive environments like opencode)
-CI=true Build/Scripts/runTests.sh -s functional -d sqlite -p 8.4
+# Functional tests on sqlite (e.g. in non-interactive environments)
+Build/Scripts/runTests.sh -s functional -d sqlite -p 8.4
+
+# Code coverage (unit + functional, HTML report + Clover XML in Build/coverage/)
+Build/Scripts/runTests.sh -s unit -k
+Build/Scripts/runTests.sh -s functional -d sqlite -k
 ```
 
-**Note:** `CI=true` disables the `-it` (interactive TTY) flag in runTests.sh, which is required when running in non-interactive environments.
+**Note:** `runTests.sh` detects non-interactive shells automatically and drops the
+`-it` flag. `CI=true` is only required when using the CI PHPStan config
+(`phpstan.ci.neon`).
 
 ### Test Strategy
 

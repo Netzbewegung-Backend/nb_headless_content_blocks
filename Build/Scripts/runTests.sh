@@ -314,6 +314,12 @@ Options:
         Send xdebug information to a different port than default 9003 if an IDE like PhpStorm
         is not listening on default port.
 
+    -k
+        Only with -s functional|unit|unitRandom
+        Generate code coverage analysis (requires Xdebug). The HTML report and Clover XML are
+        written to Build/coverage/{unit,functional}/. Collecting coverage overrides the
+        Xdebug debug mode of -x.
+
     -n
         Only with -s cgl
         Activate dry-run: do not modify files, only report issues.
@@ -374,6 +380,7 @@ DBMS_VERSION=""
 PHP_VERSION="8.2"
 PHP_XDEBUG_ON=0
 PHP_XDEBUG_PORT=9003
+PHP_COVERAGE_ON=0
 CGLCHECK_DRY_RUN=""
 DATABASE_DRIVER=""
 CHUNKS=0
@@ -400,7 +407,7 @@ OPTIND=1
 # Array for invalid options
 INVALID_OPTIONS=()
 # Simple option parsing based on getopts (! not getopt)
-while getopts ":a:b:s:c:d:i:p:xy:nhu" OPT; do
+while getopts ":a:b:s:c:d:i:kp:xy:nhu" OPT; do
     case ${OPT} in
         s)
             TEST_SUITE=${OPTARG}
@@ -440,6 +447,9 @@ while getopts ":a:b:s:c:d:i:p:xy:nhu" OPT; do
             ;;
         y)
             PHP_XDEBUG_PORT=${OPTARG}
+            ;;
+        k)
+            PHP_COVERAGE_ON=1
             ;;
         n)
             CGLCHECK_DRY_RUN="-n"
@@ -544,7 +554,11 @@ if [[ "${CI}" == "true" ]]; then
     CONTAINER_COMMON_PARAMS="${CONTAINER_COMMON_PARAMS} ${CONTAINER_COMMON_PARAMS_CI:-}"
 fi
 
-if [ ${PHP_XDEBUG_ON} -eq 0 ]; then
+if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
+    XDEBUG_MODE="-e XDEBUG_MODE=coverage"
+    XDEBUG_CONFIG=" "
+    PHP_FPM_OPTIONS="-d xdebug.mode=coverage"
+elif [ ${PHP_XDEBUG_ON} -eq 0 ]; then
     XDEBUG_MODE="-e XDEBUG_MODE=off"
     XDEBUG_CONFIG=" "
     PHP_FPM_OPTIONS="-d xdebug.mode=off"
@@ -610,6 +624,9 @@ case ${TEST_SUITE} in
         else
             COMMAND=(.Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml --exclude-group not-${DBMS} "$@")
         fi
+        if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
+            COMMAND+=(--coverage-html=Build/coverage/functional --coverage-clover=Build/coverage/functional/clover.xml)
+        fi
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name redis-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_REDIS} >/dev/null
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name memcached-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_MEMCACHED} >/dev/null
         waitFor redis-func-${SUFFIX} 6379
@@ -664,11 +681,19 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     unit)
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} .Build/bin/phpunit -c Build/phpunit/UnitTests.xml "$@"
+        COMMAND=(.Build/bin/phpunit -c Build/phpunit/UnitTests.xml "$@")
+        if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
+            COMMAND+=(--coverage-html=Build/coverage/unit --coverage-clover=Build/coverage/unit/clover.xml)
+        fi
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     unitRandom)
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} .Build/bin/phpunit -c Build/phpunit/UnitTests.xml --order-by=random "$@"
+        COMMAND=(.Build/bin/phpunit -c Build/phpunit/UnitTests.xml --order-by=random "$@")
+        if [ ${PHP_COVERAGE_ON} -eq 1 ]; then
+            COMMAND+=(--coverage-html=Build/coverage/unit --coverage-clover=Build/coverage/unit/clover.xml)
+        fi
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     update)
