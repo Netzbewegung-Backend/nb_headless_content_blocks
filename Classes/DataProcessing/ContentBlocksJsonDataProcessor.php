@@ -58,7 +58,8 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
             $resolveRecord,
             $tableDefinition,
             $this->tableDefinitionCollection,
-            $this->eventDispatcher
+            $this->eventDispatcher,
+            $this->resolveTypoScriptOptions($processorConfiguration)
         )->toArray();
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);
@@ -74,6 +75,15 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         }
 
         return [$as => $data];
+    }
+
+    protected function resolveTypoScriptOptions(array $processorConfiguration): array
+    {
+        if (!isset($processorConfiguration['options.']) || !is_array($processorConfiguration['options.'])) {
+            return [];
+        }
+
+        return $processorConfiguration['options.'];
     }
 
     protected function processDataWithLocalHeadlessPhp(array $data, ContentTypeInterface $contentType): array

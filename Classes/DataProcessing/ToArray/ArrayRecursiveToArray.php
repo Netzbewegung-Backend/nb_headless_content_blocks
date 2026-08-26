@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
+use Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\DateTimeNormalizer;
@@ -18,6 +19,7 @@ use Netzbewegung\NbHeadlessContentBlocks\Normalization\NormalizerChain;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
@@ -44,6 +46,7 @@ class ArrayRecursiveToArray
         protected TableDefinitionCollection $tableDefinitionCollection,
         protected readonly EventDispatcher $eventDispatcher,
         protected ?string $recordType = null,
+        protected array $typoScriptOptions = [],
     ) {}
 
     /**
@@ -79,7 +82,7 @@ class ArrayRecursiveToArray
                 continue;
             }
 
-            $data[$decoratedKey] = $this->normalizeValue($value, $key);
+            $data[$decoratedKey] = $this->normalizeValue($value, $key, $decoratedKey);
         }
 
         ksort($data);
@@ -87,7 +90,7 @@ class ArrayRecursiveToArray
         return $data;
     }
 
-    protected function normalizeValue(mixed $value, int|string $key): mixed
+    protected function normalizeValue(mixed $value, int|string $key, ?string $fieldIdentifier = null): mixed
     {
         if (is_string($value)) {
             return $this->processStringField($value, $key);
@@ -96,14 +99,19 @@ class ArrayRecursiveToArray
         if (is_array($value) && !$this->isJsonField($key)) {
             $normalized = [];
             foreach ($value as $itemKey => $item) {
-                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey);
+                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey, $fieldIdentifier);
             }
             ksort($normalized);
 
             return $normalized;
         }
 
-        return $this->getNormalizerChain()->normalize($value, $this->createContext());
+        $context = $this->createContext();
+        if ($fieldIdentifier !== null) {
+            $context = $context->withCurrentFieldIdentifier($fieldIdentifier);
+        }
+
+        return $this->getNormalizerChain()->normalize($value, $context);
     }
 
     protected function processStringField(string $value, int|string $key): string
@@ -211,9 +219,69 @@ class ArrayRecursiveToArray
 
     protected function createContext(): Context
     {
-        $context = new Context($this->getTcaSchema(), null, [], $this->eventDispatcher);
+        $context = new Context(
+            $this->getTcaSchema(),
+            null,
+            [],
+            $this->eventDispatcher,
+            $this->getFileProcessing()
+        );
         $context->setChain($this->getNormalizerChain());
 
         return $context;
+    }
+
+    /**
+     * Image processing definitions for the current Content Block: defaults
+     * from headless.yaml, overridden by TypoScript processor options.
+     *
+     * @return array<string, array<string, string>> field identifier => variant name => options string
+     */
+    protected function getFileProcessing(): array
+    {
+        $processing = $this->getHeadlessYamlProcessing();
+
+        $typoScriptOverride = $this->typoScriptOptions['processing'] ?? [];
+        if (is_array($typoScriptOverride)) {
+            foreach ($typoScriptOverride as $fieldIdentifier => $variants) {
+                if (is_array($variants)) {
+                    $processing[(string)$fieldIdentifier] = array_map(
+                        static fn(mixed $value): string => (string)$value,
+                        $variants
+                    );
+                }
+            }
+        }
+
+        return $processing;
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    protected function getHeadlessYamlProcessing(): array
+    {
+        $contentBlockName = $this->getContentBlockName();
+        if ($contentBlockName === null) {
+            return [];
+        }
+
+        return $this->getHeadlessYamlLoader()->getProcessingForContentBlock($contentBlockName);
+    }
+
+    protected function getContentBlockName(): ?string
+    {
+        if ($this->tableDefinition === null || $this->recordType === null) {
+            return null;
+        }
+
+        $contentBlockRegistry = GeneralUtility::makeInstance(ContentBlockRegistry::class);
+
+        return $contentBlockRegistry->getByTypeName($this->tableDefinition->table, $this->recordType)?->getName();
+    }
+
+    protected function getHeadlessYamlLoader(): HeadlessYamlLoader
+    {
+        return GeneralUtility::makeInstance(HeadlessYamlLoader::class);
     }
 }

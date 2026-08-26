@@ -172,6 +172,39 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function fileTestBlockWithHeadlessYamlThumbnails(): void
+    {
+        $data = $this->processRow(10)['data'];
+
+        self::assertArrayHasKey('thumbnails', $data['my_image']);
+        self::assertStringContainsString('_processed_', $data['my_image']['thumbnails']['mobile']);
+        self::assertStringContainsString('_processed_', $data['my_image']['thumbnails']['desktop']);
+
+        foreach ($data['my_images'] as $image) {
+            self::assertArrayHasKey('thumbnails', $image);
+            self::assertStringContainsString('_processed_', $image['thumbnails']['mobile']);
+        }
+    }
+
+    #[Test]
+    public function fileTestBlockWithTypoScriptProcessingOverride(): void
+    {
+        $data = $this->processRow(10, processorConfiguration: [
+            'options.' => [
+                'processing.' => [
+                    'my_image.' => [
+                        'mobile' => 'width=150c,fileExtension=jpg',
+                    ],
+                ],
+            ],
+        ])['data'];
+
+        self::assertStringContainsString('_processed_', $data['my_image']['thumbnails']['mobile']);
+        // headless.yaml desktop variant is kept, mobile overridden
+        self::assertArrayHasKey('desktop', $data['my_image']['thumbnails']);
+    }
+
+    #[Test]
     public function textareaBlock(): void
     {
         self::assertSame([
@@ -246,7 +279,7 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
     /**
      * @return array<string, mixed>
      */
-    private function processRow(int $uid, bool $extended = false, bool $withRichTextSetup = false): array
+    private function processRow(int $uid, bool $extended = false, bool $withRichTextSetup = false, array $processorConfiguration = []): array
     {
         $row = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tt_content')
             ->select('*')->from('tt_content')
@@ -283,6 +316,6 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
         GeneralUtility::addInstance(ContentObjectRenderer::class, $contentObjectRenderer);
 
         return $this->get(ContentBlocksJsonDataProcessor::class)
-            ->process($contentObjectRenderer, [], [], ['data' => $row]);
+            ->process($contentObjectRenderer, [], $processorConfiguration, ['data' => $row]);
     }
 }

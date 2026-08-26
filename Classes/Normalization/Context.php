@@ -16,15 +16,18 @@ use TYPO3\CMS\Core\Schema\TcaSchema;
 final class Context
 {
     private ?NormalizerChain $chain = null;
+    private string $currentFieldIdentifier = '';
 
     /**
      * @param array<string, mixed> $options
+     * @param array<string, array<string, string>> $fileProcessing field identifier => variant name => options string
      */
     public function __construct(
         private readonly ?TcaSchema $tcaSchema,
         private readonly ?ServerRequestInterface $request,
         private readonly array $options,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly array $fileProcessing = [],
     ) {}
 
     /**
@@ -80,8 +83,28 @@ final class Context
      */
     public function withTcaSchema(?TcaSchema $tcaSchema): self
     {
-        $context = new self($tcaSchema, $this->request, $this->options, $this->eventDispatcher);
+        $context = new self($tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing);
         $context->setChain($this->chain);
+
+        return $context;
+    }
+
+    /**
+     * Image processing definitions for the field currently being normalized
+     * (from Content Block headless.yaml, overridable via TypoScript options).
+     *
+     * @return array<string, string> variant name => options string
+     */
+    public function getFileProcessingForCurrentField(): array
+    {
+        return $this->fileProcessing[$this->currentFieldIdentifier] ?? [];
+    }
+
+    public function withCurrentFieldIdentifier(string $fieldIdentifier): self
+    {
+        $context = new self($this->tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing);
+        $context->setChain($this->chain);
+        $context->currentFieldIdentifier = $fieldIdentifier;
 
         return $context;
     }

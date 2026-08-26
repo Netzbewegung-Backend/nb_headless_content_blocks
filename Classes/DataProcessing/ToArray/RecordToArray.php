@@ -17,7 +17,8 @@ class RecordToArray
         protected Record $record,
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection,
-        protected readonly EventDispatcher $eventDispatcher
+        protected readonly EventDispatcher $eventDispatcher,
+        protected array $typoScriptOptions = [],
     ) {}
 
     public function toArray(): array
@@ -42,7 +43,8 @@ class RecordToArray
             $this->tableDefinition,
             $this->tableDefinitionCollection,
             $this->eventDispatcher,
-            $this->record->getRecordType()
+            $this->record->getRecordType(),
+            $this->typoScriptOptions
         )->toArray();
     }
 }
