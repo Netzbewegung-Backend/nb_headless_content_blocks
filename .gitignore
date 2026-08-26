@@ -2,6 +2,7 @@
 /.Build/
 /.cache/
 /.idea/
+/.vscode/
 /config/
 /packages/autoload-tests/
 /var/
