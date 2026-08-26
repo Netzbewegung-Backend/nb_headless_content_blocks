@@ -1,0 +1,9 @@
+"sys_file_metadata"
+,"uid","pid","file","width","height"
+,1,0,1,400,300
+"sys_file_reference"
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign","crop","t3ver_wsid","t3ver_state","t3ver_stage","t3ver_oid"
+,4,1,1,11,"tt_content","test_filetest_my_image",1,"{""default"":{""cropArea"":{""x"":0.25,""y"":0.25,""width"":0.5,""height"":0.5},""focusArea"":null,""coverAreas"":null}}",0,0,0,0
+"tt_content"
+,"uid","pid","header","test_filetest_my_image","test_filetest_my_images","sys_language_uid","colPos","CType","tstamp","crdate"
+,11,1,"CroppedImageHeader",4,0,0,0,"test_filetest",1697810925,1697810914

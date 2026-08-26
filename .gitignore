@@ -11,6 +11,8 @@
 .php-cs-fixer.cache
 .phpunit.result.cache
 composer.lock
+opencode.jsonc
 
 # Directory patterns
+/Build/phpunit/.phpunit.cache/
 /Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks

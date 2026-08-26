@@ -15,10 +15,18 @@ use TYPO3\CMS\ContentBlocks\Definition\SqlColumnDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
-use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinitionCollection;
+use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\FieldTypeInterface;
 use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
+use TYPO3\CMS\ContentBlocks\FieldType\RelationFieldType;
 use TYPO3\CMS\ContentBlocks\Registry\AutomaticLanguageKeysRegistry;
+use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ArrayRecursiveToArrayTest extends UnitTestCase
@@ -127,13 +135,24 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
 
     public function testPasswordFieldIsEmptied(): void
     {
-        $tableDefinition = $this->createTableDefinitionWithPasswordField('secret_password');
+        $tableDefinition = $this->createTableDefinition(['secret_password' => new PasswordFieldType()]);
         $subject = $this->createSubjectWithTableDefinition(
             ['secret_password' => 'mySecretValue'],
             $tableDefinition
         );
 
         self::assertSame(['secret_password' => ''], $subject->toArray());
+    }
+
+    public function testStringWithIntKeyIsPassedThrough(): void
+    {
+        $tableDefinition = $this->createTableDefinition(['myField' => new PasswordFieldType()]);
+        $subject = $this->createSubjectWithTableDefinition(
+            ['keep' => 'this string'],
+            $tableDefinition
+        );
+
+        self::assertSame(['keep' => 'this string'], $subject->toArray());
     }
 
     public function testStringWithNoTableDefinitionIsPassedThrough(): void
@@ -143,30 +162,148 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
         self::assertSame(['key' => 'hello'], $subject->toArray());
     }
 
-    public function testStringWithIntKeyIsPassedThrough(): void
+    public function testRecordValueUnderTableNameKeyIsConvertedViaRecordToArray(): void
     {
-        $tableDefinition = $this->createTableDefinitionWithPasswordField('myField');
-        $subject = $this->createSubjectWithTableDefinition(
-            ['keep' => 'this string'],
-            $tableDefinition
-        );
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 7, 'title' => 'Record title']);
 
-        self::assertSame(['keep' => 'this string'], $subject->toArray());
+        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
+        $tableDefinitionCollection->addTable($this->createTableDefinition([], 'tx_test_table'));
+
+        $subject = $this->createSubjectWithCollection(['tx_test_table' => $record], $tableDefinitionCollection);
+
+        self::assertSame(['tx_test_table' => ['title' => 'Record title']], $subject->toArray());
+    }
+
+    public function testRecordValueUnderUnknownKeyIsConvertedWithoutTableDefinition(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 1, 'bodytext' => 'Hello']);
+
+        $subject = $this->createSubject(['some_key' => $record]);
+
+        self::assertSame(['some_key' => ['bodytext' => 'Hello']], $subject->toArray());
+    }
+
+    public function testFlexFormFieldValuesAreConvertedToRawArray(): void
+    {
+        $flexFormFieldValues = new FlexFormFieldValues([
+            'sDEF' => ['settings' => ['value' => 'flex']],
+        ]);
+
+        $subject = $this->createSubject(['pi_flexform' => $flexFormFieldValues]);
+
+        self::assertSame(
+            ['pi_flexform' => ['sDEF' => ['settings' => ['value' => 'flex']]]],
+            $subject->toArray()
+        );
+    }
+
+    public function testLazyFolderCollectionValueIsConvertedToPaths(): void
+    {
+        $storage = $this->createMock(ResourceStorage::class);
+        $storage->method('getConfiguration')->willReturn(['basePath' => '/files/']);
+
+        $folder = $this->createMock(Folder::class);
+        $folder->method('getStorage')->willReturn($storage);
+        $folder->method('getIdentifier')->willReturn('/documents/report.pdf');
+
+        $collection = new LazyFolderCollection('test', fn() => [$folder]);
+
+        $subject = $this->createSubject(['my_folders' => $collection]);
+
+        self::assertSame(['my_folders' => ['//files/documents/report.pdf']], $subject->toArray());
+    }
+
+    public function testCategoryFieldCollectionIsReducedToSysCategoryArray(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 3, 'pid' => 2, 'title' => 'Category title']);
+
+        $collection = new LazyRecordCollection('my_categories', fn() => [$record]);
+
+        $tableDefinition = $this->createTableDefinition([
+            'my_categories' => (new CategoryFieldType())->createFromArray([]),
+        ]);
+        $subject = $this->createSubjectWithTableDefinition(['my_categories' => $collection], $tableDefinition);
+
+        self::assertSame(
+            ['my_categories' => [['uid' => 3, 'pid' => 2, 'title' => 'Category title']]],
+            $subject->toArray()
+        );
+    }
+
+    public function testRelationFieldWithForeignTableResolvesTableDefinitionForRecordValue(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 9, 'text' => 'Related item']);
+
+        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
+        $tableDefinitionCollection->addTable($this->createTableDefinition([], 'tx_known_table'));
+
+        $tableDefinition = $this->createTableDefinition([
+            'my_relation' => $this->createRelationFieldType(['foreign_table' => 'tx_known_table']),
+        ]);
+
+        $subject = $this->createSubjectWithCollection(['my_relation' => $record], $tableDefinitionCollection, $tableDefinition);
+
+        self::assertSame(['my_relation' => ['text' => 'Related item']], $subject->toArray());
+    }
+
+    public function testRelationFieldWithForeignTableResolvesTableDefinitionForCollectionValue(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 2, 'text' => 'Collection item']);
+
+        $collection = new LazyRecordCollection('my_relation', fn() => [$record]);
+
+        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
+        $tableDefinitionCollection->addTable($this->createTableDefinition([], 'tx_known_table'));
+
+        $tableDefinition = $this->createTableDefinition([
+            'my_relation' => $this->createRelationFieldType(['foreign_table' => 'tx_known_table']),
+        ]);
+
+        $subject = $this->createSubjectWithCollection(['my_relation' => $collection], $tableDefinitionCollection, $tableDefinition);
+
+        self::assertSame(['my_relation' => [['text' => 'Collection item']]], $subject->toArray());
+    }
+
+    public function testRelationFieldWithSingleAllowedTableResolvesTableName(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 4, 'bodytext' => 'Allowed item']);
+
+        $tableDefinition = $this->createTableDefinition([
+            'my_group' => $this->createRelationFieldType(['allowed' => 'tx_allowed_single']),
+        ]);
+
+        $subject = $this->createSubjectWithTableDefinition(['my_group' => $record], $tableDefinition);
+
+        self::assertSame(['my_group' => ['bodytext' => 'Allowed item']], $subject->toArray());
+    }
+
+    public function testRelationFieldWithMultipleAllowedTablesGetsNoTableDefinition(): void
+    {
+        $record = $this->createMock(Record::class);
+        $record->method('toArray')->willReturn(['uid' => 5, 'bodytext' => 'Multi item']);
+
+        $tableDefinition = $this->createTableDefinition([
+            'my_multi' => $this->createRelationFieldType(['allowed' => 'tx_a,tx_b']),
+        ]);
+
+        $subject = $this->createSubjectWithTableDefinition(['my_multi' => $record], $tableDefinition);
+
+        self::assertSame(['my_multi' => ['bodytext' => 'Multi item']], $subject->toArray());
     }
 
     /**
+     * @param array<string, mixed> $array
      * @param callable[] $listeners
      */
     private function createSubject(array $array, array $listeners = []): ArrayRecursiveToArray
     {
-        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
-
-        return new ArrayRecursiveToArray(
-            $array,
-            null,
-            $tableDefinitionCollection,
-            $this->createEventDispatcher($listeners)
-        );
+        return $this->createSubjectWithCollection($array, new TableDefinitionCollection(new AutomaticLanguageKeysRegistry()), null, $listeners);
     }
 
     /**
@@ -187,12 +324,20 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
     }
 
     /**
+     * @param array<string, mixed> $array
      * @param callable[] $listeners
      */
     private function createSubjectWithTableDefinition(array $array, TableDefinition $tableDefinition, array $listeners = []): ArrayRecursiveToArray
     {
-        $tableDefinitionCollection = new TableDefinitionCollection(new AutomaticLanguageKeysRegistry());
+        return $this->createSubjectWithCollection($array, new TableDefinitionCollection(new AutomaticLanguageKeysRegistry()), $tableDefinition, $listeners);
+    }
 
+    /**
+     * @param array<string, mixed> $array
+     * @param callable[] $listeners
+     */
+    private function createSubjectWithCollection(array $array, TableDefinitionCollection $tableDefinitionCollection, ?TableDefinition $tableDefinition = null, array $listeners = []): ArrayRecursiveToArray
+    {
         return new ArrayRecursiveToArray(
             $array,
             $tableDefinition,
@@ -201,37 +346,54 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
         );
     }
 
-    private function createTableDefinitionWithPasswordField(string $fieldIdentifier): TableDefinition
+    /**
+     * @param array<string, mixed> $settings
+     */
+    private function createRelationFieldType(array $settings): RelationFieldType
     {
-        $passwordFieldType = new PasswordFieldType();
+        $reflection = new \ReflectionClass(RelationFieldType::class);
+        $attribute = $reflection->getAttributes(\TYPO3\CMS\ContentBlocks\FieldType\FieldType::class)[0]->newInstance();
 
-        $args = [
-            'parentContentType' => ContentType::CONTENT_ELEMENT,
-            'identifier' => $fieldIdentifier,
-            'uniqueIdentifier' => $fieldIdentifier,
-            'labelPath' => '',
-            'descriptionPath' => '',
-            'placeholderPath' => '',
-            'useExistingField' => false,
-            'fieldType' => $passwordFieldType,
-        ];
-        if (property_exists(TcaFieldDefinition::class, 'parentTable')) {
-            $args['parentTable'] = 'tt_content';
+        $fieldType = new RelationFieldType();
+        $fieldType->setName($attribute->name);
+        $fieldType->setTcaType($attribute->tcaType);
+
+        return $fieldType->createFromArray($settings);
+    }
+
+    /**
+     * @param array<string, FieldTypeInterface> $fields
+     */
+    private function createTableDefinition(array $fields, string $table = 'tt_content'): TableDefinition
+    {
+        $tcaFieldDefinitionCollection = \TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinitionCollection::createFromArray([], $table);
+
+        foreach ($fields as $identifier => $fieldType) {
+            $args = [
+                'parentContentType' => ContentType::CONTENT_ELEMENT,
+                'identifier' => $identifier,
+                'uniqueIdentifier' => $identifier,
+                'labelPath' => '',
+                'descriptionPath' => '',
+                'placeholderPath' => '',
+                'useExistingField' => false,
+                'fieldType' => $fieldType,
+            ];
+            if (property_exists(TcaFieldDefinition::class, 'parentTable')) {
+                $args['parentTable'] = $table;
+            }
+            $tcaFieldDefinitionCollection->addField(new TcaFieldDefinition(...$args));
         }
-        $tcaFieldDefinition = new TcaFieldDefinition(...$args);
-
-        $tcaFieldDefinitionCollection = TcaFieldDefinitionCollection::createFromArray([], 'tt_content');
-        $tcaFieldDefinitionCollection->addField($tcaFieldDefinition);
 
         return new TableDefinition(
-            table: 'tt_content',
+            table: $table,
             capability: TableDefinitionCapability::createFromArray([]),
             typeField: 'CType',
             contentType: ContentType::CONTENT_ELEMENT,
-            contentTypeDefinitionCollection: ContentTypeDefinitionCollection::createFromArray([], 'tt_content'),
-            sqlColumnDefinitionCollection: SqlColumnDefinitionCollection::createFromArray([], 'tt_content'),
+            contentTypeDefinitionCollection: ContentTypeDefinitionCollection::createFromArray([], $table),
+            sqlColumnDefinitionCollection: SqlColumnDefinitionCollection::createFromArray([], $table),
             tcaFieldDefinitionCollection: $tcaFieldDefinitionCollection,
-            paletteDefinitionCollection: PaletteDefinitionCollection::createFromArray([], 'tt_content'),
+            paletteDefinitionCollection: PaletteDefinitionCollection::createFromArray([], $table),
             parentReferences: []
         );
     }
