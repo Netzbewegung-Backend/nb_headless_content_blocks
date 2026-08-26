@@ -115,6 +115,25 @@ final class RecordArrayBuilderTest extends UnitTestCase
         self::assertSame([['myKey', 'myValue']], $receivedEvents);
     }
 
+    public function testEventFiresForNestedRecordsToo(): void
+    {
+        $receivedKeys = [];
+        $listener = static function (ModifyArrayRecursiveToArrayEvent $event) use (&$receivedKeys): void {
+            $receivedKeys[] = $event->getKey();
+        };
+        $subject = $this->createBuilder(listeners: [$listener]);
+
+        $nestedRecord = $this->createMock(Record::class);
+        $nestedRecord->method('getMainType')->willReturn('tx_test_collection');
+        $nestedRecord->method('getRecordType')->willReturn(null);
+        $nestedRecord->method('toArray')->willReturn(['text' => 'Nested item']);
+
+        $subject->build($this->createRecord(['my_items' => $nestedRecord]));
+
+        self::assertContains('my_items', $receivedKeys);
+        self::assertContains('text', $receivedKeys);
+    }
+
     public function testPasswordValueIsBlankedViaTransformer(): void
     {
         $schema = new TcaSchema('tt_content', new \TYPO3\CMS\Core\Schema\Field\FieldCollection([
