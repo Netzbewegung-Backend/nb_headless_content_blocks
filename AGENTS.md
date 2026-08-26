@@ -178,6 +178,10 @@ Build/Scripts/runTests.sh -s mergeCoverage
 `-it` flag. `CI=true` is only required when using the CI PHPStan config
 (`phpstan.ci.neon`).
 
+**Running PHP directly:** There is no PHP on the host, but DDEV is running. Use
+`ddev exec php ...` (also for composer, phpstan, php-cs-fixer, etc.). Composer
+binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
+
 ### Testing Gotchas
 
 - **act: run one TYPO3 matrix entry at a time** — `act -j functional_tests` runs all

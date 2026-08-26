@@ -7,7 +7,10 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Tests\Functional\DataProcessing;
 use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ContentBlocksJsonDataProcessor;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
+use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -414,6 +417,70 @@ final class ContentBlocksJsonDataProcessorTest extends FunctionalTestCase
         $notes = array_column($result['data']['my_items'], 'note');
         self::assertContains('First note', $notes);
         self::assertContains('Second note', $notes);
+    }
+
+    #[Test]
+    public function processReturnsResolvedRecordForNonContentBlockRecordType(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/non_content_block_content_element.csv');
+        $row = $this->fetchContentRow(70);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $processedData = ['data' => $row, 'other' => 'value'];
+        $result = $subject->process($contentObjectRenderer, [], [], $processedData);
+
+        self::assertInstanceOf(Record::class, $result['data']);
+        self::assertSame('FallbackHeader', $result['data']->toArray()['header']);
+        self::assertSame('value', $result['other']);
+    }
+
+    #[Test]
+    public function processAppliesCropVariantToPublicUrl(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/cropped_file_reference_content_element.csv');
+        $row = $this->fetchContentRow(11);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame(4, $result['data']['my_image']['id']);
+        self::assertStringContainsString('_processed_', $result['data']['my_image']['publicUrl']);
+    }
+
+    #[Test]
+    public function processParsesRichTextTextareaValueWithParseFunc(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/richtext_content_element.csv');
+
+        $frontendTypoScript = new FrontendTypoScript(new RootNode(), [], [], []);
+        $frontendTypoScript->setSetupTree(new RootNode());
+        $frontendTypoScript->setSetupArray([
+            'lib.' => [
+                'parseFunc_RTE' => '1',
+                'parseFunc_RTE.' => [
+                    'allowTags' => 'p,strong,em',
+                    'htmlSanitize' => '0',
+                ],
+            ],
+        ]);
+
+        $request = (new ServerRequest('https://example.com/', 'GET'))
+            ->withAttribute('applicationType', 1)
+            ->withAttribute('frontend.typoscript', $frontendTypoScript);
+        $GLOBALS['TYPO3_REQUEST'] = $request;
+
+        $row = $this->fetchContentRow(60);
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->setRequest($request);
+        $contentObjectRenderer->start($row, 'tt_content');
+        GeneralUtility::addInstance(ContentObjectRenderer::class, $contentObjectRenderer);
+
+        $subject = $this->get(ContentBlocksJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [], ['data' => $row]);
+
+        self::assertSame('<p>This is <strong>rich</strong> text</p>', $result['data']['my_richtext']);
     }
 
     /**

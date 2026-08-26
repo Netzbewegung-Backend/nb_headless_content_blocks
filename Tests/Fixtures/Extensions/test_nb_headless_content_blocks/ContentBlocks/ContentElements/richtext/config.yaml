@@ -1,0 +1,8 @@
+name: test/richtext
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_richtext
+    type: Textarea
+    enableRichtext: true
