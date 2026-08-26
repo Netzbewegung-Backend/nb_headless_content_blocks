@@ -41,7 +41,8 @@ class RecordToArray
             $array,
             $this->tableDefinition,
             $this->tableDefinitionCollection,
-            $this->eventDispatcher
+            $this->eventDispatcher,
+            $this->record->getRecordType()
         )->toArray();
     }
 }

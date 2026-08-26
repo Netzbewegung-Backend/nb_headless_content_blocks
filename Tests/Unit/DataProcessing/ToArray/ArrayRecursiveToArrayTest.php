@@ -17,7 +17,6 @@ use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\FieldTypeInterface;
-use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\RelationFieldType;
 use TYPO3\CMS\ContentBlocks\Registry\AutomaticLanguageKeysRegistry;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
@@ -135,10 +134,9 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
 
     public function testPasswordFieldIsEmptied(): void
     {
-        $tableDefinition = $this->createTableDefinition(['secret_password' => new PasswordFieldType()]);
-        $subject = $this->createSubjectWithTableDefinition(
+        $subject = $this->createSubjectWithSchema(
             ['secret_password' => 'mySecretValue'],
-            $tableDefinition
+            ['secret_password' => $this->createCoreFieldType('password', 'secret_password')]
         );
 
         self::assertSame(['secret_password' => ''], $subject->toArray());
@@ -146,10 +144,9 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
 
     public function testStringWithIntKeyIsPassedThrough(): void
     {
-        $tableDefinition = $this->createTableDefinition(['myField' => new PasswordFieldType()]);
-        $subject = $this->createSubjectWithTableDefinition(
+        $subject = $this->createSubjectWithSchema(
             ['keep' => 'this string'],
-            $tableDefinition
+            ['other_field' => $this->createCoreFieldType('password', 'other_field')]
         );
 
         self::assertSame(['keep' => 'this string'], $subject->toArray());
@@ -341,12 +338,53 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
      */
     private function createSubjectWithCollection(array $array, TableDefinitionCollection $tableDefinitionCollection, ?TableDefinition $tableDefinition = null, array $listeners = []): ArrayRecursiveToArray
     {
-        return new ArrayRecursiveToArray(
+        $subject = new ArrayRecursiveToArray(
             $array,
             $tableDefinition,
             $tableDefinitionCollection,
             $this->createEventDispatcher($listeners)
         );
+
+        return $subject;
+    }
+
+    /**
+     * @param array<string, mixed> $array
+     * @param array<string, \TYPO3\CMS\Core\Schema\Field\FieldTypeInterface> $fields
+     * @param callable[] $listeners
+     */
+    private function createSubjectWithSchema(array $array, array $fields, array $listeners = []): ArrayRecursiveToArray
+    {
+        $subject = new ArrayRecursiveToArray(
+            $array,
+            null,
+            new TableDefinitionCollection(new AutomaticLanguageKeysRegistry()),
+            $this->createEventDispatcher($listeners)
+        );
+        $subject->setTcaSchema(new \TYPO3\CMS\Core\Schema\TcaSchema(
+            'tt_content',
+            new \TYPO3\CMS\Core\Schema\Field\FieldCollection($fields),
+            []
+        ));
+
+        return $subject;
+    }
+
+    private function createCoreFieldType(string $type, string $columnName, array $configuration = []): \TYPO3\CMS\Core\Schema\Field\FieldTypeInterface
+    {
+        $configuration['type'] = $type;
+
+        return match ($type) {
+            'category' => new \TYPO3\CMS\Core\Schema\Field\CategoryFieldType($columnName, $configuration, []),
+            'group' => new \TYPO3\CMS\Core\Schema\Field\GroupFieldType($columnName, $configuration, []),
+            'inline' => new \TYPO3\CMS\Core\Schema\Field\InlineFieldType($columnName, $configuration, []),
+            'json' => new \TYPO3\CMS\Core\Schema\Field\JsonFieldType($columnName, $configuration),
+            'link' => new \TYPO3\CMS\Core\Schema\Field\LinkFieldType($columnName, $configuration),
+            'password' => new \TYPO3\CMS\Core\Schema\Field\PasswordFieldType($columnName, $configuration),
+            'select' => new \TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType($columnName, $configuration),
+            'text' => new \TYPO3\CMS\Core\Schema\Field\TextFieldType($columnName, $configuration),
+            default => new \TYPO3\CMS\Core\Schema\Field\InputFieldType($columnName, $configuration),
+        };
     }
 
     /**

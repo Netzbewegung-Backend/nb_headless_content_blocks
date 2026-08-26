@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
-use Exception;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\DateTimeNormalizer;
@@ -19,31 +18,42 @@ use Netzbewegung\NbHeadlessContentBlocks\Normalization\NormalizerChain;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
-use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\PassFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\SlugFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\UuidFieldType;
+use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
+use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
+/**
+ * Phase 2 of the ToArray rewrite (docs/design/IMPROVE_TO_ARRAY.md):
+ * field metadata (field type, relation targets, richtext flag, JSON
+ * passthrough) now comes from the Core Schema API (TcaSchema sub-schemata),
+ * ContentBlocks definitions remain solely as the source for the identifier
+ * mapping (DB column -> content block field identifier).
+ */
 class ArrayRecursiveToArray
 {
     protected ?NormalizerChain $normalizerChain = null;
+    protected ?TcaSchema $tcaSchema = null;
 
     public function __construct(
         protected array $array,
         protected ?TableDefinition $tableDefinition,
         protected TableDefinitionCollection $tableDefinitionCollection,
-        protected readonly EventDispatcher $eventDispatcher
+        protected readonly EventDispatcher $eventDispatcher,
+        protected ?string $recordType = null,
     ) {}
+
+    /**
+     * Override the TCA schema resolution (used in tests, where no
+     * TcaSchemaFactory / DI container is available).
+     */
+    public function setTcaSchema(?TcaSchema $tcaSchema): void
+    {
+        $this->tcaSchema = $tcaSchema;
+    }
 
     public function toArray(): array
     {
@@ -69,18 +79,97 @@ class ArrayRecursiveToArray
                 continue;
             }
 
-            switch (true) {
-                case is_string($value):
-                    $data[$decoratedKey] = $this->processStringField($value, $key);
-                    break;
-                default:
-                    $data[$decoratedKey] = $this->getNormalizerChain()->normalize($value, $this->createContext());
-            }
+            $data[$decoratedKey] = $this->normalizeValue($value, $key);
         }
 
         ksort($data);
 
         return $data;
+    }
+
+    protected function normalizeValue(mixed $value, int|string $key): mixed
+    {
+        if (is_string($value)) {
+            return $this->processStringField($value, $key);
+        }
+
+        if (is_array($value) && !$this->isJsonField($key)) {
+            $normalized = [];
+            foreach ($value as $itemKey => $item) {
+                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey);
+            }
+            ksort($normalized);
+
+            return $normalized;
+        }
+
+        return $this->getNormalizerChain()->normalize($value, $this->createContext());
+    }
+
+    protected function processStringField(string $value, int|string $key): string
+    {
+        $field = $this->getSchemaField($key);
+
+        if ($field === null) {
+            return $value;
+        }
+
+        $fieldType = TableColumnType::from($field->getType());
+
+        if ($fieldType === TableColumnType::PASSWORD) {
+            // Unclear in which case it makes sense to send a password via headless to client.
+            // So we currently unset the value.
+            return '';
+        }
+
+        if ($fieldType === TableColumnType::TEXT && ($field->getConfiguration()['enableRichtext'] ?? false)) {
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
+        }
+
+        return $value;
+    }
+
+    protected function isJsonField(int|string $key): bool
+    {
+        $field = $this->getSchemaField($key);
+
+        return $field !== null && $field->getType() === TableColumnType::JSON->value;
+    }
+
+    protected function getSchemaField(int|string $key): ?FieldTypeInterface
+    {
+        if (is_int($key) || !$this->getTcaSchema()?->hasField((string)$key)) {
+            return null;
+        }
+
+        return $this->getTcaSchema()->getField((string)$key);
+    }
+
+    protected function getTcaSchema(): ?TcaSchema
+    {
+        if ($this->tcaSchema !== null) {
+            return $this->tcaSchema;
+        }
+
+        $tableName = $this->tableDefinition?->table;
+
+        if ($tableName === null) {
+            return null;
+        }
+
+        $tcaSchemaFactory = $this->getTcaSchemaFactory();
+        if ($tcaSchemaFactory === null || !$tcaSchemaFactory->has($tableName)) {
+            return null;
+        }
+
+        $schema = $tcaSchemaFactory->get($tableName);
+
+        if ($this->recordType !== null && $schema->hasSubSchema($this->recordType)) {
+            $schema = $schema->getSubSchema($this->recordType);
+        }
+
+        return $this->tcaSchema = $schema;
     }
 
     protected function getNormalizerChain(): NormalizerChain
@@ -107,105 +196,24 @@ class ArrayRecursiveToArray
     protected function getTcaSchemaFactory(): ?TcaSchemaFactory
     {
         try {
-            // makeInstance() resolves TcaSchemaFactory from the DI container
-            // whenever one is available. Without a container (unit tests) the
-            // class cannot be constructed manually, hence the nullable result.
-            // Removed when the chain is DI-wired in a later phase.
-            return GeneralUtility::makeInstance(TcaSchemaFactory::class);
-        } catch (\ArgumentCountError) {
+            $container = GeneralUtility::getContainer();
+        } catch (\LogicException) {
+            // No DI container available (unit tests).
             return null;
         }
+
+        if (!$container->has(TcaSchemaFactory::class)) {
+            return null;
+        }
+
+        return $container->get(TcaSchemaFactory::class);
     }
 
     protected function createContext(): Context
     {
-        $context = new Context(null, null, [], $this->eventDispatcher);
+        $context = new Context($this->getTcaSchema(), null, [], $this->eventDispatcher);
         $context->setChain($this->getNormalizerChain());
 
         return $context;
-    }
-
-    protected function getTableDefinitionByKey(string $key): ?TableDefinition
-    {
-        $tableName = $this->getTableNameByKey($key);
-
-        if ($tableName === null) {
-            return null;
-        }
-
-        if ($this->tableDefinitionCollection->hasTable($tableName)) {
-            return $this->tableDefinitionCollection->getTable($tableName);
-        }
-
-        return null;
-    }
-
-    protected function getTableNameByKey(string $key): ?string
-    {
-        if ($this->tableDefinitionCollection->hasTable($key)) {
-            return $key;
-        }
-
-        if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key)) {
-            $field = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
-            $fieldType = $field->fieldType;
-
-            if ($fieldType instanceof CategoryFieldType) {
-                return 'sys_category';
-            }
-
-            $tca = $fieldType->getTca();
-            if (isset($tca['config']['foreign_table'])) {
-                return $tca['config']['foreign_table'];
-            }
-
-            if (isset($tca['config']['allowed'])) {
-                if (count(explode(',', $tca['config']['allowed'])) > 1) {
-                    return null;
-                }
-                return $tca['config']['allowed'];
-            }
-        }
-
-        return null;
-    }
-
-    protected function processStringField(string $value, int|string $key): string
-    {
-        if (!$this->tableDefinition instanceof TableDefinition || is_int($key) || $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key) === false) {
-            return $value;
-        }
-
-        $tcaFieldDefinition = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
-        $fieldType = $tcaFieldDefinition->fieldType;
-
-        switch (true) {
-            case $fieldType instanceof ColorFieldType:
-            case $fieldType instanceof SelectFieldType:
-            case $fieldType instanceof TextFieldType:
-            case $fieldType instanceof EmailFieldType:
-            case $fieldType instanceof PassFieldType:
-            case $fieldType instanceof SlugFieldType:
-            case $fieldType instanceof UuidFieldType:
-                break;
-            case $fieldType instanceof PasswordFieldType:
-                // Unclear in which case it makes sense to send a password via headless to client.
-                // So we currently unset the value.
-                $value = '';
-                break;
-            case $fieldType instanceof TextareaFieldType:
-                $enableRichtext = $fieldType->getTca()['config']['enableRichtext'] ?? false;
-                if ($enableRichtext === true) {
-                    $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-                    return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
-                }
-
-                break;
-            default:
-                //debug($fieldType);
-                //throw new Exception('Unknown default case in ->processStringField() for key "' . $key . '"', 1746095966);
-        }
-
-        return $value;
     }
 }
