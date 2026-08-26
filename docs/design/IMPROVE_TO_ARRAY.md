@@ -385,8 +385,17 @@ syntax, so output URLs match what headless consumers already get from
 ## 10. Remaining open points (non-blocking, decide during implementation)
 
 - Exact `Context` option names and defaults (v1: `absoluteUrls=true`,
-  `dateTimeFormat=\DateTimeImmutable::W3C`)
+  `dateTimeFormat=\DateTimeInterface::W3C`)
 - Whether `UnknownTypeNormalizer` log channel is `nb_headless_content_blocks`
   or the site's default core log
 - Deprecation window length for `ModifyArrayRecursiveToArrayEvent` (proposal:
   one minor release, keep firing it until then)
+
+## 11. Additional goal: zero `GeneralUtility::makeInstance()`
+
+End state (after Phase 4/5): no `makeInstance()` anywhere in `Classes/` —
+all dependencies via constructor injection. Normalizers never inject the
+chain (they recurse via `Context::getChain()`), so no circular DI problem.
+Intentional non-DI leftovers: the `headless.php` include (receives
+`Context` as parameter) and static utility calls
+(`GeneralUtility::getFileAbsFileName()` etc.).
