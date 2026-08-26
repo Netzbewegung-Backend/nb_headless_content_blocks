@@ -1,6 +1,6 @@
 # Design: Improve / Rewrite the ToArray conversion
 
-Status: **Decided — ready for implementation**
+Status: **Implemented (Phases 0-5), 2026-08-26 — see git history on feature/improve-to-array**
 Date: 2026-08-26
 Scope: `Classes/DataProcessing/ToArray/*`, `ContentBlocksJsonDataProcessor`, `ContainerJsonDataProcessor`
 

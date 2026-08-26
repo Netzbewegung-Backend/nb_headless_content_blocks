@@ -15,26 +15,46 @@ TYPO3 Extension for headless Content Blocks. Converts Content Block data into JS
 
 ```
 Classes/
+├── ContentBlocks/
+│   ├── ContentBlocksIdentifierMapper.php     # column -> field identifier mapping (ContentBlocks)
+│   ├── HeadlessYamlLoader.php                # loads headless.yaml image processing config
+│   └── IdentifierMapperInterface.php
 ├── DataProcessing/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
-├── DataProcessing/ToArray/
-│   ├── RecordToArray.php
-│   ├── ArrayRecursiveToArray.php
-│   ├── FileReferenceToArray.php
-│   ├── LazyFileReferenceCollectionToArray.php
-│   ├── LazyRecordCollectionToArray.php
-│   ├── LazyRecordCollectionSysCategoryToArray.php
-│   ├── TypolinkParameterToArray.php
-│   └── LazyFolderCollectionToArray.php
+├── FieldTransformer/
+│   ├── FieldValueTransformerChain.php
+│   ├── FieldValueTransformerInterface.php
+│   └── String/
+│       ├── PasswordBlanker.php
+│       └── RichtextParser.php
+├── Normalization/
+│   ├── Context.php                           # per-run state (schema, options, field processing)
+│   ├── NormalizerChain.php                   # dispatches to tagged normalizers
+│   ├── NormalizerInterface.php
+│   ├── RecordArrayBuilder.php                # DI entry point of the conversion
+│   ├── UnknownTypeNormalizer.php             # null + debug log for unknown types
+│   ├── Normalizer/
+│   │   ├── ScalarNormalizer.php
+│   │   ├── DateTimeNormalizer.php
+│   │   ├── FlexFormNormalizer.php
+│   │   ├── TypolinkNormalizer.php
+│   │   ├── RecordNormalizer.php
+│   │   ├── RecordCollectionNormalizer.php
+│   │   ├── FileReferenceNormalizer.php       # incl. crop + declarative thumbnails
+│   │   └── FolderCollectionNormalizer.php
 └── Event/
-    └── ModifyArrayRecursiveToArrayEvent.php  # PSR-14 Event
+    └── ModifyArrayRecursiveToArrayEvent.php  # PSR-14 Event (deprecated, still fired)
 
 Configuration/
+├── Services.yaml                             # tagged services: nb_headless.normalizer,
+│                                             # nb_headless.field_value_transformer
 └── Sets/HeadlessContentBlock/
     ├── setup.typoscript
     └── config.yaml
 ```
+
+See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 
 ## Core Components
 
@@ -52,7 +72,8 @@ Configuration/
 - `RecordFactory`
 - `ContentTypeResolver`
 - `ContentBlockRegistry`
-- `EventDispatcher`
+- `RecordArrayBuilder`
+- `ContentDataProcessor`
 
 **ContainerJsonDataProcessor:**
 - `TableDefinitionCollection`
@@ -60,10 +81,12 @@ Configuration/
 - `ContentBlockDataDecorator`
 - `ContentTypeResolver`
 - `ContentBlockRegistry`
+- `ContainerProcessor` (b13/container)
 
 ### PSR-14 Event
 
-`ModifyArrayRecursiveToArrayEvent` - fired when converting arrays.
+`ModifyArrayRecursiveToArrayEvent` - fired by `RecordArrayBuilder` per field
+(deprecated, kept for backwards compatibility).
 
 ## Important Notes
 
@@ -121,12 +144,14 @@ Tests/
 ├── Unit/
 │   ├── Event/
 │   │   └── ModifyArrayRecursiveToArrayEventTest.php
-│   └── DataProcessing/ToArray/
-│       ├── ArrayRecursiveToArrayTest.php
-│       └── TypolinkParameterToArrayTest.php
+│   └── Normalization/
+│       ├── RecordArrayBuilderTest.php
+│       └── Normalizer/
+│           └── TypolinkNormalizerTest.php
 ├── Functional/
 │   └── DataProcessing/
 │       ├── ContentBlocksJsonDataProcessorTest.php
+│       ├── ContentBlocksJsonDataProcessorCharTest.php  # frozen JSON contract
 │       ├── ContainerJsonDataProcessorTest.php
 │       └── Fixtures/
 │           ├── DataSet/ (CSV fixtures)
@@ -135,7 +160,7 @@ Tests/
     ├── ContentBlocks/ContentElements/
     │   ├── simple/       # Text, Number, DateTime, Select, Password, Json, Link, Category, Collection
     │   ├── headless/     # headless.php processing
-    │   └── filetest/     # File/FAL (oneToOne, oneToMany)
+    │   └── filetest/     # File/FAL (oneToOne, oneToMany, headless.yaml thumbnails)
     └── Classes/
         └── SetRenderedContentProcessor.php  # Stub for container child rendering
 ```
@@ -208,8 +233,9 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
 
 ### Test Strategy
 
-- **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` — pure event object
-- **Functional Tests**: DataProcessor with TYPO3 context (InMemory-PDO)
+- **Unit Tests**: `RecordArrayBuilder`, `TypolinkNormalizer`, event — pure, container-less
+- **Functional Tests**: DataProcessors with TYPO3 context (InMemory-PDO) + characterization
+  tests (`ContentBlocksJsonDataProcessorCharTest`) freezing the complete JSON contract
 
 ## Development
 
