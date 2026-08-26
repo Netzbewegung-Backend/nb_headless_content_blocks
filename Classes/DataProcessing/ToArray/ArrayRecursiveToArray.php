@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
+use Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper;
 use Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader;
+use Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\IdentifierMapperInterface;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
+use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerChain;
+use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String\PasswordBlanker;
+use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String\RichtextParser;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\DateTimeNormalizer;
 use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FileReferenceNormalizer;
@@ -26,19 +31,19 @@ use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
- * Phase 2 of the ToArray rewrite (docs/design/IMPROVE_TO_ARRAY.md):
- * field metadata (field type, relation targets, richtext flag, JSON
- * passthrough) now comes from the Core Schema API (TcaSchema sub-schemata),
- * ContentBlocks definitions remain solely as the source for the identifier
- * mapping (DB column -> content block field identifier).
+ * Phase 3 of the ToArray rewrite (docs/design/IMPROVE_TO_ARRAY.md):
+ * string field shaping (password blanking, richtext) lives in dedicated
+ * FieldValueTransformers, the ContentBlocks identifier mapping is behind
+ * the IdentifierMapperInterface.
  */
 class ArrayRecursiveToArray
 {
     protected ?NormalizerChain $normalizerChain = null;
     protected ?TcaSchema $tcaSchema = null;
+    protected ?FieldValueTransformerChain $fieldValueTransformerChain = null;
+    protected ?IdentifierMapperInterface $identifierMapper = null;
 
     public function __construct(
         protected array $array,
@@ -64,15 +69,23 @@ class ArrayRecursiveToArray
 
         foreach ($this->array as $key => $value) {
 
-            if ($this->tableDefinition instanceof TableDefinition && $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key)) {
+            $decoratedKey = $this->getIdentifierMapper()->mapColumnToIdentifier(
+                $this->tableDefinition->table ?? '',
+                $this->recordType,
+                (string)$key
+            ) ?? $key;
+
+            // Dispatch event to allow custom processing. The ContentBlocks
+            // TcaFieldDefinition is kept for backwards compatibility.
+            $tcaFieldDefinition = null;
+            if (
+                $this->tableDefinition instanceof TableDefinition
+                && is_string($key)
+                && $this->tableDefinition->tcaFieldDefinitionCollection->hasField($key)
+            ) {
                 $tcaFieldDefinition = $this->tableDefinition->tcaFieldDefinitionCollection->getField($key);
-                $decoratedKey = $tcaFieldDefinition->identifier;
-            } else {
-                $tcaFieldDefinition = null;
-                $decoratedKey = $key;
             }
 
-            // Dispatch event to allow custom processing
             $event = new ModifyArrayRecursiveToArrayEvent($key, $value, $tcaFieldDefinition);
             $this->eventDispatcher->dispatch($event);
 
@@ -122,20 +135,7 @@ class ArrayRecursiveToArray
             return $value;
         }
 
-        $fieldType = TableColumnType::from($field->getType());
-
-        if ($fieldType === TableColumnType::PASSWORD) {
-            // Unclear in which case it makes sense to send a password via headless to client.
-            // So we currently unset the value.
-            return '';
-        }
-
-        if ($fieldType === TableColumnType::TEXT && ($field->getConfiguration()['enableRichtext'] ?? false)) {
-            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
-        }
-
-        return $value;
+        return $this->getFieldValueTransformerChain()->transform($value, $field);
     }
 
     protected function isJsonField(int|string $key): bool
@@ -283,5 +283,26 @@ class ArrayRecursiveToArray
     protected function getHeadlessYamlLoader(): HeadlessYamlLoader
     {
         return GeneralUtility::makeInstance(HeadlessYamlLoader::class);
+    }
+
+    protected function getFieldValueTransformerChain(): FieldValueTransformerChain
+    {
+        if ($this->fieldValueTransformerChain === null) {
+            $this->fieldValueTransformerChain = new FieldValueTransformerChain([
+                GeneralUtility::makeInstance(PasswordBlanker::class),
+                GeneralUtility::makeInstance(RichtextParser::class),
+            ]);
+        }
+
+        return $this->fieldValueTransformerChain;
+    }
+
+    protected function getIdentifierMapper(): IdentifierMapperInterface
+    {
+        if ($this->identifierMapper === null) {
+            $this->identifierMapper = new ContentBlocksIdentifierMapper($this->tableDefinitionCollection);
+        }
+
+        return $this->identifierMapper;
     }
 }
