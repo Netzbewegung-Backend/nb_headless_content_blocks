@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\ContentBlocks;
 
 use Symfony\Component\Yaml\Yaml;
+use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -27,6 +28,7 @@ final class HeadlessYamlLoader
 
     public function __construct(
         private readonly ?FrontendInterface $cache = null,
+        private readonly ?ContentBlockRegistry $contentBlockRegistry = null,
     ) {}
 
     /**
@@ -102,9 +104,10 @@ final class HeadlessYamlLoader
 
     private function getContentBlockExtPath(string $contentBlockName): ?string
     {
-        $contentBlockRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            \TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry::class
-        );
+        // ContentBlockRegistry is optional to keep the loader usable in
+        // container-less unit tests.
+        $contentBlockRegistry = $this->contentBlockRegistry
+            ?? GeneralUtility::makeInstance(ContentBlockRegistry::class);
 
         if (!$contentBlockRegistry->hasContentBlock($contentBlockName)) {
             return null;

@@ -16,3 +16,43 @@ services:
     tags:
         - name: 'data.processor'
           identifier: 'nb-container-json'
+
+  # --- Normalizer registry (tagged services, first supports() wins) ---
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\ScalarNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\DateTimeNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FlexFormNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\TypolinkNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\RecordNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\RecordCollectionNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FileReferenceNormalizer:
+    tags: ['nb_headless.normalizer']
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FolderCollectionNormalizer:
+    tags: ['nb_headless.normalizer']
+
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\NormalizerChain:
+    arguments:
+      $normalizers: !tagged_iterator nb_headless.normalizer
+      $unknownTypeNormalizer: '@Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer'
+
+  Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper: ~
+  Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader: ~
+  Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\IdentifierMapperInterface:
+    alias: Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper
+
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\RecordArrayBuilder: ~
+
+  # --- Field value transformers (tagged services) ---
+  Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String\PasswordBlanker:
+    tags: ['nb_headless.field_value_transformer']
+  Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String\RichtextParser:
+    tags: ['nb_headless.field_value_transformer']
+
+  Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerChain:
+    arguments:
+      $transformers: !tagged_iterator nb_headless.field_value_transformer

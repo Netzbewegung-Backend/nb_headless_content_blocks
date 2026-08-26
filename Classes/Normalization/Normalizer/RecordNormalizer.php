@@ -9,13 +9,13 @@ use Netzbewegung\NbHeadlessContentBlocks\Normalization\NormalizerInterface;
 use TYPO3\CMS\Core\Domain\Record;
 
 /**
- * Normalizes a resolved Record: strips system fields, converts every value
- * via the chain and sorts the result alphabetically (frozen contract).
+ * Normalizes a resolved Record by delegating to the RecordArrayBuilder via
+ * the Context, so nested records (relations, collection items) receive the
+ * full conversion: identifier mapping, field transformers and the PSR-14
+ * event.
  */
 final class RecordNormalizer implements NormalizerInterface
 {
-    private const SYSTEM_FIELDS = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid', 'tx_container_parent'];
-
     public function supports(mixed $value, Context $context): bool
     {
         return $value instanceof Record;
@@ -23,23 +23,6 @@ final class RecordNormalizer implements NormalizerInterface
 
     public function normalize(mixed $value, Context $context): mixed
     {
-        try {
-            $array = $value->toArray();
-        } catch (\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $fileDoesNotExistException) {
-            return ['__errorMessage' => $fileDoesNotExistException->getMessage()];
-        }
-
-        foreach (self::SYSTEM_FIELDS as $systemField) {
-            unset($array[$systemField]);
-        }
-
-        $data = [];
-        foreach ($array as $key => $fieldValue) {
-            $data[$key] = $context->getChain()->normalize($fieldValue, $context);
-        }
-
-        ksort($data);
-
-        return $data;
+        return $context->buildRecord($value);
     }
 }

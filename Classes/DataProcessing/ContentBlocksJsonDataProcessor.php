@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing;
 
-use Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray\RecordToArray;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\RecordArrayBuilder;
 use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
 use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
 use TYPO3\CMS\Core\Domain\RecordFactory;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -23,7 +22,8 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         protected RecordFactory $recordFactory,
         protected ContentTypeResolver $contentTypeResolver,
         protected ContentBlockRegistry $contentBlockRegistry,
-        protected readonly EventDispatcher $eventDispatcher
+        protected RecordArrayBuilder $recordArrayBuilder,
+        protected ContentDataProcessor $contentDataProcessor,
     ) {}
 
     public function process(
@@ -51,16 +51,10 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $as = $processorConfiguration['as'] ?? 'data';
 
-        $tableDefinition = $this->tableDefinitionCollection->getTable($resolveRecord->getMainType());
-
-        $data = GeneralUtility::makeInstance(
-            RecordToArray::class,
+        $data = $this->recordArrayBuilder->build(
             $resolveRecord,
-            $tableDefinition,
-            $this->tableDefinitionCollection,
-            $this->eventDispatcher,
             $this->resolveTypoScriptOptions($processorConfiguration)
-        )->toArray();
+        );
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);
 
@@ -108,7 +102,7 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
     protected function processAdditionalDataProcessors(ContentObjectRenderer $contentObjectRenderer, array $data, array $processorConfiguration): array
     {
-        return GeneralUtility::makeInstance(ContentDataProcessor::class)->process(
+        return $this->contentDataProcessor->process(
             $contentObjectRenderer,
             $processorConfiguration,
             $data
