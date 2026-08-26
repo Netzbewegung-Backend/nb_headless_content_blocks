@@ -198,6 +198,13 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
   `TYPO3\TestingFramework\Core\Exception: Can not remove folder`. Detect with
   `find .Build/public/typo3temp/var/tests -maxdepth 1 -user root`. Do NOT run `sudo`
   yourself — tell the USER (who has root) to run `sudo rm -rf <folders>`.
+- **Stale DI container / cache issues** — if services resolve wrongly or newly added
+  DI configuration (Services.yaml, tagged services) is not picked up:
+  `ddev typo3 cache:flush`, `ddev composer dump-autoload`, or `rm -rf var/cache/`.
+  Note: unit tests (`runTests.sh -s unit`) run **without any DI container** by design —
+  `GeneralUtility::makeInstance()` for container-only services (e.g.
+  `TcaSchemaFactory`) fails there and code must tolerate that; functional tests
+  bootstrap the container normally.
 
 ### Test Strategy
 

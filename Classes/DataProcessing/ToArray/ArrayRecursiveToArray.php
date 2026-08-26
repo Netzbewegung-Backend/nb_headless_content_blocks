@@ -107,16 +107,14 @@ class ArrayRecursiveToArray
     protected function getTcaSchemaFactory(): ?TcaSchemaFactory
     {
         try {
-            $container = GeneralUtility::getContainer();
-        } catch (\LogicException) {
+            // makeInstance() resolves TcaSchemaFactory from the DI container
+            // whenever one is available. Without a container (unit tests) the
+            // class cannot be constructed manually, hence the nullable result.
+            // Removed when the chain is DI-wired in a later phase.
+            return GeneralUtility::makeInstance(TcaSchemaFactory::class);
+        } catch (\ArgumentCountError) {
             return null;
         }
-
-        if ($container->has(TcaSchemaFactory::class)) {
-            return $container->get(TcaSchemaFactory::class);
-        }
-
-        return null;
     }
 
     protected function createContext(): Context
