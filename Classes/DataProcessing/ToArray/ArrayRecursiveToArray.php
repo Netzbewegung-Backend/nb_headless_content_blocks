@@ -6,13 +6,22 @@ namespace Netzbewegung\NbHeadlessContentBlocks\DataProcessing\ToArray;
 
 use Exception;
 use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\DateTimeNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FileReferenceNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FlexFormNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\FolderCollectionNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\RecordCollectionNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\RecordNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\ScalarNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Normalizer\TypolinkNormalizer;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\NormalizerChain;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
-use TYPO3\CMS\ContentBlocks\Definition\TcaFieldDefinition;
 use TYPO3\CMS\ContentBlocks\FieldType\CategoryFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\ColorFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\EmailFieldType;
-use TYPO3\CMS\ContentBlocks\FieldType\JsonFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\PassFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\PasswordFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\SelectFieldType;
@@ -20,19 +29,15 @@ use TYPO3\CMS\ContentBlocks\FieldType\SlugFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextareaFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 use TYPO3\CMS\ContentBlocks\FieldType\UuidFieldType;
-use TYPO3\CMS\Core\Collection\LazyRecordCollection;
-use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
-use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
-use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
-use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
-use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
-use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ArrayRecursiveToArray
 {
+    protected ?NormalizerChain $normalizerChain = null;
+
     public function __construct(
         protected array $array,
         protected ?TableDefinition $tableDefinition,
@@ -65,80 +70,61 @@ class ArrayRecursiveToArray
             }
 
             switch (true) {
-                case is_null($value):
-                case is_int($value):
-                    $data[$decoratedKey] = $value;
-                    break;
-                case is_array($value):
-                    if ($tcaFieldDefinition instanceof TcaFieldDefinition && $tcaFieldDefinition->fieldType instanceof JsonFieldType) {
-                        $data[$decoratedKey] = $value;
-                    } else {
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(
-                            ArrayRecursiveToArray::class,
-                            $value,
-                            null,
-                            $this->tableDefinitionCollection,
-                            $this->eventDispatcher
-                        )->toArray();
-                    }
-
-                    break;
                 case is_string($value):
                     $data[$decoratedKey] = $this->processStringField($value, $key);
                     break;
-                case $value instanceof \DateTimeImmutable:
-                    $data[$decoratedKey] = $value->format(\DateTimeImmutable::W3C);
-                    break;
-                case $value instanceof Record:
-                    $tableDefinition = $this->getTableDefinitionByKey($key);
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(
-                        RecordToArray::class,
-                        $value,
-                        $tableDefinition,
-                        $this->tableDefinitionCollection,
-                        $this->eventDispatcher
-                    )->toArray();
-                    break;
-                case $value instanceof FlexFormFieldValues:
-                    $data[$decoratedKey] = $value->toArray();
-                    break;
-                case $value instanceof TypolinkParameter:
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(TypolinkParameterToArray::class, $value)->toArray();
-                    break;
-                case $value instanceof LazyRecordCollection:
-                    $tableName = $this->getTableNameByKey($key);
-                    if ($tableName === 'sys_category') {
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(LazyRecordCollectionSysCategoryToArray::class, $value)->toArray();
-                    } else {
-                        $tableDefinition = $this->getTableDefinitionByKey($key);
-                        $data[$decoratedKey] = GeneralUtility::makeInstance(
-                            LazyRecordCollectionToArray::class,
-                            $value,
-                            $tableDefinition,
-                            $this->tableDefinitionCollection,
-                            $this->eventDispatcher
-                        )->toArray();
-                    }
-
-                    break;
-                case $value instanceof LazyFileReferenceCollection:
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFileReferenceCollectionToArray::class, $value)->toArray();
-                    break;
-                case $value instanceof FileReference:
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(FileReferenceToArray::class, $value)->toArray();
-                    break;
-                case $value instanceof LazyFolderCollection:
-                    $data[$decoratedKey] = GeneralUtility::makeInstance(LazyFolderCollectionToArray::class, $value)->toArray();
-                    break;
                 default:
-                    //debug($value);
-                    //throw new Exception('Unknown case in ->toArray() switch for key "' . $key . '"', 1746095968);
+                    $data[$decoratedKey] = $this->getNormalizerChain()->normalize($value, $this->createContext());
             }
         }
 
         ksort($data);
 
         return $data;
+    }
+
+    protected function getNormalizerChain(): NormalizerChain
+    {
+        if ($this->normalizerChain === null) {
+            $this->normalizerChain = new NormalizerChain(
+                [
+                    GeneralUtility::makeInstance(ScalarNormalizer::class),
+                    GeneralUtility::makeInstance(DateTimeNormalizer::class),
+                    GeneralUtility::makeInstance(FlexFormNormalizer::class),
+                    GeneralUtility::makeInstance(TypolinkNormalizer::class),
+                    GeneralUtility::makeInstance(RecordNormalizer::class),
+                    GeneralUtility::makeInstance(RecordCollectionNormalizer::class, $this->getTcaSchemaFactory()),
+                    GeneralUtility::makeInstance(FileReferenceNormalizer::class),
+                    GeneralUtility::makeInstance(FolderCollectionNormalizer::class),
+                ],
+                GeneralUtility::makeInstance(UnknownTypeNormalizer::class)
+            );
+        }
+
+        return $this->normalizerChain;
+    }
+
+    protected function getTcaSchemaFactory(): ?TcaSchemaFactory
+    {
+        try {
+            $container = GeneralUtility::getContainer();
+        } catch (\LogicException) {
+            return null;
+        }
+
+        if ($container->has(TcaSchemaFactory::class)) {
+            return $container->get(TcaSchemaFactory::class);
+        }
+
+        return null;
+    }
+
+    protected function createContext(): Context
+    {
+        $context = new Context(null, null, [], $this->eventDispatcher);
+        $context->setChain($this->getNormalizerChain());
+
+        return $context;
     }
 
     protected function getTableDefinitionByKey(string $key): ?TableDefinition

@@ -52,18 +52,18 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
         self::assertSame(['key' => 'value'], $subject->toArray());
     }
 
-    public function testBooleanValueIsDropped(): void
+    public function testBooleanValueIsNormalizedToNull(): void
     {
         $subject = $this->createSubject(['key' => true]);
 
-        self::assertSame([], $subject->toArray());
+        self::assertSame(['key' => null], $subject->toArray());
     }
 
-    public function testFloatValueIsDropped(): void
+    public function testFloatValueIsNormalizedToNull(): void
     {
         $subject = $this->createSubject(['key' => 13.37]);
 
-        self::assertSame([], $subject->toArray());
+        self::assertSame(['key' => null], $subject->toArray());
     }
 
     public function testDateTimeImmutableIsFormattedAsW3C(): void
@@ -218,6 +218,9 @@ final class ArrayRecursiveToArrayTest extends UnitTestCase
     public function testCategoryFieldCollectionIsReducedToSysCategoryArray(): void
     {
         $record = $this->createMock(Record::class);
+        $record->method('getRawRecord')->willReturn(
+            new \TYPO3\CMS\Core\Domain\RawRecord(3, 2, [], new \TYPO3\CMS\Core\Domain\Record\ComputedProperties(), 'sys_category')
+        );
         $record->method('toArray')->willReturn(['uid' => 3, 'pid' => 2, 'title' => 'Category title']);
 
         $collection = new LazyRecordCollection('my_categories', fn() => [$record]);
