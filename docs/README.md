@@ -20,6 +20,8 @@ whether the extension fits your setup.
 
 - [Define image variants](how-to/define-image-variants.md) — responsive
   thumbnails per field via `headless.yaml`, with per-site TypoScript overrides
+- [Migrate legacy thumbnails](how-to/migrate-legacy-thumbnails.md) — replace
+  the old `headless.php` thumbnail generators
 - [Post-process JSON with headless.php](how-to/post-process-with-headless-php.md)
 - [Add sub data processors](how-to/add-sub-dataprocessors.md) — menus,
   record lists and other TypoScript data inside a block's `data`
@@ -51,3 +53,10 @@ whether the extension fits your setup.
 the code, the code wins. Notable: [IMPROVE_TO_ARRAY.md](design/IMPROVE_TO_ARRAY.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
 API migration, declarative image variants) with its decisions and rationale.
+
+## Archive (internal)
+
+[_archive/](_archive/README.md) holds superseded documentation — how the
+extension got here, not how it works today. Notable:
+[legacy thumbnails via headless.php](_archive/legacy-headless-php-thumbnails.md)
+— the `ImageViewHelper` pattern that declarative image variants replaced.

@@ -13,6 +13,42 @@ machine-oriented onboarding lives in [AGENTS.md](AGENTS.md).
    functional tests on TYPO3 13.4 and 14.3) must be green before merge.
 4. Before every commit: run CGL and PHPStan (see below).
 
+## Development setup
+
+The project runs on [DDEV](https://ddev.com):
+
+```bash
+ddev start
+ddev composer install
+touch .Build/public/FIRST_INSTALL
+ddev launch
+```
+
+Dependencies are installed into `.Build/vendor` (TYPO3 web root:
+`.Build/public`). There is no PHP on the host — use `ddev exec php ...`
+for direct tool calls; composer binaries are in `.Build/bin/`.
+
+Exclude `.Build/public/typo3temp` from IDE indexing — functional tests
+create isolated TYPO3 instances below `typo3temp/var/tests`:
+
+- **PhpStorm**: right-click the directory → *Mark Directory as* →
+  *Excluded*.
+- **VS Code** (`.vscode/settings.json`):
+
+```json
+{
+    "files.exclude": {
+        "**/.Build/public/typo3temp": true
+    },
+    "search.exclude": {
+        "**/.Build/public/typo3temp": true
+    },
+    "files.watcherExclude": {
+        "**/.Build/public/typo3temp/**": true
+    }
+}
+```
+
 ## Tests
 
 ```bash
@@ -30,8 +66,6 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
   alters the contract, update the frozen fixtures and document it in the
   [CHANGELOG](CHANGELOG.md) and the
   [JSON contract](docs/reference/json-contract.md) in the same PR.
-- There is no PHP on the host: use `ddev exec php ...` for direct tool
-  calls; composer binaries are in `.Build/bin/`.
 
 ## Documentation
 

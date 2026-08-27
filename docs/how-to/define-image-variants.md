@@ -10,7 +10,11 @@ Headless frontends need each image in several sizes (`mobile`, `desktop`,
 `2x` variants, webp). Before this feature, every Content Block carried a
 `headless.php` with a handwritten thumbnail generator — on the production
 site this extension was built for, **13 identical `headless.php` files**
-existed, all doing the same thing with different widths.
+existed, all doing the same thing with different widths. The old pattern
+is archived here:
+[legacy thumbnails via headless.php](../_archive/legacy-headless-php-thumbnails.md);
+for migrating existing blocks see
+[Migrate legacy thumbnails](migrate-legacy-thumbnails.md).
 
 ## Define variants in headless.yaml
 

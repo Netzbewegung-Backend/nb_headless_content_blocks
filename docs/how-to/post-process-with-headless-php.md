@@ -19,7 +19,9 @@ fields, calling an API, reshaping the whole payload.
 > **Maintenance note:** on the production site this extension was built
 > for, 13 `headless.php` files existed whose only job was thumbnail
 > generation. All of them are candidates for deletion since declarative
-> image variants exist.
+> image variants exist — see
+> [Migrate legacy thumbnails](migrate-legacy-thumbnails.md) and the
+> archived [legacy pattern](../_archive/legacy-headless-php-thumbnails.md).
 
 ## Create the file
 

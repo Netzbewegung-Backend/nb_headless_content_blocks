@@ -54,25 +54,9 @@ You are ready to go — the walkthrough with an example response lives in
 
 ## Development
 
-```bash
-ddev start
-ddev composer install
-touch .Build/public/FIRST_INSTALL
-
-# Run the test suites (CGL and PHPStan before every commit)
-Build/Scripts/runTests.sh -s unit
-Build/Scripts/runTests.sh -s functional -d sqlite
-Build/Scripts/runTests.sh -s cgl
-Build/Scripts/runTests.sh -s phpstan
-```
-
-Dependencies are installed into `.Build/vendor` (TYPO3 web root:
-`.Build/public`). The extension supports TYPO3 13.4 and 14.3 — see
-[AGENTS.md](AGENTS.md) for the version-switching workflow and all testing
-gotchas. Contribution rules: [CONTRIBUTING.md](CONTRIBUTING.md).
-
-Exclude `.Build/public/typo3temp` from IDE indexing — functional tests
-create isolated TYPO3 instances below `typo3temp/var/tests`.
+Setup, tests and contribution rules live in
+[CONTRIBUTING.md](CONTRIBUTING.md); machine-oriented onboarding (testing
+gotchas, TYPO3 version switching) in [AGENTS.md](AGENTS.md).
 
 ## License
 
