@@ -1,289 +1,79 @@
 [![TYPO3 compatibility](https://img.shields.io/badge/TYPO3-13.4-ff8700?maxAge=3600&logo=typo3)](https://get.typo3.org/)
 [![TYPO3 compatibility](https://img.shields.io/badge/TYPO3-14.3-ff8700?maxAge=3600&logo=typo3)](https://get.typo3.org/)
 
-# TYPO3 Extension EXT:nb_headless_content_blocks
-Connects together EXT:headless (friendsoftypo3/headless) and EXT:content_blocks (friendsoftypo3/content-blocks)
+# EXT:nb_headless_content_blocks
 
-## TYPO3 Installation
-Install extension using composer
+Connects [EXT:headless](https://github.com/TYPO3-Headless/headless) and
+[EXT:content_blocks](https://github.com/FriendsOfTYPO3/content-blocks): it
+converts Content Block records into JSON-compatible arrays for headless
+frontends — with a stable, test-frozen JSON contract.
 
-``composer require netzbewegung/nb_headless_content_blocks``
+**Documentation:** [docs/README.md](docs/README.md) — start with
+[Getting started](docs/getting-started.md). Changes are tracked in the
+[CHANGELOG](CHANGELOG.md).
 
-and then, include Site Set "Headless Content Blocks", and you are ready to go.
+## What it does
 
-## Features
+- Converts every Content Block field type to JSON without extra
+  configuration: richtext via `parseFunc_RTE`, links as
+  `{url, target, type, title, config, attr}`, files as
+  `{id, alt, title, publicUrl}`, categories, collections, relations,
+  FlexForms, date times, and more — see the
+  [JSON contract](docs/reference/json-contract.md).
+- Field identifiers (not database columns) as JSON keys, alphabetically
+  sorted — stable for frontend consumers.
+- **Declarative image variants:** responsive thumbnails per field via an
+  optional `headless.yaml` in the Content Block, overridable per site via
+  TypoScript — no PHP needed.
+- Extensible conversion pipeline: register your own
+  [normalizers](docs/how-to/register-custom-normalizer.md) and
+  [field value transformers](docs/how-to/register-field-value-transformer.md)
+  via DI tags.
+- Escape hatches: per-block [headless.php](docs/how-to/post-process-with-headless-php.md),
+  [sub data processors](docs/how-to/add-sub-dataprocessors.md), and a
+  [PSR-14 event](docs/how-to/modify-fields-with-event.md) (deprecated).
+- Support for [EXT:container](docs/how-to/render-containers.md) via the
+  `nb-container-json` processor.
 
-- Converts all complex objects into an array without extra configuration
-- Richtext fields are automaticly converted via `parseFunc($value, null, '< lib.parseFunc_RTE')`
-- Additional thumbnails can be created via headless.php per Content Block
-- Support for EXT:container
+## Installation
 
-## Custom Configuration per Content Block Type
-
-Create headless.php inside each Content Block.
-
-your_extension/ContentBlocks/ContentElements/your-content-block-element/headless.php
-
-```
-<?php
-
-use TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper;
-
-$generateThumbnail = function (array $arguments): string {
-    if (array_key_exists('absolute', $arguments) === false) {
-        $arguments['absolute'] = true;
-    }
-
-    $imageViewHelper = new ImageViewHelper();
-
-    foreach ($imageViewHelper->prepareArguments() as $argumentKey => $argumentDefinition) {
-        if (array_key_exists($argumentKey, $arguments) === false) {
-            $arguments[$argumentKey] = $argumentDefinition->getDefaultValue();
-        }
-    }
-
-    $imageViewHelper->setArguments($arguments);
-
-    return $imageViewHelper->initializeArgumentsAndRender();
-
-};
-
-foreach ($data['items'] ?? [] as $itemKey => $item) {
-
-    if ($item['image']) {
-        $image = $item['image'];
-
-        $data['items'][$itemKey]['image']['thumbnails'] = [
-            'mobile' => $generateThumbnail(['src' => $image['id'], 'treatIdAsReference' => true, 'width' => 320]),
-            'desktop' => $generateThumbnail(['src' => $image['id'], 'treatIdAsReference' => true, 'width' => 800]),
-        ];
-    }
-}
-
-return $data;
+```bash
+composer require netzbewegung/nb_headless_content_blocks
 ```
 
-## Additional Data via Sub DataProcessing
+Include the Site Set "Headless Content Blocks" in your site's
+`config.yaml`:
 
-```
-tt_content.vendor_yourcontentblockelement.fields.data.dataProcessing.10 {
-    dataProcessing {
-        10 = menu
-        10 {
-            levels = 2
-            as = navigation
-        }
-    }
-}
+```yaml
+sets:
+  - nb-headless-content-blocks/headless-content-blocks
 ```
 
-## Custom Configuration per FieldType/FieldName/TCA-Configuration in ArrayRecursiveToArray via PSR-14 Event
-
-Create a PSR-14 Event Listener in your extension.
-Use `$event->setProcessedValue($yourModifiedValueForThisField)` to handle the value for specific fields.
-Any unhandled fields will fall back to the default processing.
-
-```
-<?php
-
-declare(strict_types=1);
-
-namespace MyVendor\MyExtension\EventListener;
-
-use Netzbewegung\NbHeadlessContentBlocks\Event\ModifyArrayRecursiveToArrayEvent;
-use TYPO3\CMS\Core\Attribute\AsEventListener;
-
-#[AsEventListener()]
-final class MyCustomListener {
-    public function __invoke(ModifyArrayRecursiveToArrayEvent $event): void {
-        // Example: Custom handling by field name (tt_content.tx_my_vendor_field_name)
-        if ($event->getKey() === 'tx_my_vendor_field_name') {
-            $value = $event->getValue();
-            // Do your custom processing here
-            $processedValue = strtoupper($value);
-            // $processedValue The value which is returned for this field in json response
-            $event->setProcessedValue($processedValue);
-        }
-
-        // Example: Custom handling for all text fields
-        if ($event->getTcaFieldDefinition()->fieldType instanceof \TYPO3\CMS\ContentBlocks\FieldType\TextFieldType) {
-            $value = $event->getValue();
-            // Do your custom processing here
-            $processedValue = strtoupper($value);
-            // $processedValue The value which is returned for this field in json response
-            $event->setProcessedValue($processedValue);
-        }
-
-        // Example: Custom handling for a specific field which have custom field type
-        if ($event->getTcaFieldDefinition()->fieldType instanceof \MyVendor\MyExtension\MyCustomFieldType) {
-            $value = $event->getValue();
-            // Do your custom processing here
-            $processedValue = strtoupper($value);
-            // $processedValue The value which is returned for this field in json response
-            $event->setProcessedValue($processedValue);
-        }
-    }
-}
-```
-
-## Custom Configuration for EXT:container (b13/container) 
-
-### TypoScript Setup
-
-#### `left`/`right` parallel to `data`
-
-```
-lib.content.select.where = colPos NOT IN (201, 202)
-
-tt_content.b13_2_columns_container =< lib.contentElement
-tt_content.b13_2_columns_container {
-    fields {
-        left = TEXT
-        left {
-            dataProcessing {
-                10 = nb-container-json 
-                10 {
-                    colPos = 201
-                    as = left
-                }
-            }
-        }
-        right = TEXT
-        right {
-            dataProcessing {
-                10 = nb-container-json 
-                10 {
-                    colPos = 202
-                    as = right
-                }
-            }
-        }
-    }
-}
-```
-
-#### `left`/`right` inside `data` (via Sub DataProcessing)
-
-```
-lib.content.select.where = colPos NOT IN (201, 202)
-
-tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
-    dataProcessing {
-        10 = nb-container-json 
-        10 {
-            colPos = 201
-            as = left
-        }
-
-        20 = nb-container-json 
-        20 {
-            colPos = 202
-            as = right
-        }
-    }
-}
-```
+You are ready to go — the walkthrough with an example response lives in
+[Getting started](docs/getting-started.md).
 
 ## Development
-
-### Setup
 
 ```bash
 ddev start
 ddev composer install
 touch .Build/public/FIRST_INSTALL
-ddev launch
 
-chmod +x ./Build/Scripts/runTests.sh
-```
-
-Dependencies are installed into `.Build/vendor` (TYPO3 web root: `.Build/public`).
-
-### Testing
-
-Unit and functional tests are based on the TYPO3 Testing Framework.
-
-```bash
-# Unit tests
+# Run the test suites (CGL and PHPStan before every commit)
 Build/Scripts/runTests.sh -s unit
-
-# Functional tests (sqlite by default, -d mariadb|mysql|postgres possible)
-Build/Scripts/runTests.sh -s functional
-
-# PHPStan
-Build/Scripts/runTests.sh -s phpstan
-
-# Coding guidelines (php-cs-fixer)
+Build/Scripts/runTests.sh -s functional -d sqlite
 Build/Scripts/runTests.sh -s cgl
-
-# Specific PHP version
-Build/Scripts/runTests.sh -s unit -p 8.4
+Build/Scripts/runTests.sh -s phpstan
 ```
 
-### Switching TYPO3 version
+Dependencies are installed into `.Build/vendor` (TYPO3 web root:
+`.Build/public`). The extension supports TYPO3 13.4 and 14.3 — see
+[AGENTS.md](AGENTS.md) for the version-switching workflow and all testing
+gotchas. Contribution rules: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The extension supports TYPO3 13.4 and 14.3. Switch the installed TYPO3 version by
-updating composer dependencies (the `-W` flag allows dependency resolution across
-all locked packages):
+Exclude `.Build/public/typo3temp` from IDE indexing — functional tests
+create isolated TYPO3 instances below `typo3temp/var/tests`.
 
-```bash
-# Switch to TYPO3 13
-Build/Scripts/runTests.sh -s composer -- require -W \
-  "typo3/cms-core:^13.4" \
-  "friendsoftypo3/content-blocks:^1.2.3" \
-  "friendsoftypo3/headless:^4.5"
+## License
 
-# Switch to TYPO3 14
-Build/Scripts/runTests.sh -s composer -- require -W \
-  "typo3/cms-core:^14.3" \
-  "friendsoftypo3/content-blocks:^2.0" \
-  "friendsoftypo3/headless:^5.0"
-
-# Restore multi-version constraints in composer.json
-git checkout -- composer.json
-```
-
-`b13/container` is compatible with both versions and does not need to be changed.
-
-**Note:** `composer require` rewrites the version constraints in `composer.json` to the
-resolved versions. Run `git checkout -- composer.json` after switching to restore the
-multi-version constraints (`^13.4 || ^14.3`). The `composer.lock` is in `.gitignore`
-and does not need to be restored.
-
-### Test structure
-
-```
-Tests/
-├── Fixtures/Extensions/test_nb_headless_content_blocks/   # Content Block fixtures
-├── Unit/                                                   # Unit tests (no TYPO3 context)
-└── Functional/                                             # Functional tests (isolated TYPO3 instance)
-```
-
-### IDE: temp directories from indexing
-
-Be sure to exclude the temp directories from indexing in your IDE before starting
-the tests. Functional tests create isolated TYPO3 instances in `typo3temp/var/tests`,
-the DDEV web container uses `.Build/public/typo3temp`:
-
-```
-.Build/public/typo3temp
-```
-
-**PhpStorm**: Right-click the directories → *Mark Directory as* → *Excluded*
-(or *Settings* → *Directories* → add both to *Excluded files*).
-
-**VS Code** (`.vscode/settings.json`):
-
-```json
-{
-    "files.exclude": {
-        "**/.Build/public/typo3temp": true
-    },
-    "search.exclude": {
-        "**/.Build/public/typo3temp": true
-    },
-    "files.watcherExclude": {
-        "**/.Build/public/typo3temp/**": true
-    }
-}
-```
+GPL-2.0-or-later

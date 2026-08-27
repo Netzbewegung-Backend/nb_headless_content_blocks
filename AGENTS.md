@@ -52,9 +52,35 @@ Configuration/
 └── Sets/HeadlessContentBlock/
     ├── setup.typoscript
     └── config.yaml
+
+docs/
+├── README.md                                 # documentation index (Diátaxis)
+├── getting-started.md                        # tutorial: install → include Site Set → verify
+├── troubleshooting.md                        # symptom → cause → fix
+├── concepts/                                 # why it works this way
+│   └── architecture.md
+├── how-to/                                   # task guides (image variants, normalizers, ...)
+├── reference/                                # lookup (JSON contract, normalizers, options)
+└── design/
+    └── IMPROVE_TO_ARRAY.md                   # design record: the ToArray rewrite
 ```
 
 See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
+
+## Documentation Rules
+
+- **Docs change with the code in the same PR/commit** — a behavior change
+  without a docs change is incomplete.
+- **One page = one topic type** (tutorial / how-to / reference / concept),
+  with a first-line purpose statement. The docs index is `docs/README.md`.
+- **Design records** (`docs/design/`) open with a status blockquote
+  (`> Status: IMPLEMENTED|CURRENT|...`) and are historical records — where
+  wording differs from the code, **the code wins**.
+- **Troubleshooting** entries follow **symptom → cause → fix**, the
+  heading is the literal symptom.
+- All shipped content is **English** (American spelling).
+- Before committing docs changes: run `Build/Scripts/checkDocs.sh` (link
+  checker for relative Markdown links and anchors).
 
 ## Core Components
 
@@ -93,6 +119,9 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 ### Git Workflow
 
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
+- New releases/tags: `Build/Scripts/tag-version.sh <x.y.z>` — sets the version in
+  `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
+  and creates the git tag (requires a clean working tree).
 
 ### Language
 
@@ -209,6 +238,8 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
 
 ### Testing Gotchas
 
+- **act basics** (installation, available jobs, matrix invocation):
+  `.github/TEST-GITHUB-WORKFLOWS.md`.
 - **act: run one TYPO3 matrix entry at a time** — `act -j functional_tests` runs all
   matrix entries in parallel. Each job starts 4 docker containers (redis, memcached,
   DB, phpunit) on the shared daemon; `runTests.sh`'s `waitFor()` aborts after ~10s,
@@ -278,7 +309,7 @@ Build/Scripts/runTests.sh -s composer -- require -W \
 Build/Scripts/runTests.sh -s composer -- require -W \
   "typo3/cms-core:^14.3" \
   "friendsoftypo3/content-blocks:^2.0" \
-  "friendsoftypo3/headless:^5.0"
+  "friendsoftypo3/headless:^5.0@RC"
 
 # Restore multi-version constraints in composer.json
 git checkout -- composer.json
