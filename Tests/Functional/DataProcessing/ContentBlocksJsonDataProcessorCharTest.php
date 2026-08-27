@@ -133,6 +133,18 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function dateTimeFormatOptionChangesOutput(): void
+    {
+        $data = $this->processRow(1, processorConfiguration: [
+            'options.' => [
+                'dateTimeFormat' => 'Y',
+            ],
+        ])['data'];
+
+        self::assertSame('2023', $data['my_datetime']);
+    }
+
+    #[Test]
     public function headlessPhpBlock(): void
     {
         self::assertSame([
@@ -200,7 +212,33 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
         ])['data'];
 
         self::assertStringContainsString('_processed_', $data['my_image']['thumbnails']['mobile']);
-        // headless.yaml desktop variant is kept, mobile overridden
+        // headless.yaml desktop variant is kept, mobile overridden (merge)
+        self::assertArrayHasKey('desktop', $data['my_image']['thumbnails']);
+        // TypoScript can add variants that headless.yaml does not define
+        // (proves the override is actually applied, not just vacuously green)
+        self::assertArrayNotHasKey('xl', $data['my_image']['thumbnails']);
+        self::assertSame(
+            $data['my_image']['thumbnails']['desktop'],
+            $this->processRow(10)['data']['my_image']['thumbnails']['desktop']
+        );
+    }
+
+    #[Test]
+    public function fileTestBlockWithTypoScriptProcessingOverrideAddsVariant(): void
+    {
+        $data = $this->processRow(10, processorConfiguration: [
+            'options.' => [
+                'processing.' => [
+                    'my_image.' => [
+                        'xl' => 'width=350c,fileExtension=jpg',
+                    ],
+                ],
+            ],
+        ])['data'];
+
+        self::assertStringContainsString('_processed_', $data['my_image']['thumbnails']['xl']);
+        // headless.yaml variants survive next to the added one
+        self::assertArrayHasKey('mobile', $data['my_image']['thumbnails']);
         self::assertArrayHasKey('desktop', $data['my_image']['thumbnails']);
     }
 

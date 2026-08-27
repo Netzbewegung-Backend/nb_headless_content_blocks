@@ -30,6 +30,20 @@ The JSON output contract is unchanged and frozen by characterization tests.
   records (`ContentBlocksJsonDataProcessorCharTest`).
 - Unknown/unconvertible value types now become `null` with a debug log entry
   instead of being silently dropped.
+- Documentation: structured `docs/` (tutorial, concepts, how-to guides,
+  reference, troubleshooting — see `docs/README.md`), rewritten README,
+  `CONTRIBUTING.md`, and a Markdown link checker
+  (`Build/Scripts/checkDocs.sh`).
+
+### Fixed
+
+- TypoScript processor option `options.processing.<field>.<variant>` now
+  actually applies (the dotted TypoScript keys `processing.`/`my_field.`
+  were not read). Variants merge per name: TypoScript wins over
+  `headless.yaml`, `headless.yaml` variants without a TypoScript
+  counterpart stay.
+- TypoScript processor option `options.dateTimeFormat` now reaches the
+  `DateTimeNormalizer` (the `Context` was built with empty options).
 
 ### Changed
 

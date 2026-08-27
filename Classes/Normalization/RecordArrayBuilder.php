@@ -90,7 +90,8 @@ final class RecordArrayBuilder
                 $key,
                 $decoratedKey,
                 $tcaSchema,
-                $fileProcessing
+                $fileProcessing,
+                $typoScriptOptions
             );
         }
 
@@ -105,6 +106,7 @@ final class RecordArrayBuilder
         ?string $fieldIdentifier,
         ?TcaSchema $tcaSchema,
         array $fileProcessing,
+        array $typoScriptOptions,
     ): mixed {
         if (is_string($value)) {
             return $this->transformStringValue($value, $key, $tcaSchema);
@@ -113,14 +115,14 @@ final class RecordArrayBuilder
         if (is_array($value) && !$this->isJsonField($key, $tcaSchema)) {
             $normalized = [];
             foreach ($value as $itemKey => $item) {
-                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey, $fieldIdentifier, $tcaSchema, $fileProcessing);
+                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey, $fieldIdentifier, $tcaSchema, $fileProcessing, $typoScriptOptions);
             }
             ksort($normalized);
 
             return $normalized;
         }
 
-        $context = $this->createContext($tcaSchema, $fileProcessing);
+        $context = $this->createContext($tcaSchema, $fileProcessing, $typoScriptOptions);
         if ($fieldIdentifier !== null) {
             $context = $context->withCurrentFieldIdentifier($fieldIdentifier);
         }
@@ -185,14 +187,18 @@ final class RecordArrayBuilder
             $processing = $this->headlessYamlLoader->getProcessingForContentBlock($contentBlockName);
         }
 
-        $typoScriptOverride = $typoScriptOptions['processing'] ?? [];
+        // TypoScript hands over keys with the trailing dot ("processing.",
+        // "my_image."); accept both spellings. Variants merge per name:
+        // TypoScript wins over headless.yaml, headless.yaml variants stay.
+        $typoScriptOverride = $typoScriptOptions['processing.'] ?? $typoScriptOptions['processing'] ?? [];
         if (is_array($typoScriptOverride)) {
             foreach ($typoScriptOverride as $fieldIdentifier => $variants) {
                 if (is_array($variants)) {
-                    $processing[(string)$fieldIdentifier] = array_map(
+                    $identifier = rtrim((string)$fieldIdentifier, '.');
+                    $processing[$identifier] = array_map(
                         static fn(mixed $value): string => (string)$value,
                         $variants
-                    );
+                    ) + ($processing[$identifier] ?? []);
                 }
             }
         }
@@ -200,12 +206,12 @@ final class RecordArrayBuilder
         return $processing;
     }
 
-    private function createContext(?TcaSchema $tcaSchema, array $fileProcessing): Context
+    private function createContext(?TcaSchema $tcaSchema, array $fileProcessing, array $typoScriptOptions): Context
     {
         $context = new Context(
             $tcaSchema,
             null,
-            [],
+            $typoScriptOptions,
             $this->eventDispatcher,
             $fileProcessing
         );
