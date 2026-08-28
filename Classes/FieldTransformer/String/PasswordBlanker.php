@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String;
 
 use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerInterface;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\PasswordFieldType;
@@ -20,7 +21,7 @@ final class PasswordBlanker implements FieldValueTransformerInterface
             || $field->getType() === TableColumnType::PASSWORD->value;
     }
 
-    public function transform(string $value, FieldTypeInterface $field): string
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string
     {
         return '';
     }

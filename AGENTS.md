@@ -130,7 +130,11 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 ### Code Changes
 
 - Use `readonly` class declarations (PHP 8.2+)
-- `GeneralUtility::makeInstance()` in Utility classes (no DI)
+- No `GeneralUtility::makeInstance()` / `$GLOBALS['TYPO3_REQUEST']` in `Classes/`
+  — dependencies go through DI; the frontend request and the processor's
+  `ContentObjectRenderer` are threaded through `RecordArrayBuilder` into the
+  normalization `Context` (the only exceptions are static path helpers like
+  `GeneralUtility::getFileAbsFileName()`)
 - `autoconfigure: false` in `Services.yaml`
 
 ### External Dependencies

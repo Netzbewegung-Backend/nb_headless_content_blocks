@@ -8,11 +8,13 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Domain\RecordInterface;
 use TYPO3\CMS\Core\Schema\TcaSchema;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Carries the state of a single normalization run: the current table schema,
- * the PSR-7 request, options forwarded from the DataProcessor (TypoScript
- * "options.") and per-field image processing definitions.
+ * the PSR-7 request (with the frontend TypoScript) and the ContentObjectRenderer
+ * of the originating DataProcessor, options forwarded from the DataProcessor
+ * (TypoScript "options.") and per-field image processing definitions.
  */
 final class Context
 {
@@ -30,6 +32,7 @@ final class Context
         private readonly array $options,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly array $fileProcessing = [],
+        private readonly ?ContentObjectRenderer $contentObjectRenderer = null,
     ) {}
 
     /**
@@ -83,6 +86,11 @@ final class Context
         return $this->request;
     }
 
+    public function getContentObjectRenderer(): ?ContentObjectRenderer
+    {
+        return $this->contentObjectRenderer;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -108,7 +116,7 @@ final class Context
      */
     public function withTcaSchema(?TcaSchema $tcaSchema): self
     {
-        $context = new self($tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing);
+        $context = new self($tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing, $this->contentObjectRenderer);
         $context->setChain($this->chain);
         $context->setRecordBuilder($this->recordBuilder);
 
@@ -128,7 +136,7 @@ final class Context
 
     public function withCurrentFieldIdentifier(string $fieldIdentifier): self
     {
-        $context = new self($this->tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing);
+        $context = new self($this->tcaSchema, $this->request, $this->options, $this->eventDispatcher, $this->fileProcessing, $this->contentObjectRenderer);
         $context->setChain($this->chain);
         $context->setRecordBuilder($this->recordBuilder);
         $context->currentFieldIdentifier = $fieldIdentifier;

@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * DI-wired entry point of the ToArray conversion (Phase 4): converts a
@@ -43,7 +44,7 @@ final class RecordArrayBuilder
      * @param array<string, mixed> $typoScriptOptions processor "options." (TypoScript)
      * @return array<string, mixed>
      */
-    public function build(RecordInterface $record, array $typoScriptOptions = []): array
+    public function build(RecordInterface $record, array $typoScriptOptions = [], ?ContentObjectRenderer $contentObjectRenderer = null): array
     {
         try {
             $array = $record->toArray();
@@ -59,6 +60,7 @@ final class RecordArrayBuilder
         $recordType = $record->getRecordType();
         $tcaSchema = $this->resolveTcaSchema($table, $recordType);
         $fileProcessing = $this->resolveFileProcessing($table, $recordType, $typoScriptOptions);
+        $context = $this->createContext($tcaSchema, $fileProcessing, $typoScriptOptions, $contentObjectRenderer);
 
         $data = [];
         foreach ($array as $key => $value) {
@@ -85,14 +87,7 @@ final class RecordArrayBuilder
                 continue;
             }
 
-            $data[$decoratedKey] = $this->normalizeValue(
-                $value,
-                $key,
-                $decoratedKey,
-                $tcaSchema,
-                $fileProcessing,
-                $typoScriptOptions
-            );
+            $data[$decoratedKey] = $this->normalizeValue($value, $key, $decoratedKey, $context);
         }
 
         ksort($data);
@@ -104,25 +99,22 @@ final class RecordArrayBuilder
         mixed $value,
         int|string $key,
         ?string $fieldIdentifier,
-        ?TcaSchema $tcaSchema,
-        array $fileProcessing,
-        array $typoScriptOptions,
+        Context $context,
     ): mixed {
         if (is_string($value)) {
-            return $this->transformStringValue($value, $key, $tcaSchema);
+            return $this->transformStringValue($value, $key, $context);
         }
 
-        if (is_array($value) && !$this->isJsonField($key, $tcaSchema)) {
+        if (is_array($value) && !$this->isJsonField($key, $context->getTcaSchema())) {
             $normalized = [];
             foreach ($value as $itemKey => $item) {
-                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey, $fieldIdentifier, $tcaSchema, $fileProcessing, $typoScriptOptions);
+                $normalized[$itemKey] = $this->normalizeValue($item, $itemKey, $fieldIdentifier, $context);
             }
             ksort($normalized);
 
             return $normalized;
         }
 
-        $context = $this->createContext($tcaSchema, $fileProcessing, $typoScriptOptions);
         if ($fieldIdentifier !== null) {
             $context = $context->withCurrentFieldIdentifier($fieldIdentifier);
         }
@@ -130,15 +122,15 @@ final class RecordArrayBuilder
         return $this->normalizerChain->normalize($value, $context);
     }
 
-    private function transformStringValue(string $value, int|string $key, ?TcaSchema $tcaSchema): string
+    private function transformStringValue(string $value, int|string $key, Context $context): string
     {
-        $field = $this->getSchemaField($key, $tcaSchema);
+        $field = $this->getSchemaField($key, $context->getTcaSchema());
 
         if ($field === null) {
             return $value;
         }
 
-        return $this->fieldValueTransformerChain->transform($value, $field);
+        return $this->fieldValueTransformerChain->transform($value, $field, $context);
     }
 
     private function isJsonField(int|string $key, ?TcaSchema $tcaSchema): bool
@@ -206,17 +198,20 @@ final class RecordArrayBuilder
         return $processing;
     }
 
-    private function createContext(?TcaSchema $tcaSchema, array $fileProcessing, array $typoScriptOptions): Context
+    private function createContext(?TcaSchema $tcaSchema, array $fileProcessing, array $typoScriptOptions, ?ContentObjectRenderer $contentObjectRenderer): Context
     {
         $context = new Context(
             $tcaSchema,
-            null,
+            $contentObjectRenderer?->getRequest(),
             $typoScriptOptions,
             $this->eventDispatcher,
-            $fileProcessing
+            $fileProcessing,
+            $contentObjectRenderer
         );
         $context->setChain($this->normalizerChain);
-        $context->setRecordBuilder(fn(RecordInterface $record): array => $this->build($record));
+        $context->setRecordBuilder(
+            fn(RecordInterface $record, array $options = []): array => $this->build($record, $options, $contentObjectRenderer)
+        );
 
         return $context;
     }

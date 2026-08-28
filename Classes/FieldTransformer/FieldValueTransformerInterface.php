@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\FieldTransformer;
 
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 
 /**
@@ -14,5 +15,5 @@ interface FieldValueTransformerInterface
 {
     public function supports(FieldTypeInterface $field): bool;
 
-    public function transform(string $value, FieldTypeInterface $field): string;
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string;
 }

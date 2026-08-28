@@ -53,7 +53,8 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
         $data = $this->recordArrayBuilder->build(
             $resolveRecord,
-            $this->resolveTypoScriptOptions($processorConfiguration)
+            $this->resolveTypoScriptOptions($processorConfiguration),
+            $contentObjectRenderer
         );
 
         $data = $this->processDataWithLocalHeadlessPhp($data, $contentTypeDefinition);

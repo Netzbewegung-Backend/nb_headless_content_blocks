@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String;
 
 use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\TextFieldType;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Rich text areas are rendered through lib.parseFunc_RTE, plain text areas
@@ -22,12 +20,14 @@ final class RichtextParser implements FieldValueTransformerInterface
         return $field instanceof TextFieldType && $field->isRichText();
     }
 
-    public function transform(string $value, FieldTypeInterface $field): string
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string
     {
-        $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
-        if ($request instanceof ServerRequestInterface) {
-            $contentObject->setRequest($request);
+        $contentObject = $context->getContentObjectRenderer();
+
+        if ($contentObject === null) {
+            // Without a ContentObjectRenderer (container-less usage) there is
+            // no frontend TypoScript to parse the value with.
+            return $value;
         }
 
         return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');

@@ -105,14 +105,14 @@ final class HeadlessYamlLoader
     private function getContentBlockExtPath(string $contentBlockName): ?string
     {
         // ContentBlockRegistry is optional to keep the loader usable in
-        // container-less unit tests.
-        $contentBlockRegistry = $this->contentBlockRegistry
-            ?? GeneralUtility::makeInstance(ContentBlockRegistry::class);
-
-        if (!$contentBlockRegistry->hasContentBlock($contentBlockName)) {
+        // container-less contexts (unit tests); without it, headless.yaml
+        // support is simply disabled.
+        if ($this->contentBlockRegistry === null
+            || !$this->contentBlockRegistry->hasContentBlock($contentBlockName)
+        ) {
             return null;
         }
 
-        return $contentBlockRegistry->getContentBlockExtPath($contentBlockName);
+        return $this->contentBlockRegistry->getContentBlockExtPath($contentBlockName);
     }
 }

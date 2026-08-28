@@ -29,6 +29,7 @@ declare(strict_types=1);
 namespace MyVendor\MyExtension\FieldTransformer;
 
 use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerInterface;
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 
@@ -45,12 +46,18 @@ final class ColorNameNormalizer implements FieldValueTransformerInterface
         return $field->getType() === TableColumnType::COLOR->value;
     }
 
-    public function transform(string $value, FieldTypeInterface $field): string
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string
     {
         return self::COLOR_NAMES[strtolower($value)] ?? $value;
     }
 }
 ```
+
+The `Context` carries the state of the current normalization run: the
+frontend request (with its TypoScript) and the `ContentObjectRenderer` of
+the originating DataProcessor, plus the processor options — the built-in
+`RichtextParser` uses the `ContentObjectRenderer` to parse values through
+`lib.parseFunc_RTE`.
 
 ## Register the service
 

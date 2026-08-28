@@ -52,7 +52,7 @@ and renders each through the same `RecordArrayBuilder`.
 | `FieldTransformer/*` | String shaping driven by the field's schema type (password → `""`, richtext → `parseFunc_RTE`) |
 | `ContentBlocks/ContentBlocksIdentifierMapper` | Column → field identifier mapping; the only ContentBlocks definition still in the conversion path |
 | `ContentBlocks/HeadlessYamlLoader` | Loads the optional per-block `headless.yaml` (declarative image variants), with caching |
-| `Normalization/Context` | Per-run state: current `TcaSchema`, request, TypoScript `options.`, per-field image processing; lets normalizers recurse without circular DI |
+| `Normalization/Context` | Per-run state: current `TcaSchema`, request and `ContentObjectRenderer` of the originating DataProcessor, TypoScript `options.`, per-field image processing; lets normalizers recurse without circular DI |
 
 ## Why normalizers (and not one big converter)
 

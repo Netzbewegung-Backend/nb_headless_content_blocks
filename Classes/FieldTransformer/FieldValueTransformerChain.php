@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\FieldTransformer;
 
+use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 
 /**
@@ -29,11 +30,11 @@ final class FieldValueTransformerChain implements FieldValueTransformerInterface
         return false;
     }
 
-    public function transform(string $value, FieldTypeInterface $field): string
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string
     {
         foreach ($this->transformers as $transformer) {
             if ($transformer->supports($field)) {
-                return $transformer->transform($value, $field);
+                return $transformer->transform($value, $field, $context);
             }
         }
 

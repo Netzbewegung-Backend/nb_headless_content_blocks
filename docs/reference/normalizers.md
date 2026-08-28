@@ -44,7 +44,7 @@ JSON. First `supports() === true` wins.
 interface FieldValueTransformerInterface
 {
     public function supports(FieldTypeInterface $field): bool;
-    public function transform(string $value, FieldTypeInterface $field): string;
+    public function transform(string $value, FieldTypeInterface $field, Context $context): string;
 }
 ```
 
@@ -62,7 +62,8 @@ Built-in transformers (`Classes/FieldTransformer/String/`):
 | Member | Purpose |
 |---|---|
 | `getTcaSchema()` | current table schema (sub-schema per record type) |
-| `getRequest()` | PSR-7 request (may be `null` in CLI/unit contexts) |
+| `getRequest()` | PSR-7 request of the originating DataProcessor (may be `null` in CLI/unit contexts) |
+| `getContentObjectRenderer()` | the processor's `ContentObjectRenderer` (may be `null` in CLI/unit contexts) |
 | `getOptions()` / `getOption()` | TypoScript `options.` of the processor |
 | `getFileProcessingForCurrentField()` | image variant definitions of the field being normalized |
 | `getChain()` | the normalizer chain — for recursion without circular DI |
