@@ -6,7 +6,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\ContentBlocks;
 
 use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -27,7 +27,7 @@ final class HeadlessYamlLoader
     private const FILENAME = 'headless.yaml';
 
     public function __construct(
-        private readonly ?FrontendInterface $cache = null,
+        private readonly ?PhpFrontend $cache = null,
         private readonly ?ContentBlockRegistry $contentBlockRegistry = null,
     ) {}
 
@@ -64,15 +64,30 @@ final class HeadlessYamlLoader
      */
     private function loadConfig(string $contentBlockName): array
     {
-        $cacheIdentifier = 'headless_yaml_' . md5($contentBlockName);
-        if ($this->cache !== null && $this->cache->has($cacheIdentifier)) {
-            return $this->cache->get($cacheIdentifier);
+        $filePath = $this->resolveFilePath($contentBlockName);
+        if ($filePath === '') {
+            return [];
         }
 
-        $config = $this->parseFile($contentBlockName);
+        // The file modification time is part of the cache identifier, so a
+        // changed headless.yaml is picked up automatically (the entry itself
+        // lives until the TYPO3 caches are flushed).
+        $cacheIdentifier = 'headless_yaml_' . md5($contentBlockName . '|' . (string)filemtime($filePath));
+        if ($this->cache !== null && $this->cache->has($cacheIdentifier)) {
+            // PhpFrontend::require() evaluates the cached "return array(...)"
+            // source (get() would return the raw source string). Unlike
+            // requireOnce(), require() also works for repeated access to the
+            // same entry within one request.
+            $cached = $this->cache->require($cacheIdentifier);
+
+            return is_array($cached) ? $cached : [];
+        }
+
+        $config = $this->parseFile($filePath);
 
         if ($this->cache !== null) {
-            $this->cache->set($cacheIdentifier, $config);
+            // PhpFrontend stores PHP source code, not values
+            $this->cache->set($cacheIdentifier, 'return ' . var_export($config, true) . ';');
         }
 
         return $config;
@@ -81,18 +96,8 @@ final class HeadlessYamlLoader
     /**
      * @return array<string, mixed>
      */
-    private function parseFile(string $contentBlockName): array
+    private function parseFile(string $absolutePath): array
     {
-        $extPath = $this->getContentBlockExtPath($contentBlockName);
-        if ($extPath === null) {
-            return [];
-        }
-
-        $absolutePath = GeneralUtility::getFileAbsFileName($extPath . '/' . self::FILENAME);
-        if ($absolutePath === '' || !is_file($absolutePath)) {
-            return [];
-        }
-
         try {
             $parsed = Yaml::parseFile($absolutePath);
         } catch (\Throwable) {
@@ -102,7 +107,7 @@ final class HeadlessYamlLoader
         return is_array($parsed) ? $parsed : [];
     }
 
-    private function getContentBlockExtPath(string $contentBlockName): ?string
+    private function resolveFilePath(string $contentBlockName): string
     {
         // ContentBlockRegistry is optional to keep the loader usable in
         // container-less contexts (unit tests); without it, headless.yaml
@@ -110,9 +115,16 @@ final class HeadlessYamlLoader
         if ($this->contentBlockRegistry === null
             || !$this->contentBlockRegistry->hasContentBlock($contentBlockName)
         ) {
-            return null;
+            return '';
         }
 
-        return $this->contentBlockRegistry->getContentBlockExtPath($contentBlockName);
+        $extPath = $this->contentBlockRegistry->getContentBlockExtPath($contentBlockName);
+        $absolutePath = GeneralUtility::getFileAbsFileName($extPath . '/' . self::FILENAME);
+
+        if ($absolutePath === '' || !is_file($absolutePath)) {
+            return '';
+        }
+
+        return $absolutePath;
     }
 }

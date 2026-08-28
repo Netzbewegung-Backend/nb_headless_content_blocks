@@ -48,7 +48,7 @@ services:
   Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper: ~
   Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader:
     arguments:
-      $cache: '@cache.runtime'
+      $cache: '@cache.core'
   Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\IdentifierMapperInterface:
     alias: Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper
 
