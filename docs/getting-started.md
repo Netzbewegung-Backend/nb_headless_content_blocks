@@ -24,7 +24,7 @@ Then include the extension's Site Set in your site package's
 `config/sites/<site>/config.yaml`:
 
 ```yaml
-sets:
+dependencies:
   - nb-headless-content-blocks/headless-content-blocks
 ```
 

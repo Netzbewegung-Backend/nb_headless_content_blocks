@@ -178,14 +178,20 @@ Tests/
 │       └── Normalizer/
 │           └── TypolinkNormalizerTest.php
 ├── Functional/
-│   └── DataProcessing/
-│       ├── ContentBlocksJsonDataProcessorTest.php
-│       ├── ContentBlocksJsonDataProcessorCharTest.php  # frozen JSON contract
-│       ├── ContainerJsonDataProcessorTest.php
-│       └── Fixtures/
-│           ├── DataSet/ (CSV fixtures)
-│           └── Files/ (test images)
+│   ├── DataProcessing/
+│   │   ├── ContentBlocksJsonDataProcessorTest.php
+│   │   ├── ContentBlocksJsonDataProcessorCharTest.php  # frozen JSON contract
+│   │   ├── ContainerJsonDataProcessorTest.php
+│   │   └── Fixtures/
+│   │       ├── DataSet/ (CSV fixtures)
+│   │       └── Files/ (test images)
+│   └── Frontend/
+│       ├── ContentBlocksJsonResponseTest.php           # e2e: full frontend request,
+│       │                                               # headless page JSON frozen (issue #18)
+│       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/
+    ├── Configuration/Sets/TestFrontend/                 # fixture site set: maps test
+    │                                                   # blocks onto lib.contentBlock
     ├── ContentBlocks/ContentElements/
     │   ├── simple/       # Text, Number, DateTime, Select, Password, Json, Link, Category, Collection
     │   ├── headless/     # headless.php processing
@@ -267,6 +273,13 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
 - **Unit Tests**: `RecordArrayBuilder`, `TypolinkNormalizer`, event — pure, container-less
 - **Functional Tests**: DataProcessors with TYPO3 context (InMemory-PDO) + characterization
   tests (`ContentBlocksJsonDataProcessorCharTest`) freezing the complete JSON contract
+- **E2E Tests** (`Tests/Functional/Frontend/`): full frontend request against a headless
+  site (site config + fixture site set `test_nb_headless_content_blocks/test-frontend`,
+  which depends on `friendsoftypo3/headless` and this extension's set) via
+  `executeFrontendSubRequest()`; freezes the complete headless page JSON response
+  (`ContentBlocksJsonResponseTest`, issue #18). Runs on sqlite; absolute file URLs are
+  normalized to `https://` across TYPO3 13/14 by setting `$_SERVER['HTTPS']`
+  (TYPO3 13 builds hosts via `getIndpEnv()`, TYPO3 14 via the request object)
 
 ## Development
 

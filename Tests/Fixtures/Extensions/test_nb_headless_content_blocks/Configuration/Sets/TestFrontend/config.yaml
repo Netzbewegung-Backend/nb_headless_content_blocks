@@ -1,0 +1,5 @@
+name: test_nb_headless_content_blocks/test-frontend
+label: Test frontend (e2e)
+dependencies:
+  - friendsoftypo3/headless
+  - nb-headless-content-blocks/headless-content-blocks

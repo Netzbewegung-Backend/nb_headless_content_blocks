@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String;
 
 use Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\FieldValueTransformerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\TextFieldType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,6 +25,10 @@ final class RichtextParser implements FieldValueTransformerInterface
     public function transform(string $value, FieldTypeInterface $field): string
     {
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if ($request instanceof ServerRequestInterface) {
+            $contentObject->setRequest($request);
+        }
 
         return $contentObject->parseFunc($value, null, '< lib.parseFunc_RTE');
     }

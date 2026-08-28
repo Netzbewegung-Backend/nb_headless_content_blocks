@@ -1,0 +1,20 @@
+# Emulates a headless site package: all test Content Blocks are mapped
+# onto lib.contentBlock, which wraps EXT:headless' lib.contentElement
+# and adds the "data" field filled by the nb-content-blocks-json processor.
+
+tt_content {
+    test_simple =< lib.contentBlock
+    test_headless =< lib.contentBlock
+    test_filetest =< lib.contentBlock
+    test_textarea =< lib.contentBlock
+    test_coloremailslug =< lib.contentBlock
+    test_collectiontest =< lib.contentBlock
+    test_richtext =< lib.contentBlock
+}
+
+# The test instance has no fluid_styled_content, so provide a minimal
+# RTE parsing setup (mirrors the one used in the characterization tests).
+lib.parseFunc_RTE {
+    allowTags = p,strong
+    htmlSanitize = 0
+}

@@ -63,6 +63,6 @@ The extension ships the Site Set
 wired). Include it in your site's `config.yaml`:
 
 ```yaml
-sets:
+dependencies:
   - nb-headless-content-blocks/headless-content-blocks
 ```
