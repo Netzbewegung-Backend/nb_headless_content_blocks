@@ -1,11 +1,11 @@
 {
   "name": "netzbewegung/nb-headless-content-blocks",
   "type": "typo3-cms-extension",
-  "description": "Connects together EXT:headless and EXT:content_block",
+  "description": "Connects together EXT:headless and EXT:content_blocks",
   "keywords": [
     "TYPO3",
     "headless",
-    "content_block",
+    "content_blocks",
     "json"
   ],
   "license": [

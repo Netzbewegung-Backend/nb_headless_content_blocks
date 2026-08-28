@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\Normalization;
 
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
  * Last resort for value types no other normalizer supports: emits null
  * (never breaks the JSON response) and logs the dropped type for debugging.
  */
-final class UnknownTypeNormalizer implements NormalizerInterface
+final class UnknownTypeNormalizer implements NormalizerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

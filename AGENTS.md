@@ -102,11 +102,6 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 - `ContentDataProcessor`
 
 **ContainerJsonDataProcessor:**
-- `TableDefinitionCollection`
-- `RecordFactory`
-- `ContentBlockDataDecorator`
-- `ContentTypeResolver`
-- `ContentBlockRegistry`
 - `ContainerProcessor` (b13/container)
 
 ### PSR-14 Event

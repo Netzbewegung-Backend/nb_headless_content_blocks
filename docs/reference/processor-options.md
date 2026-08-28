@@ -53,7 +53,10 @@ Used inside container Content Types (see
 |---|---|---|---|
 | `colPos` | int | — | container column whose children are fetched (e.g. `201`) |
 | `as` | string | — | key for the children array |
-| `options.` | array | — | same options as `nb-content-blocks-json` |
+
+Children are rendered through their own `tt_content.<CType>` mapping —
+their conversion options (`options.processing`, `options.dateTimeFormat`)
+are therefore configured there, not on `nb-container-json`.
 
 ## Site Set
 

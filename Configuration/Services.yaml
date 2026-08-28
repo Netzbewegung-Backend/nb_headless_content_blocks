@@ -40,8 +40,15 @@ services:
       $normalizers: !tagged_iterator nb_headless.normalizer
       $unknownTypeNormalizer: '@Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer'
 
+  # autoconfigure is disabled, so the core LoggerAwarePass needs the tag
+  # to inject the logger (channel = class name)
+  Netzbewegung\NbHeadlessContentBlocks\Normalization\UnknownTypeNormalizer:
+    tags: ['psr.logger_aware']
+
   Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper: ~
-  Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader: ~
+  Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader:
+    arguments:
+      $cache: '@cache.runtime'
   Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\IdentifierMapperInterface:
     alias: Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\ContentBlocksIdentifierMapper
 

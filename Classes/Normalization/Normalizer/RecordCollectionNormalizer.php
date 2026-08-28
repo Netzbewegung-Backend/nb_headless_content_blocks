@@ -17,7 +17,7 @@ use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 final class RecordCollectionNormalizer implements NormalizerInterface
 {
     public function __construct(
-        private readonly ?TcaSchemaFactory $tcaSchemaFactory,
+        private readonly TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function supports(mixed $value, Context $context): bool
@@ -41,7 +41,7 @@ final class RecordCollectionNormalizer implements NormalizerInterface
                 continue;
             }
 
-            $recordContext = $this->tcaSchemaFactory !== null && $this->tcaSchemaFactory->has($recordMainType)
+            $recordContext = $this->tcaSchemaFactory->has($recordMainType)
                 ? $context->withTcaSchema($this->tcaSchemaFactory->get($recordMainType))
                 : $context->withTcaSchema(null);
 

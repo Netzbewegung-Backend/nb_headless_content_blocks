@@ -126,7 +126,9 @@ appear twice: once in the page's content array and once in their column.
 
 ## Options
 
-The processor accepts the same options as `nb-content-blocks-json`
-(`as`, `options.processing`, `options.dateTimeFormat` — see
-[Processor options](../reference/processor-options.md)) plus `colPos`
-(container column to fetch, required).
+The processor accepts `colPos` (container column to fetch, required) and
+`as` (key of the children array). Children are rendered through their own
+`tt_content.<CType>` mapping, so their conversion options
+([processor options](../reference/processor-options.md) like
+`options.processing` or `options.dateTimeFormat`) are configured there,
+not on `nb-container-json`.
