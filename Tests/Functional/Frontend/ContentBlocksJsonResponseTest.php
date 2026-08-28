@@ -55,6 +55,8 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/rich_collection_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/richtext_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_richtext_link.csv');
+        $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/folder_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/flexform_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_container.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_container_block.csv');
         $this->writeSiteConfiguration();
@@ -241,6 +243,20 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                 ],
                 'right' => [
                     $this->containerChild(82, 212, 'ChildBlockRight', 'Block right child content'),
+                ],
+            ]),
+            $this->contentElement(90, 'test_foldertest', [
+                'header' => 'HeaderFolder',
+                'my_folder' => [
+                    '/fileadmin/test-folder/',
+                ],
+            ]),
+            $this->contentElement(91, 'test_flexformtest', [
+                'header' => 'HeaderFlexform',
+                'my_flexform' => [
+                    'sDEF' => [
+                        'my_text' => 'FlexValue',
+                    ],
                 ],
             ]),
         ], $json['content']['colPos0']);

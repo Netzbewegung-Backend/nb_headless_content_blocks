@@ -1,0 +1,7 @@
+name: test/foldertest
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_folder
+    type: Folder

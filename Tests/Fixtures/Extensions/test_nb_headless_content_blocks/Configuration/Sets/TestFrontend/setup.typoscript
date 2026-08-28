@@ -11,6 +11,8 @@ tt_content {
     test_collectiontest =< lib.contentBlock
     test_richtext =< lib.contentBlock
     test_containerblock =< lib.contentBlock
+    test_foldertest =< lib.contentBlock
+    test_flexformtest =< lib.contentBlock
 }
 
 # Container (b13/container): children columns via nb-container-json,

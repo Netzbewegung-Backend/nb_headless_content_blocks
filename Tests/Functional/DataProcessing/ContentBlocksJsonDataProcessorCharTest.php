@@ -43,6 +43,8 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/richtext_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/cropped_file_reference_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/non_content_block_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/folder_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/flexform_content_element.csv');
     }
 
     #[Test]
@@ -312,6 +314,30 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
         $result = $this->processRow(70);
 
         self::assertInstanceOf(\TYPO3\CMS\Core\Domain\Record::class, $result['data']);
+    }
+
+    #[Test]
+    public function folderBlock(): void
+    {
+        self::assertSame([
+            'header' => 'HeaderFolder',
+            'my_folder' => [
+                '/fileadmin/test-folder/',
+            ],
+        ], $this->processRow(90)['data']);
+    }
+
+    #[Test]
+    public function flexformBlock(): void
+    {
+        self::assertSame([
+            'header' => 'HeaderFlexform',
+            'my_flexform' => [
+                'sDEF' => [
+                    'my_text' => 'FlexValue',
+                ],
+            ],
+        ], $this->processRow(91)['data']);
     }
 
     /**

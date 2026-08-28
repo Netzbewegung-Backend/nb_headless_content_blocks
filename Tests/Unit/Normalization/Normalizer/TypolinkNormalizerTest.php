@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\LinkHandling\TypolinkParameter;
 use TYPO3\CMS\Frontend\Typolink\LinkFactory;
 use TYPO3\CMS\Frontend\Typolink\LinkResult;
+use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class TypolinkNormalizerTest extends UnitTestCase
@@ -50,6 +51,26 @@ final class TypolinkNormalizerTest extends UnitTestCase
         self::assertSame('https://example.com', $result['title']);
         self::assertSame(['parameter' => 'https://example.com'], $result['config']);
         self::assertSame(['href' => 'https://example.com'], $result['attr']);
+    }
+
+    public function testUnresolvableLinkReturnsErrorShape(): void
+    {
+        $linkFactory = $this->createLinkFactory();
+        $linkFactory->method('createUri')->willThrowException(
+            new UnableToLinkException('Could not link', 123, null, 't3://page?uid=999')
+        );
+
+        $subject = new TypolinkNormalizer($linkFactory, $this->createTypoLinkCodecService());
+
+        $result = $subject->normalize(new TypolinkParameter('t3://page?uid=999'), $this->createContext());
+
+        self::assertSame('', $result['url']);
+        self::assertSame('', $result['target']);
+        self::assertSame('', $result['type']);
+        self::assertSame('', $result['title']);
+        self::assertSame([], $result['config']);
+        self::assertSame([], $result['attr']);
+        self::assertSame('Could not link', $result['__errorMessage']);
     }
 
     private function createLinkFactory(): LinkFactory&MockObject
