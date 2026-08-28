@@ -1,3 +1,4 @@
 "pages"
 ,"uid","pid","deleted","perms_everybody","hidden","doktype","title","slug","tstamp","crdate"
 ,1,0,0,255,0,1,"E2E Test Page","/",1697810925,1697810914
+,2,1,0,255,0,1,"Link Target","/link-target",1697810925,1697810914

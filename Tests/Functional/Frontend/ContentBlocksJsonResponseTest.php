@@ -54,6 +54,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/color_email_slug_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/rich_collection_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/richtext_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_richtext_link.csv');
         $this->writeSiteConfiguration();
 
         // EXT:headless selects tt_content ordered by "sorting" only. Give the
@@ -200,6 +201,12 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
             $this->contentElement(60, 'test_richtext', [
                 'header' => 'HeaderRichtext',
                 'my_richtext' => '<p>This is <strong>rich</strong> text</p>',
+            ]),
+            $this->contentElement(61, 'test_richtext', [
+                'header' => 'HeaderRichtextLink',
+                // t3:// link URI from a real production record, resolved to
+                // the target page URL by parseFunc's a-tag typolink handler
+                'my_richtext' => '<p>Test Test Test <a href="/link-target">Link zur Projekten</a> Test Test Test</p>',
             ]),
         ], $json['content']['colPos0']);
     }

@@ -14,7 +14,20 @@ tt_content {
 
 # The test instance has no fluid_styled_content, so provide a minimal
 # RTE parsing setup (mirrors the one used in the characterization tests).
+# The "a" tag handler resolves t3:// link URIs (like EXT:headless'
+# lib.parseFunc_links) so richtext links point to real page URLs.
 lib.parseFunc_RTE {
-    allowTags = p,strong
+    allowTags = p,strong,a
     htmlSanitize = 0
+    tags {
+        a = TEXT
+        a {
+            current = 1
+            typolink {
+                parameter.data = parameters : href
+                target.data = parameters : target
+                extTarget.data = parameters : target
+            }
+        }
+    }
 }
