@@ -1,0 +1,10 @@
+name: test/yamledges
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_text
+    type: Text
+  - identifier: my_unprocessed_image
+    type: File
+    relationship: oneToOne

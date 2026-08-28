@@ -14,6 +14,12 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 final class UnknownTypeNormalizerTest extends UnitTestCase
 {
     #[Test]
+    public function supportsEverything(): void
+    {
+        self::assertTrue((new UnknownTypeNormalizer())->supports(new \stdClass(), $this->createContext()));
+    }
+
+    #[Test]
     public function normalizeReturnsNullForUnsupportedValue(): void
     {
         $subject = new UnknownTypeNormalizer();

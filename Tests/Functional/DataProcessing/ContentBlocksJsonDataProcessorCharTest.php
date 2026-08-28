@@ -45,6 +45,8 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/non_content_block_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/folder_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/flexform_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/yamledges_content_element.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/yamlbroken_content_element.csv');
     }
 
     #[Test]
@@ -338,6 +340,31 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
                 ],
             ],
         ], $this->processRow(91)['data']);
+    }
+
+    #[Test]
+    public function yamlEdgesBlock(): void
+    {
+        $data = $this->processRow(92)['data'];
+
+        self::assertSame('HeaderYamlEdges', $data['header']);
+        self::assertSame('YamlEdgesText', $data['my_text']);
+
+        // image without processing definition: base contract without thumbnails
+        self::assertSame(5, $data['my_unprocessed_image']['id']);
+        self::assertStringEndsWith('/fileadmin/test-image.jpg', $data['my_unprocessed_image']['publicUrl']);
+        self::assertArrayNotHasKey('thumbnails', $data['my_unprocessed_image']);
+    }
+
+    #[Test]
+    public function brokenYamlBlockStillRenders(): void
+    {
+        // an unparsable headless.yaml must never break the JSON rendering;
+        // image processing definitions are simply ignored
+        self::assertSame([
+            'header' => 'HeaderYamlBroken',
+            'my_text' => 'YamlBrokenText',
+        ], $this->processRow(93)['data']);
     }
 
     /**
