@@ -55,6 +55,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/rich_collection_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/richtext_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_richtext_link.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_container.csv');
         $this->writeSiteConfiguration();
 
         // EXT:headless selects tt_content ordered by "sorting" only. Give the
@@ -208,6 +209,27 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                 // the target page URL by parseFunc's a-tag typolink handler
                 'my_richtext' => '<p>Test Test Test <a href="/link-target">Link zur Projekten</a> Test Test Test</p>',
             ]),
+            // b13/container element: children columns (nb-container-json)
+            // alongside the headless wrapper, children kept out of the
+            // regular page content by the colPos exclusion in lib.content
+            [
+                'id' => 70,
+                'type' => 'test_2cols_container',
+                'colPos' => 0,
+                'categories' => '',
+                'appearance' => [
+                    'layout' => 'default',
+                    'frameClass' => 'default',
+                    'spaceBefore' => '',
+                    'spaceAfter' => '',
+                ],
+                'left' => [
+                    $this->containerChild(71, 201, 'ChildLeft', 'Left child content'),
+                ],
+                'right' => [
+                    $this->containerChild(72, 202, 'ChildRight', 'Right child content'),
+                ],
+            ],
         ], $json['content']['colPos0']);
     }
 
@@ -231,6 +253,32 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                 'REMOTE_ADDR' => '127.0.0.1',
             ])
             ->withPageId(1);
+    }
+
+    /**
+     * A container child rendered through lib.contentBlock (full headless
+     * wrapper + data), nested in the container's column.
+     *
+     * @return array<string, mixed>
+     */
+    private function containerChild(int $id, int $colPos, string $header, string $textarea): array
+    {
+        return [
+            'id' => $id,
+            'type' => 'test_textarea',
+            'colPos' => $colPos,
+            'categories' => '',
+            'appearance' => [
+                'layout' => 'default',
+                'frameClass' => 'default',
+                'spaceBefore' => '',
+                'spaceAfter' => '',
+            ],
+            'data' => [
+                'header' => $header,
+                'my_textarea' => $textarea,
+            ],
+        ];
     }
 
     /**

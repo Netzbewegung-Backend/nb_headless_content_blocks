@@ -12,6 +12,36 @@ tt_content {
     test_richtext =< lib.contentBlock
 }
 
+# Container (b13/container): children columns via nb-container-json,
+# children are kept out of the regular page content query
+lib.content.select.where = colPos NOT IN (201, 202)
+
+tt_content.test_2cols_container =< lib.contentElement
+tt_content.test_2cols_container {
+    fields {
+        left = TEXT
+        left {
+            dataProcessing {
+                10 = nb-container-json
+                10 {
+                    colPos = 201
+                    as = left
+                }
+            }
+        }
+        right = TEXT
+        right {
+            dataProcessing {
+                10 = nb-container-json
+                10 {
+                    colPos = 202
+                    as = right
+                }
+            }
+        }
+    }
+}
+
 # The test instance has no fluid_styled_content, so provide a minimal
 # RTE parsing setup (mirrors the one used in the characterization tests).
 # The "a" tag handler resolves t3:// link URIs (like EXT:headless'
