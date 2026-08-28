@@ -56,6 +56,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/richtext_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_richtext_link.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_container.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_container_block.csv');
         $this->writeSiteConfiguration();
 
         // EXT:headless selects tt_content ordered by "sorting" only. Give the
@@ -230,6 +231,18 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                     $this->containerChild(72, 202, 'ChildRight', 'Right child content'),
                 ],
             ],
+            // Container as Content Block (docs variant 2, production pattern):
+            // own fields AND the children columns nested inside "data"
+            $this->contentElement(80, 'test_containerblock', [
+                'header' => 'Container Block',
+                'my_text' => 'Own container data',
+                'left' => [
+                    $this->containerChild(81, 211, 'ChildBlockLeft', 'Block left child content'),
+                ],
+                'right' => [
+                    $this->containerChild(82, 212, 'ChildBlockRight', 'Block right child content'),
+                ],
+            ]),
         ], $json['content']['colPos0']);
     }
 

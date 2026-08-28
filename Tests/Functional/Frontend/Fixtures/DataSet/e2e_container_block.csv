@@ -1,0 +1,5 @@
+"tt_content"
+,"uid","pid","header","test_containerblock_my_text","test_textarea_my_textarea","colPos","tx_container_parent","CType","tstamp","crdate"
+,80,1,"Container Block","Own container data","",0,0,"test_containerblock",1697810925,1697810914
+,81,1,"ChildBlockLeft","","Block left child content",211,80,"test_textarea",1697810925,1697810914
+,82,1,"ChildBlockRight","","Block right child content",212,80,"test_textarea",1697810925,1697810914

@@ -17,3 +17,21 @@ defined('TYPO3') or die();
         ]
     )
 );
+
+// Container that is a Content Block at the same time (production pattern:
+// container content blocks with the columns nested inside "data").
+// Registered WITHOUT Registry::configureContainer(), because that would
+// overwrite the Content Block's "showitem" (and thereby its fields in the
+// resolved record); writing containerConfiguration directly keeps both.
+$containerConfigurationBlock = new \B13\Container\Tca\ContainerConfiguration(
+    'test_containerblock',
+    'Container Content Block',
+    'Container registered as Content Block for functional tests',
+    [
+        [
+            ['name' => 'left', 'colPos' => 211],
+            ['name' => 'right', 'colPos' => 212],
+        ],
+    ]
+);
+$GLOBALS['TCA']['tt_content']['containerConfiguration']['test_containerblock'] = $containerConfigurationBlock->toArray();

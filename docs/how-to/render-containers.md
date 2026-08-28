@@ -94,6 +94,30 @@ and renders each child through the same conversion as
 `nb-content-blocks-json` — field identifiers as keys, same
 [JSON contract](../reference/json-contract.md).
 
+Both variants are covered end-to-end by
+`Tests/Functional/Frontend/ContentBlocksJsonResponseTest.php`.
+
+## Container as Content Block (variant 2): keep your own fields
+
+When the container itself is a Content Block (variant 2), do **not**
+register it with `Registry::configureContainer()`: b13/container would
+overwrite the `types[<cType>]['showitem']` of the Content Block, and the
+resolved record (and thereby `data`) would lose the Content Block's own
+fields. Write the `containerConfiguration` directly into TCA instead —
+this keeps the Content Block's showitem while b13/container still
+recognizes the container:
+
+```php
+$configuration = new \B13\Container\Tca\ContainerConfiguration(
+    'vendor_mycontainer',
+    'My Container',
+    '',
+    [[['name' => 'main', 'colPos' => 201]]]
+);
+$GLOBALS['TCA']['tt_content']['containerConfiguration']['vendor_mycontainer']
+    = $configuration->toArray();
+```
+
 ## The `colPos` exclusion matters
 
 `lib.content.select.where = colPos NOT IN (201, 202)` keeps the container

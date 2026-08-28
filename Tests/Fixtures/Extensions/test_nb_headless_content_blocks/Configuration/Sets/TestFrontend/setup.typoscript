@@ -10,11 +10,12 @@ tt_content {
     test_coloremailslug =< lib.contentBlock
     test_collectiontest =< lib.contentBlock
     test_richtext =< lib.contentBlock
+    test_containerblock =< lib.contentBlock
 }
 
 # Container (b13/container): children columns via nb-container-json,
 # children are kept out of the regular page content query
-lib.content.select.where = colPos NOT IN (201, 202)
+lib.content.select.where = colPos NOT IN (201, 202, 211, 212)
 
 tt_content.test_2cols_container =< lib.contentElement
 tt_content.test_2cols_container {
@@ -38,6 +39,24 @@ tt_content.test_2cols_container {
                     as = right
                 }
             }
+        }
+    }
+}
+
+# Container as Content Block (production pattern, docs variant 2):
+# the columns are nested INSIDE "data" via sub data processors
+tt_content.test_containerblock.fields.data.dataProcessing.10 {
+    dataProcessing {
+        20 = nb-container-json
+        20 {
+            colPos = 211
+            as = left
+        }
+
+        30 = nb-container-json
+        30 {
+            colPos = 212
+            as = right
         }
     }
 }
