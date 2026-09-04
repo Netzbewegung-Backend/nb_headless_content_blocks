@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -21,8 +22,9 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * the interplay of EXT:headless and this extension become visible.
  *
  * Deprecations are ignored because loading EXT:headless in a TYPO3 14.3
- * test instance triggers core deprecation-108345 (ext_emconf.php shipped
- * by the extension) — not something this extension can fix.
+ * test instance may trigger core deprecation-108345 (ext_emconf.php
+ * shipped by the extension up to headless 5.0.0-rc1) — not something
+ * this extension can fix.
  *
  * @see https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/issues/18
  */
@@ -30,6 +32,15 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 final class ContentBlocksJsonResponseTest extends FunctionalTestCase
 {
     private const SITE_IDENTIFIER = 'e2e-test';
+
+    // EXT:headless >= 5.0.0-rc2 ships no ext_emconf.php, so the testing
+    // framework resolves its composer dependencies for the classic-mode
+    // test instance. typo3/cms-install must be loaded as a core extension
+    // then, otherwise package sorting fails with "Package headless
+    // depends on package install which does not exist".
+    protected array $coreExtensionsToLoad = [
+        'install',
+    ];
 
     protected array $testExtensionsToLoad = [
         'typo3conf/ext/nb_headless_content_blocks/Tests/Fixtures/Extensions/test_nb_headless_content_blocks',
@@ -43,9 +54,18 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         'typo3conf/ext/nb_headless_content_blocks/Tests/Functional/DataProcessing/Fixtures/Files/' => 'fileadmin/',
     ];
 
+    private bool $headlessUsesCleanedUpResponse;
+
     public function setUp(): void
     {
         parent::setUp();
+        // headless >= 5.0.0-rc2 delivers a cleaned-up page response by
+        // default (no "meta" page field, no per-element "categories") and
+        // provides the 4.x response as the separate HeadlessLegacy site
+        // set instead. The presence of that set marks the new contract.
+        $this->headlessUsesCleanedUpResponse = is_dir(
+            ExtensionManagementUtility::extPath('headless') . 'Configuration/Sets/HeadlessLegacy'
+        );
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DataSet/e2e_page.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/simple_content_element.csv');
         $this->importCSVDataSet(__DIR__ . '/../DataProcessing/Fixtures/DataSet/headless_content_element.csv');
@@ -87,7 +107,10 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
         self::assertSame(1, $json['id']);
         self::assertSame('Standard', $json['type']);
         self::assertSame('/', $json['slug']);
-        self::assertSame('E2E Test Page', $json['meta']['title']);
+        // "meta" is only part of the legacy response (headless < 5.0.0-rc2)
+        if (!$this->headlessUsesCleanedUpResponse) {
+            self::assertSame('E2E Test Page', $json['meta']['title']);
+        }
         self::assertSame('E2E Test Page', $json['seo']['title']);
     }
 
@@ -219,7 +242,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                 'id' => 70,
                 'type' => 'test_2cols_container',
                 'colPos' => 0,
-                'categories' => '',
+                ...$this->categories(),
                 'appearance' => [
                     'layout' => 'default',
                     'frameClass' => 'default',
@@ -296,7 +319,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
             'id' => $id,
             'type' => 'test_textarea',
             'colPos' => $colPos,
-            'categories' => '',
+            ...$this->categories(),
             'appearance' => [
                 'layout' => 'default',
                 'frameClass' => 'default',
@@ -323,7 +346,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
             'id' => $id,
             'type' => $type,
             'colPos' => 0,
-            'categories' => '',
+            ...$this->categories(),
             'appearance' => [
                 'layout' => 'default',
                 'frameClass' => 'default',
@@ -332,6 +355,17 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
             ],
             'data' => $data,
         ];
+    }
+
+    /**
+     * "categories" is only part of the legacy content element wrapper
+     * (headless < 5.0.0-rc2).
+     *
+     * @return array<string, string>
+     */
+    private function categories(): array
+    {
+        return $this->headlessUsesCleanedUpResponse ? [] : ['categories' => ''];
     }
 
     /**
