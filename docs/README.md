@@ -46,6 +46,8 @@ whether the extension fits your setup.
 ## Troubleshooting
 
 - [Troubleshooting](troubleshooting.md) — symptom → cause → fix
+- [Testing troubleshooting](testing-troubleshooting.md) — symptom →
+  cause → fix for the extension's own test setup (contributors)
 
 ## Design records (internal)
 

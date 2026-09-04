@@ -61,6 +61,9 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
 - All suites must pass on **both TYPO3 versions** — switch with the
   composer commands in [AGENTS.md](AGENTS.md) (TYPO3 Version
   Compatibility) and restore `composer.json` afterwards.
+- Pitfalls of the test setup itself (version switches, `act`, extension
+  loading) are collected in
+  [Testing troubleshooting](docs/testing-troubleshooting.md).
 - The JSON output contract is frozen by characterization tests
   (`ContentBlocksJsonDataProcessorCharTest`). If a change deliberately
   alters the contract, update the frozen fixtures and document it in the

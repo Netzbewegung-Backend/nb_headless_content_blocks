@@ -56,7 +56,8 @@ Configuration/
 docs/
 ├── README.md                                 # documentation index (Diátaxis)
 ├── getting-started.md                        # tutorial: install → include Site Set → verify
-├── troubleshooting.md                        # symptom → cause → fix
+├── troubleshooting.md                        # symptom → cause → fix (end users)
+├── testing-troubleshooting.md                # symptom → cause → fix (test setup, contributors)
 ├── concepts/                                 # why it works this way
 │   └── architecture.md
 ├── how-to/                                   # task guides (image variants, normalizers, ...)
