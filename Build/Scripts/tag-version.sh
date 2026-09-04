@@ -21,7 +21,8 @@ fi
 
 echo "Setting version to $VERSION..."
 
-jq ".extra.\"typo3/cms\".version = \"$VERSION\"" composer.json > tmp.json && mv tmp.json composer.json
+jq ".extra.\"typo3/cms\".version = \"$VERSION\"" composer.json > tmp.json
+mv tmp.json composer.json
 
 sed -i "s/'version' => '[^']*'/'version' => '$VERSION'/" ext_emconf.php
 
