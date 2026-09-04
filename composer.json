@@ -63,7 +63,7 @@
     "typo3/cms": {
       "web-dir": ".Build/public",
       "extension-key": "nb_headless_content_blocks",
-      "version": "0.0.26",
+      "version": "0.1.0",
       "Package": {
         "providesPackages": {}
       }
