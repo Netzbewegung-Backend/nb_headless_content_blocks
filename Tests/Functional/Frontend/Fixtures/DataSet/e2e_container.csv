@@ -1,0 +1,5 @@
+"tt_content"
+,"uid","pid","header","test_textarea_my_textarea","colPos","tx_container_parent","CType","tstamp","crdate"
+,70,1,"Container","",0,0,"test_2cols_container",1697810925,1697810914
+,71,1,"ChildLeft","Left child content",201,70,"test_textarea",1697810925,1697810914
+,72,1,"ChildRight","Right child content",202,70,"test_textarea",1697810925,1697810914

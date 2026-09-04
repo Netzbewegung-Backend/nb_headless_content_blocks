@@ -1,0 +1,8 @@
+fields:
+  my_image:
+    processing:
+      mobile: "width=200c,fileExtension=jpg"
+      desktop: "width=300c,fileExtension=jpg"
+  my_images:
+    processing:
+      mobile: "width=100c,fileExtension=jpg"

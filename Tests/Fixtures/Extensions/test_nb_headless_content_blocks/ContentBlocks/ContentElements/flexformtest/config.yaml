@@ -1,0 +1,10 @@
+name: test/flexformtest
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: my_flexform
+    type: FlexForm
+    fields:
+      - identifier: my_text
+        type: Text

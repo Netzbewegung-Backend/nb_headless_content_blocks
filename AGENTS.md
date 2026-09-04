@@ -15,26 +15,72 @@ TYPO3 Extension for headless Content Blocks. Converts Content Block data into JS
 
 ```
 Classes/
+├── ContentBlocks/
+│   ├── ContentBlocksIdentifierMapper.php     # column -> field identifier mapping (ContentBlocks)
+│   ├── HeadlessYamlLoader.php                # loads headless.yaml image processing config
+│   └── IdentifierMapperInterface.php
 ├── DataProcessing/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
-├── DataProcessing/ToArray/
-│   ├── RecordToArray.php
-│   ├── ArrayRecursiveToArray.php
-│   ├── FileReferenceToArray.php
-│   ├── LazyFileReferenceCollectionToArray.php
-│   ├── LazyRecordCollectionToArray.php
-│   ├── LazyRecordCollectionSysCategoryToArray.php
-│   ├── TypolinkParameterToArray.php
-│   └── LazyFolderCollectionToArray.php
+├── FieldTransformer/
+│   ├── FieldValueTransformerChain.php
+│   ├── FieldValueTransformerInterface.php
+│   └── String/
+│       ├── PasswordBlanker.php
+│       └── RichtextParser.php
+├── Normalization/
+│   ├── Context.php                           # per-run state (schema, options, field processing)
+│   ├── NormalizerChain.php                   # dispatches to tagged normalizers
+│   ├── NormalizerInterface.php
+│   ├── RecordArrayBuilder.php                # DI entry point of the conversion
+│   ├── UnknownTypeNormalizer.php             # null + debug log for unknown types
+│   ├── Normalizer/
+│   │   ├── ScalarNormalizer.php
+│   │   ├── DateTimeNormalizer.php
+│   │   ├── FlexFormNormalizer.php
+│   │   ├── TypolinkNormalizer.php
+│   │   ├── RecordNormalizer.php
+│   │   ├── RecordCollectionNormalizer.php
+│   │   ├── FileReferenceNormalizer.php       # incl. crop + declarative thumbnails
+│   │   └── FolderCollectionNormalizer.php
 └── Event/
-    └── ModifyArrayRecursiveToArrayEvent.php  # PSR-14 Event
+    └── ModifyArrayRecursiveToArrayEvent.php  # PSR-14 Event (deprecated, still fired)
 
 Configuration/
+├── Services.yaml                             # tagged services: nb_headless.normalizer,
+│                                             # nb_headless.field_value_transformer
 └── Sets/HeadlessContentBlock/
     ├── setup.typoscript
     └── config.yaml
+
+docs/
+├── README.md                                 # documentation index (Diátaxis)
+├── getting-started.md                        # tutorial: install → include Site Set → verify
+├── troubleshooting.md                        # symptom → cause → fix
+├── concepts/                                 # why it works this way
+│   └── architecture.md
+├── how-to/                                   # task guides (image variants, normalizers, ...)
+├── reference/                                # lookup (JSON contract, normalizers, options)
+└── design/
+    └── IMPROVE_TO_ARRAY.md                   # design record: the ToArray rewrite
 ```
+
+See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
+
+## Documentation Rules
+
+- **Docs change with the code in the same PR/commit** — a behavior change
+  without a docs change is incomplete.
+- **One page = one topic type** (tutorial / how-to / reference / concept),
+  with a first-line purpose statement. The docs index is `docs/README.md`.
+- **Design records** (`docs/design/`) open with a status blockquote
+  (`> Status: IMPLEMENTED|CURRENT|...`) and are historical records — where
+  wording differs from the code, **the code wins**.
+- **Troubleshooting** entries follow **symptom → cause → fix**, the
+  heading is the literal symptom.
+- All shipped content is **English** (American spelling).
+- Before committing docs changes: run `Build/Scripts/checkDocs.sh` (link
+  checker for relative Markdown links and anchors).
 
 ## Core Components
 
@@ -52,24 +98,25 @@ Configuration/
 - `RecordFactory`
 - `ContentTypeResolver`
 - `ContentBlockRegistry`
-- `EventDispatcher`
+- `RecordArrayBuilder`
+- `ContentDataProcessor`
 
 **ContainerJsonDataProcessor:**
-- `TableDefinitionCollection`
-- `RecordFactory`
-- `ContentBlockDataDecorator`
-- `ContentTypeResolver`
-- `ContentBlockRegistry`
+- `ContainerProcessor` (b13/container)
 
 ### PSR-14 Event
 
-`ModifyArrayRecursiveToArrayEvent` - fired when converting arrays.
+`ModifyArrayRecursiveToArrayEvent` - fired by `RecordArrayBuilder` per field
+(deprecated, kept for backwards compatibility).
 
 ## Important Notes
 
 ### Git Workflow
 
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
+- New releases/tags: `Build/Scripts/tag-version.sh <x.y.z>` — sets the version in
+  `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
+  and creates the git tag (requires a clean working tree).
 
 ### Language
 
@@ -78,7 +125,11 @@ Configuration/
 ### Code Changes
 
 - Use `readonly` class declarations (PHP 8.2+)
-- `GeneralUtility::makeInstance()` in Utility classes (no DI)
+- No `GeneralUtility::makeInstance()` / `$GLOBALS['TYPO3_REQUEST']` in `Classes/`
+  — dependencies go through DI; the frontend request and the processor's
+  `ContentObjectRenderer` are threaded through `RecordArrayBuilder` into the
+  normalization `Context` (the only exceptions are static path helpers like
+  `GeneralUtility::getFileAbsFileName()`)
 - `autoconfigure: false` in `Services.yaml`
 
 ### External Dependencies
@@ -121,21 +172,29 @@ Tests/
 ├── Unit/
 │   ├── Event/
 │   │   └── ModifyArrayRecursiveToArrayEventTest.php
-│   └── DataProcessing/ToArray/
-│       ├── ArrayRecursiveToArrayTest.php
-│       └── TypolinkParameterToArrayTest.php
+│   └── Normalization/
+│       ├── RecordArrayBuilderTest.php
+│       └── Normalizer/
+│           └── TypolinkNormalizerTest.php
 ├── Functional/
-│   └── DataProcessing/
-│       ├── ContentBlocksJsonDataProcessorTest.php
-│       ├── ContainerJsonDataProcessorTest.php
-│       └── Fixtures/
-│           ├── DataSet/ (CSV fixtures)
-│           └── Files/ (test images)
+│   ├── DataProcessing/
+│   │   ├── ContentBlocksJsonDataProcessorTest.php
+│   │   ├── ContentBlocksJsonDataProcessorCharTest.php  # frozen JSON contract
+│   │   ├── ContainerJsonDataProcessorTest.php
+│   │   └── Fixtures/
+│   │       ├── DataSet/ (CSV fixtures)
+│   │       └── Files/ (test images)
+│   └── Frontend/
+│       ├── ContentBlocksJsonResponseTest.php           # e2e: full frontend request,
+│       │                                               # headless page JSON frozen (issue #18)
+│       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/
+    ├── Configuration/Sets/TestFrontend/                 # fixture site set: maps test
+    │                                                   # blocks onto lib.contentBlock
     ├── ContentBlocks/ContentElements/
     │   ├── simple/       # Text, Number, DateTime, Select, Password, Json, Link, Category, Collection
     │   ├── headless/     # headless.php processing
-    │   └── filetest/     # File/FAL (oneToOne, oneToMany)
+    │   └── filetest/     # File/FAL (oneToOne, oneToMany, headless.yaml thumbnails)
     └── Classes/
         └── SetRenderedContentProcessor.php  # Stub for container child rendering
 ```
@@ -184,6 +243,8 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
 
 ### Testing Gotchas
 
+- **act basics** (installation, available jobs, matrix invocation):
+  `.github/TEST-GITHUB-WORKFLOWS.md`.
 - **act: run one TYPO3 matrix entry at a time** — `act -j functional_tests` runs all
   matrix entries in parallel. Each job starts 4 docker containers (redis, memcached,
   DB, phpunit) on the shared daemon; `runTests.sh`'s `waitFor()` aborts after ~10s,
@@ -198,11 +259,26 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
   `TYPO3\TestingFramework\Core\Exception: Can not remove folder`. Detect with
   `find .Build/public/typo3temp/var/tests -maxdepth 1 -user root`. Do NOT run `sudo`
   yourself — tell the USER (who has root) to run `sudo rm -rf <folders>`.
+- **Stale DI container / cache issues** — if services resolve wrongly or newly added
+  DI configuration (Services.yaml, tagged services) is not picked up:
+  `ddev typo3 cache:flush`, `ddev composer dump-autoload`, or `rm -rf var/cache/`.
+  Note: unit tests (`runTests.sh -s unit`) run **without any DI container** by design —
+  `GeneralUtility::makeInstance()` for container-only services (e.g.
+  `TcaSchemaFactory`) fails there and code must tolerate that; functional tests
+  bootstrap the container normally.
 
 ### Test Strategy
 
-- **Unit Tests**: `ModifyArrayRecursiveToArrayEvent` — pure event object
-- **Functional Tests**: DataProcessor with TYPO3 context (InMemory-PDO)
+- **Unit Tests**: `RecordArrayBuilder`, `TypolinkNormalizer`, event — pure, container-less
+- **Functional Tests**: DataProcessors with TYPO3 context (InMemory-PDO) + characterization
+  tests (`ContentBlocksJsonDataProcessorCharTest`) freezing the complete JSON contract
+- **E2E Tests** (`Tests/Functional/Frontend/`): full frontend request against a headless
+  site (site config + fixture site set `test_nb_headless_content_blocks/test-frontend`,
+  which depends on `friendsoftypo3/headless` and this extension's set) via
+  `executeFrontendSubRequest()`; freezes the complete headless page JSON response
+  (`ContentBlocksJsonResponseTest`, issue #18). Runs on sqlite; absolute file URLs are
+  normalized to `https://` across TYPO3 13/14 by setting `$_SERVER['HTTPS']`
+  (TYPO3 13 builds hosts via `getIndpEnv()`, TYPO3 14 via the request object)
 
 ## Development
 
@@ -245,7 +321,7 @@ Build/Scripts/runTests.sh -s composer -- require -W \
 Build/Scripts/runTests.sh -s composer -- require -W \
   "typo3/cms-core:^14.3" \
   "friendsoftypo3/content-blocks:^2.0" \
-  "friendsoftypo3/headless:^5.0"
+  "friendsoftypo3/headless:^5.0@RC"
 
 # Restore multi-version constraints in composer.json
 git checkout -- composer.json

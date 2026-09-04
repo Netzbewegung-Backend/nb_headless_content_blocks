@@ -1,0 +1,10 @@
+# Edge cases for the loader:
+# - "my_text" has no "processing" key (must be skipped)
+# - the numeric entry has "processing" but no valid identifier (must be skipped)
+# - "my_unprocessed_image" is not mentioned (no thumbnails in output)
+fields:
+  my_text:
+    label: Just a text field
+  0:
+    processing:
+      mobile: width=10c,fileExtension=jpg

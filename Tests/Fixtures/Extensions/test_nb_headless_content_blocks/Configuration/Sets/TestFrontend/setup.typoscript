@@ -1,0 +1,86 @@
+# Emulates a headless site package: all test Content Blocks are mapped
+# onto lib.contentBlock, which wraps EXT:headless' lib.contentElement
+# and adds the "data" field filled by the nb-content-blocks-json processor.
+
+tt_content {
+    test_simple =< lib.contentBlock
+    test_headless =< lib.contentBlock
+    test_filetest =< lib.contentBlock
+    test_textarea =< lib.contentBlock
+    test_coloremailslug =< lib.contentBlock
+    test_collectiontest =< lib.contentBlock
+    test_richtext =< lib.contentBlock
+    test_containerblock =< lib.contentBlock
+    test_foldertest =< lib.contentBlock
+    test_flexformtest =< lib.contentBlock
+    test_yamledges =< lib.contentBlock
+    test_yamlbroken =< lib.contentBlock
+}
+
+# Container (b13/container): children columns via nb-container-json,
+# children are kept out of the regular page content query
+lib.content.select.where = colPos NOT IN (201, 202, 211, 212)
+
+tt_content.test_2cols_container =< lib.contentElement
+tt_content.test_2cols_container {
+    fields {
+        left = TEXT
+        left {
+            dataProcessing {
+                10 = nb-container-json
+                10 {
+                    colPos = 201
+                    as = left
+                }
+            }
+        }
+        right = TEXT
+        right {
+            dataProcessing {
+                10 = nb-container-json
+                10 {
+                    colPos = 202
+                    as = right
+                }
+            }
+        }
+    }
+}
+
+# Container as Content Block (production pattern, docs variant 2):
+# the columns are nested INSIDE "data" via sub data processors
+tt_content.test_containerblock.fields.data.dataProcessing.10 {
+    dataProcessing {
+        20 = nb-container-json
+        20 {
+            colPos = 211
+            as = left
+        }
+
+        30 = nb-container-json
+        30 {
+            colPos = 212
+            as = right
+        }
+    }
+}
+
+# The test instance has no fluid_styled_content, so provide a minimal
+# RTE parsing setup (mirrors the one used in the characterization tests).
+# The "a" tag handler resolves t3:// link URIs (like EXT:headless'
+# lib.parseFunc_links) so richtext links point to real page URLs.
+lib.parseFunc_RTE {
+    allowTags = p,strong,a
+    htmlSanitize = 0
+    tags {
+        a = TEXT
+        a {
+            current = 1
+            typolink {
+                parameter.data = parameters : href
+                target.data = parameters : target
+                extTarget.data = parameters : target
+            }
+        }
+    }
+}
