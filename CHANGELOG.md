@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Rewrite of the ToArray conversion (see `docs/design/IMPROVE_TO_ARRAY.md`).
+Rewrite of the ToArray conversion (see `docs/design/improve_to_array.md`).
 The JSON output contract is unchanged and frozen by characterization tests.
 
 ### Added

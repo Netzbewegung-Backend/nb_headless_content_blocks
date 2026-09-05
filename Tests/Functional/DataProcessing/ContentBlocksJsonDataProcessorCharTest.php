@@ -15,7 +15,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * Characterization tests: freeze the complete JSON contract of the
  * ToArray conversion for every fixture record, so that the planned
- * rewrite (see docs/design/IMPROVE_TO_ARRAY.md) cannot change the
+ * rewrite (see docs/design/improve_to_array.md) cannot change the
  * output unnoticed.
  */
 final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
