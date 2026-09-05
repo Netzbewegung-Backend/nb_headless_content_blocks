@@ -2,12 +2,13 @@
 set -e
 
 if [ -z "$1" ]; then
-  echo "Usage: my-git-tag <version>"
-  echo "Example: my-git-tag 0.0.26"
+  echo "Usage: Build/Scripts/tag-version.sh <version> [message]"
+  echo "Example: Build/Scripts/tag-version.sh 0.2.0 \"Adds TER publishing\""
   exit 1
 fi
 
 VERSION="$1"
+MESSAGE="${2:-Release of version $VERSION}"
 
 if ! [[ "$VERSION" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
   echo "Version must be in format x.y.z (e.g. 0.0.26)"
@@ -28,6 +29,6 @@ sed -i "s/'version' => '[^']*'/'version' => '$VERSION'/" ext_emconf.php
 
 git add composer.json ext_emconf.php
 git commit -m "Set version to $VERSION"
-git tag "$VERSION"
+git tag -a "$VERSION" -m "$MESSAGE"
 
-echo "Done! Tag $VERSION created."
+echo "Done! Tag $VERSION created (annotated: \"$MESSAGE\")."
