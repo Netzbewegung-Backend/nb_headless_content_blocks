@@ -118,6 +118,10 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 - New releases/tags: `Build/Scripts/tag-version.sh <x.y.z>` — sets the version in
   `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
   and creates the git tag (requires a clean working tree).
+- Before releasing a new version: update `CHANGELOG.md` — turn the
+  `[Unreleased]` section into the new version with the release date
+  (Keep a Changelog format) and commit it **before** running
+  `tag-version.sh` (0.1.0 shipped without this step).
 
 ### Language
 
