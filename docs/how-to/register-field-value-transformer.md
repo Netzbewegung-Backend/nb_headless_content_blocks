@@ -33,7 +33,7 @@ use Netzbewegung\NbHeadlessContentBlocks\Normalization\Context;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 
-final class ColorNameNormalizer implements FieldValueTransformerInterface
+final class ColorNameTransformer implements FieldValueTransformerInterface
 {
     private const COLOR_NAMES = [
         '#ff0000' => 'red',
@@ -65,7 +65,7 @@ In your extension's `Configuration/Services.yaml`:
 
 ```yaml
 services:
-  MyVendor\MyExtension\FieldTransformer\ColorNameNormalizer:
+  MyVendor\MyExtension\FieldTransformer\ColorNameTransformer:
     tags: ['nb_headless.field_value_transformer']
 ```
 

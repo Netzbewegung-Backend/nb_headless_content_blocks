@@ -1,7 +1,7 @@
 # Getting started
 
 This page walks you through installing the extension and verifying your first
-JSON output — it is a linear tutorial; alternatives and background are linked
+JSON output — it is a linear tutorial; background and next steps follow
 at the end.
 
 ## Prerequisites

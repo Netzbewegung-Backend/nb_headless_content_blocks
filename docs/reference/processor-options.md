@@ -61,9 +61,14 @@ are therefore configured there, not on `nb-container-json`.
 ## Site Set
 
 The extension ships the Site Set
-`nb-headless-content-blocks/headless-content-blocks` which defines
-`lib.contentBlock` (a `lib.contentElement` clone with the processor
-wired). Include it in your site's `config.yaml`:
+`nb-headless-content-blocks/headless-content-blocks` which replaces
+`lib.contentBlock` (originally defined by EXT:content_blocks) with a
+`lib.contentElement` clone with the processor wired. EXT:content_blocks
+auto-maps every Content Block with a frontend template onto
+`lib.contentBlock`, so no manual TypoScript is needed — see
+[Getting started → How it works](../getting-started.md#how-it-works)
+for the two cases that do need one. Include the set in your site's
+`config.yaml`:
 
 ```yaml
 dependencies:

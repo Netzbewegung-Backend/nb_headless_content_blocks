@@ -8,9 +8,8 @@ missing, open an issue.
 
 ## A field is `null` in the JSON and the log mentions an unknown type
 
-**Symptom:** a field renders as `null` and the TYPO3 debug log (writer
-`NbHeadlessContentBlocks...` / channel of your site) contains an entry about
-an unconvertible or unknown value type.
+**Symptom:** a field renders as `null` and the TYPO3 log contains a
+debug-level entry about an unconvertible or unknown value type.
 
 **Cause:** the value reached the end of the normalizer chain without any
 normalizer claiming it. Unconvertible values become `null` **by design**
@@ -105,6 +104,28 @@ ext:frontend, but site-specific classes require your site package's setup.
 
 **Fix:** configure `lib.parseFunc_RTE` in your site package (typically via
 fluid_styled_content's richContentObject or your own setup).
+
+## A block renders `"has no rendering definition!"` instead of JSON
+
+**Symptom:** the block appears in the page JSON, but instead of a `data`
+object it carries an error text like
+`Content Element with uid "1" and type "vendor_myblock" has no rendering definition!`.
+
+**Cause:** the block has no TypoScript mapping. EXT:content_blocks
+auto-generates `tt_content.<ctype> =< lib.contentBlock` only for Content
+Blocks that ship a frontend template (`templates/frontend.html`).
+Template-less blocks and custom (non-Content-Block) content elements
+fall through to `tt_content.default`.
+
+**Fix:** either give the block a `templates/frontend.html` (an empty one
+is enough — it is not rendered, the JSON output comes from the data
+processors) or map it yourself in your site package's TypoScript:
+
+```typoscript
+tt_content.vendor_myblock =< lib.contentBlock
+```
+
+See [How it works](getting-started.md#how-it-works).
 
 ## Container children do not render / render twice
 
