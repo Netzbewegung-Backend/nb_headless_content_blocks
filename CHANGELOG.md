@@ -243,7 +243,8 @@ The JSON output contract is unchanged and frozen by characterization tests.
 - Initial release: connects EXT:headless with EXT:content_blocks, converts
   Content Block records to JSON-compatible arrays.
 
-[Unreleased]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.26...HEAD
+[Unreleased]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.26...0.1.0
 [0.0.26]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.23...0.0.26
 [0.0.23]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.22...0.0.23
 [0.0.22]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.21...0.0.22

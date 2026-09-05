@@ -120,8 +120,9 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
   and creates the git tag (requires a clean working tree).
 - Before releasing a new version: update `CHANGELOG.md` — turn the
   `[Unreleased]` section into the new version with the release date
-  (Keep a Changelog format) and commit it **before** running
-  `tag-version.sh` (0.1.0 shipped without this step).
+  (Keep a Changelog format, including the compare link definitions at
+  the bottom of the file and the `[Unreleased]` link) and commit it
+  **before** running `tag-version.sh` (0.1.0 shipped without this step).
 
 ### Language
 
