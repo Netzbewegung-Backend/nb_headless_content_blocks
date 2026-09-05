@@ -64,6 +64,7 @@
       "web-dir": ".Build/public",
       "extension-key": "nb_headless_content_blocks",
       "version": "0.1.0",
+      "skip-ter-packagist-import": true,
       "Package": {
         "providesPackages": {}
       }
