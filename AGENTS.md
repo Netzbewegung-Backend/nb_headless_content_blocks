@@ -245,7 +245,7 @@ binaries are in `.Build/bin/`, e.g. `ddev exec .Build/bin/phpunit --version`.
 ### Testing Gotchas
 
 - **act basics** (installation, available jobs, matrix invocation):
-  `.github/TEST-GITHUB-WORKFLOWS.md`.
+  `CONTRIBUTING.md` → "Running the GitHub Actions workflows locally (act)".
 - **act: run one TYPO3 matrix entry at a time** — `act -j functional_tests` runs all
   matrix entries in parallel. Each job starts 4 docker containers (redis, memcached,
   DB, phpunit) on the shared daemon; `runTests.sh`'s `waitFor()` aborts after ~10s,

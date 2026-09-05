@@ -70,6 +70,39 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
   [CHANGELOG](CHANGELOG.md) and the
   [JSON contract](docs/reference/json-contract.md) in the same PR.
 
+## Running the GitHub Actions workflows locally (act)
+
+[nektos/act](https://github.com/nektos/act) runs the CI jobs from
+`.github/workflows/` locally — no push needed:
+
+```bash
+# installation (or download a release binary and put it on your PATH)
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+
+# list the available jobs
+act -l
+
+# single jobs
+act -j early_cgl
+act -j PHPStan
+
+# functional tests - TYPO3 13.4
+act -j functional_tests --matrix typo3:^13.4 --matrix php:8.2 --matrix content-blocks:^1.2 --matrix headless:^4.5 --matrix container:^3.1
+
+# functional tests - TYPO3 14.3 (only AFTER the 13.4 run has finished)
+act -j functional_tests --matrix typo3:^14.3 --matrix php:8.4 --matrix content-blocks:^2.0 --matrix headless:^5.0@RC --matrix container:^4.0
+```
+
+> **Warning:** never run both functional test matrix entries at the same
+> time (e.g. one per terminal). Each job starts 4 docker containers
+> (redis, memcached, DB, phpunit) on the shared docker daemon, and
+> `runTests.sh`'s `waitFor()` aborts after ~10s — parallel runs fail with
+> `Can not connect ... Aborting`. Run them strictly one after another.
+
+More `act` pitfalls (composer cache eviction, root-owned test folders):
+[Testing troubleshooting](docs/testing-troubleshooting.md) and
+[AGENTS.md](AGENTS.md).
+
 ## Documentation
 
 User-facing documentation lives in `docs/` and is organized by topic type

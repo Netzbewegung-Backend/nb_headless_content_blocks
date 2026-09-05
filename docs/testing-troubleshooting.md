@@ -34,7 +34,8 @@ find .Build/public/typo3temp/var/tests -maxdepth 1 -user root
 
 and have a user with root delete those folders (`sudo rm -rf <folder>`).
 More `act` gotchas (matrix parallelism, composer cache eviction): see
-`AGENTS.md` → Testing Gotchas and `.github/TEST-GITHUB-WORKFLOWS.md`.
+`AGENTS.md` → Testing Gotchas and
+[CONTRIBUTING.md](../CONTRIBUTING.md#running-the-github-actions-workflows-locally-act).
 
 ## Functional tests fail with `Package "headless" depends on package "install" which does not exist.`
 
