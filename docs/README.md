@@ -31,6 +31,9 @@ whether the extension fits your setup.
   value types in the JSON output
 - [Register a field value transformer](how-to/register-field-value-transformer.md) —
   own string field shaping (like password blanking)
+- [Generate JSON Schema](how-to/generate-json-schema.md) — JSON Schema
+  files describing the block output, for IDEs, generated types and
+  contract tests
 - [Modify fields with the PSR-14 event](how-to/modify-fields-with-event.md)
   (deprecated — prefer normalizers/transformers)
 
@@ -55,9 +58,10 @@ whether the extension fits your setup.
 the code, the code wins. Notable: [improve_to_array.md](design/improve_to_array.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
 API migration, declarative image variants) with its decisions and rationale;
-[json_schema_generation.md](design/json_schema_generation.md) — a proposed
-(not implemented) plan for generating JSON Schema from the Content Block
-definitions (issue #22).
+[json_schema_generation.md](design/json_schema_generation.md) — the plan
+for generating JSON Schema from the Content Block definitions (issue #22;
+phase 1 — CLI generator and contract tests — is implemented, see
+[Generate JSON Schema](how-to/generate-json-schema.md)).
 
 ## Archive (internal)
 
