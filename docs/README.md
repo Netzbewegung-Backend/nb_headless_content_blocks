@@ -52,9 +52,12 @@ whether the extension fits your setup.
 ## Design records (internal)
 
 `design/` holds planning and analysis records — where wording differs from
-the code, the code wins. Notable: [IMPROVE_TO_ARRAY.md](design/IMPROVE_TO_ARRAY.md)
+the code, the code wins. Notable: [improve_to_array.md](design/improve_to_array.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
-API migration, declarative image variants) with its decisions and rationale.
+API migration, declarative image variants) with its decisions and rationale;
+[json_schema_generation.md](design/json_schema_generation.md) — a proposed
+(not implemented) plan for generating JSON Schema from the Content Block
+definitions (issue #22).
 
 ## Archive (internal)
 
