@@ -15,6 +15,8 @@ TYPO3 Extension for headless Content Blocks. Converts Content Block data into JS
 
 ```
 Classes/
+├── Command/
+│   └── GenerateSchemaCommand.php            # nbheadlesscontentblocks:generate-schema
 ├── ContentBlocks/
 │   ├── ContentBlocksIdentifierMapper.php     # column -> field identifier mapping (ContentBlocks)
 │   ├── HeadlessYamlLoader.php                # loads headless.yaml image processing config
@@ -22,6 +24,8 @@ Classes/
 ├── DataProcessing/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
+├── Schema/
+│   └── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
 ├── FieldTransformer/
 │   ├── FieldValueTransformerChain.php
 │   ├── FieldValueTransformerInterface.php

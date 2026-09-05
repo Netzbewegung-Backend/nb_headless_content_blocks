@@ -15,3 +15,4 @@
 
 // Define constants for PHPStan analysis
 defined('TYPO3_MODE') || define('TYPO3_MODE', 'BE');
+defined('LF') || define('LF', "\n");

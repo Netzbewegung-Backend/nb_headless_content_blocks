@@ -54,6 +54,15 @@ services:
 
   Netzbewegung\NbHeadlessContentBlocks\Normalization\RecordArrayBuilder: ~
 
+  Netzbewegung\NbHeadlessContentBlocks\Schema\JsonSchemaGenerator: ~
+
+  Netzbewegung\NbHeadlessContentBlocks\Command\GenerateSchemaCommand:
+    tags:
+      - name: 'console.command'
+        command: 'nbheadlesscontentblocks:generate-schema'
+        description: 'Generate JSON Schema files describing the Content Block JSON output.'
+        schedulable: false
+
   # --- Field value transformers (tagged services) ---
   Netzbewegung\NbHeadlessContentBlocks\FieldTransformer\String\PasswordBlanker:
     tags: ['nb_headless.field_value_transformer']

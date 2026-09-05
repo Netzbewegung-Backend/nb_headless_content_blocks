@@ -34,14 +34,15 @@
     }
   ],
   "require": {
-    "typo3/cms-core": "^13.4 || ^14.3",
-    "friendsoftypo3/content-blocks": "^1.2.3 || ^2.0",
-    "friendsoftypo3/headless": "^4.5 || ^5.0 || dev-master"
+    "friendsoftypo3/content-blocks": "^2.0",
+    "friendsoftypo3/headless": "^5.0@RC",
+    "typo3/cms-core": "^14.3"
   },
   "require-dev": {
     "b13/container": "^3.1 || ^4.0",
     "bnf/phpstan-psr-container": "^1.1",
     "friendsofphp/php-cs-fixer": "^3.22",
+    "justinrainbow/json-schema": "^5.3",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-phpunit": "^2.0",
     "phpunit/phpcov": "^10",

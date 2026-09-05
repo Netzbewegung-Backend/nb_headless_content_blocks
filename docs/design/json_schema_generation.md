@@ -1,7 +1,12 @@
 # Design: Automatically generate JSON Schema
 
-> Status: **PROPOSED — evaluation only, nothing implemented** (issue #22).
-> This record is a plan; where it disagrees with the code, the code wins.
+> Status: **PHASE 1 IMPLEMENTED (2026-09-05)** — `JsonSchemaGenerator`,
+> the `nbheadlesscontentblocks:generate-schema` command and the schema
+> contract tests are shipped (issue #22). Phases 2–3 remain open. This is
+> a historical design record; where wording differs from the code, **the
+> code wins** — notably the implementation emits **draft-07** with
+> `definitions` (instead of the 2020-12/`$defs` sketch below) for the
+> widest tool support.
 
 Date: 2026-09-05
 Scope: potential new `SchemaGenerator` + CLI command / HTTP endpoint; no change
