@@ -115,9 +115,13 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 ### Git Workflow
 
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
-- New releases/tags: `Build/Scripts/tag-version.sh <x.y.z>` — sets the version in
+- New releases/tags: `Build/Scripts/tag-version.sh <x.y.z> [message]` — sets the version in
   `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
-  and creates the git tag (requires a clean working tree).
+  and creates the annotated git tag (requires a clean working tree).
+- Pushing a tag triggers `.github/workflows/publish.yml`, which publishes the
+  version to TER via typo3/tailor (requires the `TYPO3_API_TOKEN` repo secret and
+  a registered TER extension key). The workflow can also be started manually
+  ("Run workflow") with an existing tag and an optional release comment.
 
 ### Language
 
