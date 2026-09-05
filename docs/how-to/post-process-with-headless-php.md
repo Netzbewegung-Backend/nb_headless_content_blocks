@@ -5,7 +5,7 @@ PHP — the escape hatch when no declarative feature covers your case.
 
 ## When to use it (and when not)
 
-Reach for `headless.php` only what the built-in features cannot do:
+Reach for `headless.php` only for what the built-in features cannot do:
 
 | Need | Use instead |
 |---|---|

@@ -1,7 +1,7 @@
 # Getting started
 
 This page walks you through installing the extension and verifying your first
-JSON output — it is a linear tutorial; alternatives and background are linked
+JSON output — it is a linear tutorial; background and next steps follow
 at the end.
 
 ## Prerequisites
@@ -9,7 +9,8 @@ at the end.
 - TYPO3 ≥ 13.4 (13.4 and 14.3 are tested in CI)
 - A headless frontend based on [EXT:headless](https://github.com/TYPO3-Headless/headless) ≥ 4.5
 - Content Blocks created with [EXT:content_blocks](https://github.com/FriendsOfTYPO3/content-blocks) ≥ 1.2.3
-- Composer — the extension is not published to TER
+- [Composer](https://getcomposer.org) — installation is Composer-only,
+  the extension is not published to TER
 
 EXT:headless and EXT:content_blocks are installed automatically as
 dependencies when you require this extension.
@@ -28,30 +29,9 @@ dependencies:
   - nb-headless-content-blocks/headless-content-blocks
 ```
 
-The Site Set defines `lib.contentBlock` — a clone of `lib.contentElement`
-whose `fields.data` is produced by the `nb-content-blocks-json` data
-processor:
-
-```typoscript
-lib.contentBlock < lib.contentElement
-lib.contentBlock {
-    fields {
-        data = TEXT
-        data {
-            dataProcessing {
-                10 = nb-content-blocks-json
-                10.as = data
-            }
-        }
-    }
-}
-```
-
-Map your Content Blocks onto it in your site package's TypoScript:
-
-```typoscript
-tt_content.vendor_mycontentblock =< lib.contentBlock
-```
+That's it — no TypoScript mapping is needed for your Content Blocks:
+EXT:content_blocks maps them automatically onto `lib.contentBlock` (see
+[How it works](#how-it-works)).
 
 ## Verify
 
@@ -88,6 +68,50 @@ extension's processor output; everything inside `data` comes from
 
 If the block renders but a field is missing or `null`, see
 [Troubleshooting](troubleshooting.md).
+
+## How it works
+
+`lib.contentBlock` comes from EXT:content_blocks — a FLUIDTEMPLATE served
+by the `content-blocks` data processor. For every Content Block with a
+frontend template (`templates/frontend.html`), EXT:content_blocks
+auto-generates the mapping
+
+```typoscript
+tt_content.vendor_mycontentblock =< lib.contentBlock
+```
+
+This extension's Site Set replaces `lib.contentBlock` with a clone of
+EXT:headless' `lib.contentElement` whose `fields.data` is produced by the
+`nb-content-blocks-json` data processor:
+
+```typoscript
+lib.contentBlock < lib.contentElement
+lib.contentBlock {
+    fields {
+        data = TEXT
+        data {
+            dataProcessing {
+                10 = nb-content-blocks-json
+                10.as = data
+            }
+        }
+    }
+}
+```
+
+Because the auto-generated mapping points at `lib.contentBlock`, your
+Content Blocks render as JSON without any TypoScript on your side. Only
+two cases need a manual mapping:
+
+- Content Blocks **without** a frontend template are not auto-mapped.
+- Custom content elements that are not Content Blocks.
+
+```typoscript
+tt_content.vendor_puredatablock =< lib.contentBlock
+```
+
+How the processor turns a record into the `data` JSON is covered in
+[Architecture](concepts/architecture.md).
 
 ## Next steps
 
