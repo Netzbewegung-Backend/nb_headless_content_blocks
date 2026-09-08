@@ -5,12 +5,18 @@
 > command and the schema contract tests (issue #22); phase 2 shipped the
 > HTTP endpoint (`SchemaEndpointMiddleware`, per-site gating via site
 > settings with an optional access token, see
-> [the how-to](../how-to/publish-json-schema.md)). Phase 3 remains
-> open. This is a historical design record; where wording differs from
-> the code, **the code wins** — notably the implementation emits
-> **draft-07** with `definitions` (instead of the 2020-12/`$defs` sketch
-> below) for the widest tool support, and the endpoint is delivered as
-> middleware after site resolution (not as a page type).
+> [the how-to](../how-to/publish-json-schema.md)) plus a byte-stable
+> sorted generator output frozen by a committed artifact
+> (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).
+> Phase 3 remains open. The open questions of section 8 are decided:
+> base contract (not per-site), URL strategy per the how-to, validator
+> `justinrainbow/json-schema`, headless wrapper included. This is a
+> historical design record; where wording differs from the code, **the
+> code wins** — notably the implementation emits **draft-07** with
+> `definitions` (instead of the 2020-12/`$defs` sketch below), maps
+> field types as nullable unions (see the contract tests instead of
+> the sketch table below), and the endpoint is delivered as middleware
+> after site resolution (not as a page type).
 
 Date: 2026-09-05
 Scope: potential new `SchemaGenerator` + CLI command / HTTP endpoint; no change
