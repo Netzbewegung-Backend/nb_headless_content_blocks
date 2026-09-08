@@ -34,6 +34,49 @@ and tools can reference them, e.g.:
 Re-run the command whenever Content Block definitions change — the
 schemas are derived from the same definitions the JSON conversion uses.
 
+## Serve the schemas via HTTP endpoint
+
+Instead of (or in addition to) generating files, this extension ships a
+page type that serves the combined schema:
+
+```
+https://cms.example.org/?type=1788873600
+```
+
+The response has the content type `application/schema+json` and is
+always generated from the currently registered Content Block
+definitions (the page is rendered uncached).
+
+Access is gated:
+
+- **Development application contexts** (e.g. local DDEV instances):
+  the endpoint is available out of the box.
+- **Any other context** (Production, Staging): the endpoint answers
+  with `404` unless the site setting `schemaEndpoint.enabled` is turned
+  on — Settings → Site Settings → "JSON Schema endpoint" or directly in
+  the site's `config.yaml`:
+
+  ```yaml
+  settings:
+    schemaEndpoint.enabled: true
+    schemaEndpoint.idBase: 'https://cms.example.org/api/schema'
+  ```
+
+`schemaEndpoint.idBase` (optional) is used as the `$id` base of the
+served schema, so consumers get stable schema URLs exactly like with
+the generated files.
+
+Sites using a `PageTypeSuffix` route enhancer must map the type to a
+URL segment first, e.g.:
+
+```yaml
+routeEnhancers:
+  PageTypeSuffix:
+    type: PageTypeSuffix
+    map:
+      schema.json: 1788873600
+```
+
 ## What the schemas describe
 
 The schemas describe the **base contract** (see

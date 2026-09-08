@@ -10,6 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- JSON Schema HTTP endpoint: page type `1788873600` (`?type=1788873600`)
+  serves the combined Content Block schema as `application/schema+json`.
+  Available in Development application contexts; everywhere else it answers
+  with 404 unless the site setting `schemaEndpoint.enabled` is turned on
+  (`schemaEndpoint.idBase` configures the `$id` base of the served schema).
+  See `docs/how-to/generate-json-schema.md` (issue #22, phase 2).
+
 ## [0.1.0] - 2026-09-04
 
 Rewrite of the ToArray conversion (see `docs/design/improve_to_array.md`).

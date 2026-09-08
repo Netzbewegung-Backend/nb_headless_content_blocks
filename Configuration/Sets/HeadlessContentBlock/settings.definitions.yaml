@@ -1,0 +1,17 @@
+categories:
+  schemaEndpoint:
+    label: 'JSON Schema endpoint'
+
+settings:
+  schemaEndpoint.enabled:
+    label: 'Enable the JSON Schema endpoint outside Development contexts'
+    description: 'The endpoint (page type 1788873600) delivers the combined Content Block schema. It is always available in Development application contexts; enable this setting to serve it in Production/Staging as well.'
+    type: bool
+    default: false
+    category: schemaEndpoint
+  schemaEndpoint.idBase:
+    label: 'Base URL for the $id fields of the endpoint schema'
+    description: 'For example https://cms.example.org/api/schema — the combined schema is served with $id <idBase>/content-blocks.schema.json.'
+    type: string
+    default: ''
+    category: schemaEndpoint

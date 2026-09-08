@@ -25,7 +25,8 @@ Classes/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
 ├── Schema/
-│   └── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
+│   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
+│   └── SchemaEndpoint.php                    # HTTP endpoint (page type 1788873600) serving the combined schema
 ├── FieldTransformer/
 │   ├── FieldValueTransformerChain.php
 │   ├── FieldValueTransformerInterface.php
@@ -54,7 +55,8 @@ Configuration/
 ├── Services.yaml                             # tagged services: nb_headless.normalizer,
 │                                             # nb_headless.field_value_transformer
 └── Sets/HeadlessContentBlock/
-    ├── setup.typoscript
+    ├── setup.typoscript                      # lib.contentBlock + schema endpoint page type
+    ├── settings.definitions.yaml             # site settings: schemaEndpoint.enabled / .idBase
     └── config.yaml
 
 docs/
@@ -194,9 +196,15 @@ Tests/
 │   │   └── Fixtures/
 │   │       ├── DataSet/ (CSV fixtures)
 │   │       └── Files/ (test images)
+│   ├── Schema/
+│   │   ├── JsonSchemaGeneratorTest.php
+│   │   └── JsonSchemaContractTest.php                  # fixtures validated against schema
 │   └── Frontend/
 │       ├── ContentBlocksJsonResponseTest.php           # e2e: full frontend request,
 │       │                                               # headless page JSON frozen (issue #18)
+│       ├── SchemaEndpointTest.php                      # e2e: schema endpoint enabled via
+│       │                                               # site setting (issue #22, phase 2)
+│       ├── SchemaEndpointDisabledTest.php              # e2e: endpoint 404s by default
 │       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/
     ├── Configuration/Sets/TestFrontend/                 # fixture site set: maps test
