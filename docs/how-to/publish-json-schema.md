@@ -71,6 +71,14 @@ Access is gated:
 |---|---|---|
 | `schemaEndpoint.enabled` | `false` | serve the schema outside Development contexts |
 | `schemaEndpoint.idBase` | `''` | `$id` base of the served schema |
+| `schemaEndpoint.token` | `''` | require this token on every request (any context) |
+
+With a configured `token`, every request must authenticate via the
+`X-API-Token` request header. A missing or wrong token answers with
+`404`, indistinguishable from a disabled endpoint, so the route does
+not leak whether it exists. (A query parameter is deliberately not
+supported: the frontend cHash mechanism strips unknown GET parameters
+from page-type URLs, and tokens in URLs would leak into access logs.)
 
 Because the endpoint is a page type of the site, the setting applies
 **per site** — a multisite installation can publish the schema on one
@@ -91,7 +99,25 @@ routeEnhancers:
 (all Content Blocks, field identifiers, field types). That is usually
 fine for development and staging — which is why it is disabled for
 everything else by default. On production, prefer option 1 (static
-files) or make a deliberate decision to enable the setting.
+files), enable the setting deliberately, or protect the endpoint with
+`schemaEndpoint.token`.
+
+## URL strategy and versioning
+
+The `$id` URLs become public API once consumers reference them. Keep
+them stable:
+
+- Do not change the `$id` base without a migration plan; the `$id` can
+  carry a version segment (e.g. `.../v1/content-blocks.schema.json`).
+- The endpoint always reflects the current installation; static files
+  let you pin a version explicitly.
+
+## Browser-based tooling and CORS
+
+Editors and IDE extensions fetch schemas without a browser origin, so
+CORS is usually not an issue. If browser-based tooling must fetch the
+endpoint directly, add `Access-Control-Allow-Origin` headers on a
+reverse proxy in front of the CMS.
 
 Background and the phased delivery plan:
 [JSON Schema generation](../design/json_schema_generation.md) (design

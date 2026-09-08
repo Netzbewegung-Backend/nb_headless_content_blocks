@@ -15,3 +15,9 @@ settings:
     type: string
     default: ''
     category: schemaEndpoint
+  schemaEndpoint.token:
+    label: 'Access token for the JSON Schema endpoint'
+    description: 'When set, every endpoint request must send this token via the X-API-Token header — in any application context. Requests with a missing or wrong token get a 404.'
+    type: string
+    default: ''
+    category: schemaEndpoint

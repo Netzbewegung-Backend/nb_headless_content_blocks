@@ -158,5 +158,7 @@ settings:
   schemaEndpoint.enabled: true
 ```
 
-When a `PageTypeSuffix` route enhancer is configured, also map the type
-to a URL segment. See [Publish JSON Schema](how-to/publish-json-schema.md).
+When a `schemaEndpoint.token` is configured, every request must send
+it via the `X-API-Token` header. When a `PageTypeSuffix` route enhancer
+is configured, also map the type to a URL segment. See
+[Publish JSON Schema](how-to/publish-json-schema.md).

@@ -26,7 +26,8 @@ Classes/
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
 ├── Schema/
 │   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
-│   └── SchemaEndpoint.php                    # HTTP endpoint (page type 1788873600) serving the combined schema
+│   ├── SchemaEndpoint.php                    # HTTP endpoint (page type 1788873600) serving the combined schema
+│   └── SchemaEndpointAccess.php              # pure gating helper (dev context / setting / token)
 ├── FieldTransformer/
 │   ├── FieldValueTransformerChain.php
 │   ├── FieldValueTransformerInterface.php
@@ -184,6 +185,8 @@ Tests/
 ├── Unit/
 │   ├── Event/
 │   │   └── ModifyArrayRecursiveToArrayEventTest.php
+│   ├── Schema/
+│   │   └── SchemaEndpointAccessTest.php      # gating matrix (dev / setting / token)
 │   └── Normalization/
 │       ├── RecordArrayBuilderTest.php
 │       └── Normalizer/
@@ -207,6 +210,7 @@ Tests/
 │       ├── SchemaEndpointTest.php                      # e2e: schema endpoint enabled via
 │       │                                               # site setting (issue #22, phase 2)
 │       ├── SchemaEndpointDisabledTest.php              # e2e: endpoint 404s by default
+│       ├── SchemaEndpointTokenTest.php                 # e2e: token required when configured
 │       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/
     ├── Configuration/Sets/TestFrontend/                 # fixture site set: maps test

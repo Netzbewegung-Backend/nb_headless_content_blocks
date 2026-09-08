@@ -40,5 +40,6 @@ schemaEndpoint {
         userFunc = Netzbewegung\NbHeadlessContentBlocks\Schema\SchemaEndpoint->deliverSchema
         enabled = {$schemaEndpoint.enabled}
         idBase = {$schemaEndpoint.idBase}
+        token = {$schemaEndpoint.token}
     }
 }

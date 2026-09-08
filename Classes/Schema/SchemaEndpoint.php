@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\Schema;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Attribute\AsAllowedCallable;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
@@ -17,7 +18,12 @@ use TYPO3\CMS\Core\Http\JsonResponse;
  * Development application contexts, or anywhere else only when the
  * site setting "schemaEndpoint.enabled" is turned on — otherwise the
  * endpoint answers with 404 to avoid leaking the content model of a
- * production site.
+ * production site. A configured site setting "schemaEndpoint.token"
+ * additionally requires authentication on every request (X-API-Token
+ * header — a query parameter is not supported, because the frontend
+ * cHash mechanism strips unknown GET parameters from page-type URLs);
+ * a missing or wrong token also answers with 404, indistinguishable
+ * from a disabled endpoint.
  */
 final class SchemaEndpoint
 {
@@ -32,13 +38,19 @@ final class SchemaEndpoint
 
     /**
      * @param array<string, mixed> $conf TypoScript conf of the USER object:
-     *        "enabled" and "idBase", fed from the site settings
-     *        schemaEndpoint.enabled / schemaEndpoint.idBase
+     *        "enabled", "idBase" and "token", fed from the site settings
+     *        schemaEndpoint.enabled / schemaEndpoint.idBase / schemaEndpoint.token
      */
     #[AsAllowedCallable]
-    public function deliverSchema(string $content, array $conf): string
+    public function deliverSchema(string $content, array $conf, ?ServerRequestInterface $request = null): string
     {
-        if (!self::accessIsAllowed($conf)) {
+        $enabled = in_array(strtolower(trim((string)($conf['enabled'] ?? ''))), ['1', 'true', 'yes'], true);
+        if (!SchemaEndpointAccess::isAllowed(
+            Environment::getContext()->isDevelopment(),
+            $enabled,
+            trim((string)($conf['token'] ?? '')),
+            $this->providedToken($request)
+        )) {
             throw new ImmediateResponseException(
                 new JsonResponse(
                     ['error' => 'Schema endpoint is disabled. It is available in Development application contexts or when the site setting "schemaEndpoint.enabled" is enabled.'],
@@ -58,16 +70,11 @@ final class SchemaEndpoint
         );
     }
 
-    /**
-     * @param array<string, mixed> $conf
-     */
-    private function accessIsAllowed(array $conf): bool
+    private function providedToken(?ServerRequestInterface $request): string
     {
-        if (Environment::getContext()->isDevelopment()) {
-            return true;
+        if ($request === null) {
+            return '';
         }
-        // Site settings may arrive as "1"/"true" (or an empty string when
-        // the boolean setting defaults to false), never as PHP bool.
-        return in_array(strtolower(trim((string)($conf['enabled'] ?? ''))), ['1', 'true', 'yes'], true);
+        return trim($request->getHeaderLine('X-API-Token'));
     }
 }
