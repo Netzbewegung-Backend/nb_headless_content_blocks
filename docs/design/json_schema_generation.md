@@ -3,13 +3,14 @@
 > Status: **PHASES 1–2 IMPLEMENTED (2026-09-08)** — phase 1 shipped
 > `JsonSchemaGenerator`, the `nbheadlesscontentblocks:generate-schema`
 > command and the schema contract tests (issue #22); phase 2 shipped the
-> HTTP endpoint (page type `?type=1788873600`, gated to Development
-> contexts or the site setting `schemaEndpoint.enabled`, see
-> [the how-to](../how-to/generate-json-schema.md)). Phase 3 remains
+> HTTP endpoint (`SchemaEndpointMiddleware`, per-site gating via site
+> settings with an optional access token, see
+> [the how-to](../how-to/publish-json-schema.md)). Phase 3 remains
 > open. This is a historical design record; where wording differs from
 > the code, **the code wins** — notably the implementation emits
 > **draft-07** with `definitions` (instead of the 2020-12/`$defs` sketch
-> below) for the widest tool support.
+> below) for the widest tool support, and the endpoint is delivered as
+> middleware after site resolution (not as a page type).
 
 Date: 2026-09-05
 Scope: potential new `SchemaGenerator` + CLI command / HTTP endpoint; no change

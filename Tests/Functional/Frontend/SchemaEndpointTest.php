@@ -12,14 +12,15 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
- * End-to-end tests of the JSON Schema endpoint (page type 1788873600)
- * with the endpoint explicitly enabled via the site setting
+ * End-to-end tests of the JSON Schema endpoint middleware with the
+ * endpoint explicitly enabled via the site setting
  * "schemaEndpoint.enabled" (functional tests run in the "Testing"
  * application context, which is not Development, so only the setting
  * can grant access here).
  *
  * Freezes the delivery contract of the endpoint response: status code,
- * content type, $id and the oneOf block types of the combined schema.
+ * content type, ETag/304 behavior, $id and the oneOf block types of
+ * the combined schema.
  *
  * Deprecations are ignored because loading EXT:headless in a TYPO3 14.3
  * test instance may trigger core deprecation-108345 (see
@@ -58,6 +59,7 @@ final class SchemaEndpointTest extends FunctionalTestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/schema+json', $response->getHeaderLine('Content-Type'));
+        self::assertNotSame('', $response->getHeaderLine('ETag'));
 
         $schema = $this->decodeJsonResponse($response);
 
@@ -90,11 +92,56 @@ final class SchemaEndpointTest extends FunctionalTestCase
         }
     }
 
+    #[Test]
+    public function matchingEtagIsAnsweredWithNotModified(): void
+    {
+        $eTag = $this->executeFrontendSubRequest($this->schemaEndpointRequest())->getHeaderLine('ETag');
+
+        $response = $this->executeFrontendSubRequest(
+            $this->schemaEndpointRequest()->withHeader('If-None-Match', $eTag)
+        );
+
+        self::assertSame(304, $response->getStatusCode());
+        self::assertSame('', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function otherRequestMethodsAreRejected(): void
+    {
+        $response = $this->executeFrontendSubRequest(
+            $this->schemaEndpointRequest()->withMethod('POST')
+        );
+
+        self::assertSame(405, $response->getStatusCode());
+        self::assertSame('GET, HEAD', $response->getHeaderLine('Allow'));
+    }
+
+    #[Test]
+    public function requestsOutsideTheEndpointPathArePassedThrough(): void
+    {
+        $response = $this->executeFrontendSubRequest(
+            $this->request('/some/other/path')
+        );
+
+        self::assertNotSame(200, $response->getStatusCode());
+        self::assertStringNotContainsString('json-schema.org', (string)$response->getBody());
+    }
+
     private function schemaEndpointRequest(): InternalRequest
     {
-        return (new InternalRequest('https://example.com/'))
-            ->withPageId(1)
-            ->withQueryParameter('type', '1788873600');
+        return $this->request('/api/schema/content-blocks.schema.json');
+    }
+
+    private function request(string $path): InternalRequest
+    {
+        return (new InternalRequest('https://example.com' . $path))
+            ->withServerParams([
+                'SCRIPT_NAME' => '/index.php',
+                'HTTP_HOST' => 'example.com',
+                'SERVER_NAME' => 'example.com',
+                'HTTPS' => 'on',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ]);
     }
 
     /**

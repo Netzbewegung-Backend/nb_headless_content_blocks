@@ -56,9 +56,8 @@ services:
 
   Netzbewegung\NbHeadlessContentBlocks\Schema\JsonSchemaGenerator: ~
 
-  # Public: fetched via GeneralUtility::callUserFunction() from TypoScript
-  # (USER userFunc of the schema endpoint page type), not injected anywhere
-  Netzbewegung\NbHeadlessContentBlocks\Schema\SchemaEndpoint:
+  # Public: resolved through the middleware dispatcher, not injected anywhere
+  Netzbewegung\NbHeadlessContentBlocks\Middleware\SchemaEndpointMiddleware:
     public: true
 
   Netzbewegung\NbHeadlessContentBlocks\Command\GenerateSchemaCommand:

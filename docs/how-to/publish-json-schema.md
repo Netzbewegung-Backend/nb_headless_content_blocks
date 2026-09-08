@@ -41,16 +41,24 @@ regenerate and diff it.
 
 ## Option 2: HTTP endpoint
 
-The extension ships a page type that serves the combined schema over
-HTTP, so no file copy step is needed:
+The extension ships a PSR-15 middleware that serves the combined schema
+over HTTP, so no file copy step is needed:
 
 ```
-https://cms.example.org/?type=1788873600
+https://cms.example.org/api/schema/content-blocks.schema.json
 ```
 
-The response has the content type `application/schema+json` and is
-always generated from the currently registered Content Block
-definitions (the page is rendered uncached).
+The response has the content type `application/schema+json`, an `ETag`
+(answering `304 Not Modified` on `If-None-Match`) and is always
+generated from the currently registered Content Block definitions.
+Only `GET`/`HEAD` are allowed — other methods get `405`.
+
+The middleware runs after site resolution and before page routing: the
+path is **independent of the site base** and works for every site and
+language of the installation, and the settings apply **per site** — a
+multisite installation can publish the schema on one site and keep it
+disabled on the others. Note that a CMS page at the same path becomes
+unreachable while the endpoint answers.
 
 Access is gated:
 
@@ -70,6 +78,7 @@ Access is gated:
 | Setting | Default | Meaning |
 |---|---|---|
 | `schemaEndpoint.enabled` | `false` | serve the schema outside Development contexts |
+| `schemaEndpoint.path` | `/api/schema` | absolute path prefix, independent of the site base |
 | `schemaEndpoint.idBase` | `''` | `$id` base of the served schema |
 | `schemaEndpoint.token` | `''` | require this token on every request (any context) |
 
@@ -77,23 +86,9 @@ With a configured `token`, every request must authenticate via the
 `X-API-Token` request header. A missing or wrong token answers with
 `404`, indistinguishable from a disabled endpoint, so the route does
 not leak whether it exists. (A query parameter is deliberately not
-supported: the frontend cHash mechanism strips unknown GET parameters
-from page-type URLs, and tokens in URLs would leak into access logs.)
-
-Because the endpoint is a page type of the site, the setting applies
-**per site** — a multisite installation can publish the schema on one
-site and keep it disabled on the others.
-
-Sites using a `PageTypeSuffix` route enhancer must map the type to a
-URL segment first, e.g.:
-
-```yaml
-routeEnhancers:
-  PageTypeSuffix:
-    type: PageTypeSuffix
-    map:
-      schema.json: 1788873600
-```
+supported: tokens in URLs would leak into access logs.) Token-protected
+responses are served with `Cache-Control: private, no-store`, public
+ones with `public, max-age=3600`.
 
 **Security note:** the endpoint publishes your whole content model
 (all Content Blocks, field identifiers, field types). That is usually

@@ -12,14 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- JSON Schema HTTP endpoint: page type `1788873600` (`?type=1788873600`)
-  serves the combined Content Block schema as `application/schema+json`.
-  Available in Development application contexts; everywhere else it answers
-  with 404 unless the site setting `schemaEndpoint.enabled` is turned on
-  (`schemaEndpoint.idBase` configures the `$id` base of the served schema).
+- JSON Schema HTTP endpoint: the `SchemaEndpointMiddleware` (after site
+  resolution, before page routing) serves the combined Content Block
+  schema at `<schemaEndpoint.path>/content-blocks.schema.json`
+  (default `/api/schema`, independent of the site base) as
+  `application/schema+json` with ETag/304 and GET/HEAD-only (405).
+  Available in Development application contexts; everywhere else it
+  answers with 404 unless the site setting `schemaEndpoint.enabled` is
+  turned on (`schemaEndpoint.idBase` configures the `$id` base).
   An optional `schemaEndpoint.token` requires authentication on every
-  request (`X-API-Token` header) in any application context. See `docs/how-to/publish-json-schema.md`
-  (issue #22, phase 2).
+  request (`X-API-Token` header) in any application context. See
+  `docs/how-to/publish-json-schema.md` (issue #22, phase 2).
 - Drift guard: the combined schema generator output is sorted (type names,
   `oneOf` branches, definitions) and frozen byte-exactly by a committed
   artifact (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).

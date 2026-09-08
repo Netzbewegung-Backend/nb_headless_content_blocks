@@ -12,9 +12,9 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
- * End-to-end tests of the JSON Schema endpoint (page type 1788873600)
- * with the site setting "schemaEndpoint.token" configured: the token is
- * then required on every request via the X-API-Token header (functional
+ * End-to-end tests of the JSON Schema endpoint middleware with the
+ * site setting "schemaEndpoint.token" configured: the token is then
+ * required on every request via the X-API-Token header (functional
  * tests run in the "Testing" application context, so even the enabled
  * setting alone must not be enough). A missing or wrong token answers
  * with 404, indistinguishable from a disabled endpoint.
@@ -82,9 +82,14 @@ final class SchemaEndpointTokenTest extends FunctionalTestCase
 
     private function schemaEndpointRequest(): InternalRequest
     {
-        return (new InternalRequest('https://example.com/'))
-            ->withPageId(1)
-            ->withQueryParameter('type', '1788873600');
+        return (new InternalRequest('https://example.com/api/schema/content-blocks.schema.json'))
+            ->withServerParams([
+                'SCRIPT_NAME' => '/index.php',
+                'HTTP_HOST' => 'example.com',
+                'SERVER_NAME' => 'example.com',
+                'HTTPS' => 'on',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ]);
     }
 
     private function assertCombinedSchema(ResponseInterface $response): void

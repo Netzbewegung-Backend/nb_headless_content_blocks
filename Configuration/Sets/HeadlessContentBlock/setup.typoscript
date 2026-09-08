@@ -13,33 +13,3 @@ lib.contentBlock {
         }
     }
 }
-
-# JSON Schema endpoint (issue #22, phase 2): delivers the combined
-# Content Block schema via ?type=1788873600. Available in Development
-# application contexts, or when the site setting
-# "schemaEndpoint.enabled" is turned on (see settings.definitions.yaml).
-# The schema derives from the Content Block definitions, so the page
-# is rendered uncached to always reflect the current definitions.
-schemaEndpoint = PAGE
-schemaEndpoint {
-    typeNum = 1788873600
-
-    config {
-        disableAllHeaderCode = 1
-        no_cache = 1
-        admPanel = 0
-        debug = 0
-        additionalHeaders {
-            10.header = Content-Type: application/schema+json
-            10.replace = 1
-        }
-    }
-
-    10 = USER
-    10 {
-        userFunc = Netzbewegung\NbHeadlessContentBlocks\Schema\SchemaEndpoint->deliverSchema
-        enabled = {$schemaEndpoint.enabled}
-        idBase = {$schemaEndpoint.idBase}
-        token = {$schemaEndpoint.token}
-    }
-}

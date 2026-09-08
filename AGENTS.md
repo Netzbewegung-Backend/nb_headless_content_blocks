@@ -26,8 +26,10 @@ Classes/
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
 ├── Schema/
 │   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
-│   ├── SchemaEndpoint.php                    # HTTP endpoint (page type 1788873600) serving the combined schema
 │   └── SchemaEndpointAccess.php              # pure gating helper (dev context / setting / token)
+├── Middleware/
+│   └── SchemaEndpointMiddleware.php          # HTTP endpoint serving the combined schema (after site
+│                                             # resolution, before page routing; Configuration/RequestMiddlewares.php)
 ├── FieldTransformer/
 │   ├── FieldValueTransformerChain.php
 │   ├── FieldValueTransformerInterface.php
@@ -55,9 +57,11 @@ Classes/
 Configuration/
 ├── Services.yaml                             # tagged services: nb_headless.normalizer,
 │                                             # nb_headless.field_value_transformer
+├── RequestMiddlewares.php                    # schema endpoint middleware (after site resolution)
 └── Sets/HeadlessContentBlock/
-    ├── setup.typoscript                      # lib.contentBlock + schema endpoint page type
-    ├── settings.definitions.yaml             # site settings: schemaEndpoint.enabled / .idBase
+    ├── setup.typoscript                      # lib.contentBlock
+    ├── settings.definitions.yaml             # site settings: schemaEndpoint.enabled / .path /
+    │                                         # .idBase / .token
     └── config.yaml
 
 docs/
@@ -209,7 +213,7 @@ Tests/
 │       │                                               # headless page JSON frozen (issue #18)
 │       ├── SchemaEndpointTest.php                      # e2e: schema endpoint enabled via
 │       │                                               # site setting (issue #22, phase 2)
-│       ├── SchemaEndpointDisabledTest.php              # e2e: endpoint 404s by default
+│       ├── SchemaEndpointDisabledTest.php              # e2e: endpoint passes through by default
 │       ├── SchemaEndpointTokenTest.php                 # e2e: token required when configured
 │       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/

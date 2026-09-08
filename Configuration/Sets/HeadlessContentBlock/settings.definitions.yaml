@@ -5,9 +5,15 @@ categories:
 settings:
   schemaEndpoint.enabled:
     label: 'Enable the JSON Schema endpoint outside Development contexts'
-    description: 'The endpoint (page type 1788873600) delivers the combined Content Block schema. It is always available in Development application contexts; enable this setting to serve it in Production/Staging as well.'
+    description: 'The endpoint (middleware) delivers the combined Content Block schema under the configured path. It is always available in Development application contexts; enable this setting to serve it in Production/Staging as well.'
     type: bool
     default: false
+    category: schemaEndpoint
+  schemaEndpoint.path:
+    label: 'Path of the JSON Schema endpoint'
+    description: 'Absolute path prefix without trailing slash, e.g. /api/schema. The combined schema is served at <path>/content-blocks.schema.json. Independent of the site base; a page at the same path becomes unreachable while the endpoint answers.'
+    type: string
+    default: '/api/schema'
     category: schemaEndpoint
   schemaEndpoint.idBase:
     label: 'Base URL for the $id fields of the endpoint schema'

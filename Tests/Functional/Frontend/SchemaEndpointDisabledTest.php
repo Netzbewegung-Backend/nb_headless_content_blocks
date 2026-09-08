@@ -6,17 +6,18 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Tests\Functional\Frontend;
 
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
- * End-to-end tests of the JSON Schema endpoint (page type 1788873600)
- * with the site setting "schemaEndpoint.enabled" left at its default
- * (false). Functional tests run in the "Testing" application context,
- * which is not Development — the endpoint must therefore answer with
- * 404, so the content model of a site is never leaked by default.
+ * End-to-end tests of the JSON Schema endpoint middleware with the
+ * site setting "schemaEndpoint.enabled" left at its default (false).
+ * Functional tests run in the "Testing" application context, which is
+ * not Development — the middleware must pass the request through to
+ * regular page routing, which answers with a regular 404 (there is no
+ * page at the endpoint path), so the content model of a site is never
+ * leaked by default.
  *
  * Deprecations are ignored because loading EXT:headless in a TYPO3 14.3
  * test instance may trigger core deprecation-108345 (see
@@ -49,30 +50,21 @@ final class SchemaEndpointDisabledTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function disabledEndpointAnswersWith404(): void
+    public function disabledEndpointPassesTheRequestThrough(): void
     {
         $response = $this->executeFrontendSubRequest(
-            (new InternalRequest('https://example.com/'))
-                ->withPageId(1)
-                ->withQueryParameter('type', '1788873600')
+            (new InternalRequest('https://example.com/api/schema/content-blocks.schema.json'))
+                ->withServerParams([
+                    'SCRIPT_NAME' => '/index.php',
+                    'HTTP_HOST' => 'example.com',
+                    'SERVER_NAME' => 'example.com',
+                    'HTTPS' => 'on',
+                    'REMOTE_ADDR' => '127.0.0.1',
+                ])
         );
 
         self::assertSame(404, $response->getStatusCode());
-        self::assertSame(
-            ['error' => 'Schema endpoint is disabled. It is available in Development application contexts or when the site setting "schemaEndpoint.enabled" is enabled.'],
-            $this->decodeJsonResponse($response)
-        );
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function decodeJsonResponse(ResponseInterface $response): array
-    {
-        $json = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        self::assertIsArray($json);
-
-        return $json;
+        self::assertStringNotContainsString('json-schema.org', (string)$response->getBody());
     }
 
     private function writeSiteConfiguration(): void

@@ -141,14 +141,13 @@ see [Render containers](how-to/render-containers.md).
 
 ## The JSON Schema endpoint answers with 404
 
-**Symptom:** `https://cms.example.org/?type=1788873600` returns a `404`
-JSON error (or the site's 404 page), not the schema.
+**Symptom:** `https://cms.example.org/api/schema/content-blocks.schema.json`
+returns a `404` (the site's 404 page or a JSON error), not the schema.
 
 **Cause:** the endpoint is gated. It is only available in Development
 application contexts; everywhere else the site setting
-`schemaEndpoint.enabled` must be turned on. A missing `PageTypeSuffix`
-mapping looks different: the URL then falls back to regular page
-rendering instead of answering with the JSON error.
+`schemaEndpoint.enabled` must be turned on. A configured
+`schemaEndpoint.token` that is missing or wrong looks the same.
 
 **Fix:** enable the site setting (Settings → Site Settings →
 "JSON Schema endpoint", or in the site's `config.yaml`):
@@ -159,6 +158,17 @@ settings:
 ```
 
 When a `schemaEndpoint.token` is configured, every request must send
-it via the `X-API-Token` header. When a `PageTypeSuffix` route enhancer
-is configured, also map the type to a URL segment. See
+it via the `X-API-Token` header. Also verify the request path matches
+the configured `schemaEndpoint.path`. See
 [Publish JSON Schema](how-to/publish-json-schema.md).
+
+## The JSON Schema endpoint answers with 405 Method Not Allowed
+
+**Symptom:** a request to the schema endpoint returns `405` with
+`Allow: GET, HEAD`.
+
+**Cause:** the endpoint only serves `GET`/`HEAD` requests — `POST` and
+friends are rejected to keep caching semantics unambiguous.
+
+**Fix:** fetch the schema read-only. It is regenerated on demand; do
+not submit anything to the endpoint.
