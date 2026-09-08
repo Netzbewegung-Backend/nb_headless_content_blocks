@@ -53,6 +53,8 @@ final class JsonSchemaGenerator
         foreach ($this->getContentElementTableDefinition()->contentTypeDefinitionCollection as $typeDefinition) {
             $typeNames[] = (string)$typeDefinition->getTypeName();
         }
+        // sorted, so generated artifacts stay byte-stable across environments
+        sort($typeNames);
         return $typeNames;
     }
 
@@ -65,7 +67,7 @@ final class JsonSchemaGenerator
                 $typeName = (string)$typeDefinition->getTypeName();
                 $definitionKey = $this->definitionKey('ctype_' . $typeName);
                 $this->recordDefinitions[$definitionKey] = $this->buildDataObject($typeDefinition);
-                $branches[] = [
+                $branches[$typeName] = [
                     'type' => 'object',
                     'properties' => [
                         'id' => ['type' => 'integer'],
@@ -77,10 +79,12 @@ final class JsonSchemaGenerator
                 ];
             }
         }
+        // sorted, so generated artifacts stay byte-stable across environments
+        ksort($branches);
         $schema = [
             '$schema' => self::SCHEMA_DRAFT,
             'title' => 'Content Block elements',
-            'oneOf' => $branches,
+            'oneOf' => array_values($branches),
             'definitions' => $this->getDefinitions(),
         ];
         if ($idBase !== '') {
@@ -300,6 +304,8 @@ final class JsonSchemaGenerator
 
     private function getDefinitions(): array
     {
+        // sorted, so generated artifacts stay byte-stable across environments
+        ksort($this->recordDefinitions);
         return array_merge($this->getSharedDefinitions(), $this->recordDefinitions);
     }
 

@@ -1,0 +1,672 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Content Block elements",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_collectiontest"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_collectiontest"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_coloremailslug"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_coloremailslug"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_containerblock"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_containerblock"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_filetest"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_filetest"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_flexformtest"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_flexformtest"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_foldertest"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_foldertest"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_headless"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_headless"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_richtext"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_richtext"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_simple"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_simple"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_textarea"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_textarea"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_yamlbroken"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_yamlbroken"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "const": "test_yamledges"
+                },
+                "colPos": {
+                    "type": "integer"
+                },
+                "appearance": {
+                    "type": "object"
+                },
+                "data": {
+                    "$ref": "#/definitions/ctype_test_yamledges"
+                }
+            }
+        }
+    ],
+    "definitions": {
+        "linkObject": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object"
+                },
+                "attr": {
+                    "type": "object"
+                }
+            }
+        },
+        "fileObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "alt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "publicUrl": {
+                    "type": "string"
+                },
+                "thumbnails": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "errorObject": {
+            "type": "object",
+            "required": [
+                "__errorMessage"
+            ],
+            "properties": {
+                "__errorMessage": {
+                    "type": "string"
+                }
+            }
+        },
+        "categoryObject": {
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": "integer"
+                },
+                "pid": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "ctype_test_collectiontest": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/record_test_collectiontest_my_items"
+                    }
+                }
+            }
+        },
+        "ctype_test_coloremailslug": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_color": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_email": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_slug": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_containerblock": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_filetest": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_image": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/fileObject"
+                        },
+                        {
+                            "$ref": "#/definitions/errorObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "my_images": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/fileObject"
+                            },
+                            {
+                                "$ref": "#/definitions/errorObject"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "ctype_test_flexformtest": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_flexform": {
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_foldertest": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_folder": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ctype_test_headless": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_richtext": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_richtext": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_simple": {
+            "type": "object",
+            "properties": {
+                "bodytext": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/categoryObject"
+                    }
+                },
+                "my_collection": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/record_test_simple_my_collection"
+                    }
+                },
+                "my_datetime": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "date-time"
+                },
+                "my_json": {
+                    "type": [
+                        "object",
+                        "array",
+                        "null"
+                    ]
+                },
+                "my_link": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/linkObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "my_number": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "my_password": {
+                    "const": ""
+                },
+                "my_select": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "my_text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_textarea": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_textarea": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_yamlbroken": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_yamledges": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "my_unprocessed_image": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/fileObject"
+                        },
+                        {
+                            "$ref": "#/definitions/errorObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "record_test_collectiontest_my_items": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "quantity": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "record_test_simple_my_collection": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        }
+    }
+}

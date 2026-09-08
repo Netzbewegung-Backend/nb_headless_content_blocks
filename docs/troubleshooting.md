@@ -138,3 +138,25 @@ content query as well.
 
 **Fix:** add the exclusion and map the columns via `nb-container-json` —
 see [Render containers](how-to/render-containers.md).
+
+## The JSON Schema endpoint answers with 404
+
+**Symptom:** `https://cms.example.org/?type=1788873600` returns a `404`
+JSON error (or the site's 404 page), not the schema.
+
+**Cause:** the endpoint is gated. It is only available in Development
+application contexts; everywhere else the site setting
+`schemaEndpoint.enabled` must be turned on. A missing `PageTypeSuffix`
+mapping looks different: the URL then falls back to regular page
+rendering instead of answering with the JSON error.
+
+**Fix:** enable the site setting (Settings → Site Settings →
+"JSON Schema endpoint", or in the site's `config.yaml`):
+
+```yaml
+settings:
+  schemaEndpoint.enabled: true
+```
+
+When a `PageTypeSuffix` route enhancer is configured, also map the type
+to a URL segment. See [Publish JSON Schema](how-to/publish-json-schema.md).

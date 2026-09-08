@@ -198,7 +198,9 @@ Tests/
 │   │       └── Files/ (test images)
 │   ├── Schema/
 │   │   ├── JsonSchemaGeneratorTest.php
-│   │   └── JsonSchemaContractTest.php                  # fixtures validated against schema
+│   │   ├── JsonSchemaContractTest.php                  # fixtures validated against schema
+│   │   ├── CommittedSchemaArtifactTest.php             # frozen combined schema artifact
+│   │   └── Fixtures/content-blocks.schema.json         # byte-stable via sorted generator output
 │   └── Frontend/
 │       ├── ContentBlocksJsonResponseTest.php           # e2e: full frontend request,
 │       │                                               # headless page JSON frozen (issue #18)

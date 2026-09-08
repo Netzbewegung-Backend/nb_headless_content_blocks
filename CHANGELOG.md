@@ -17,7 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Available in Development application contexts; everywhere else it answers
   with 404 unless the site setting `schemaEndpoint.enabled` is turned on
   (`schemaEndpoint.idBase` configures the `$id` base of the served schema).
-  See `docs/how-to/generate-json-schema.md` (issue #22, phase 2).
+  See `docs/how-to/publish-json-schema.md` (issue #22, phase 2).
+- Drift guard: the combined schema generator output is sorted (type names,
+  `oneOf` branches, definitions) and frozen byte-exactly by a committed
+  artifact (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).
 
 ## [0.1.0] - 2026-09-04
 
