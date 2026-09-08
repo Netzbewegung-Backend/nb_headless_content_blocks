@@ -31,6 +31,11 @@ whether the extension fits your setup.
   value types in the JSON output
 - [Register a field value transformer](how-to/register-field-value-transformer.md) —
   own string field shaping (like password blanking)
+- [Generate JSON Schema](how-to/generate-json-schema.md) — JSON Schema
+  files describing the block output, for IDEs, generated types and
+  contract tests
+- [Publish JSON Schema](how-to/publish-json-schema.md) — deliver the
+  schemas to consumers: static files or the HTTP endpoint
 - [Modify fields with the PSR-14 event](how-to/modify-fields-with-event.md)
   (deprecated — prefer normalizers/transformers)
 
@@ -52,9 +57,14 @@ whether the extension fits your setup.
 ## Design records (internal)
 
 `design/` holds planning and analysis records — where wording differs from
-the code, the code wins. Notable: [IMPROVE_TO_ARRAY.md](design/IMPROVE_TO_ARRAY.md)
+the code, the code wins. Notable: [improve_to_array.md](design/improve_to_array.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
-API migration, declarative image variants) with its decisions and rationale.
+API migration, declarative image variants) with its decisions and rationale;
+[json_schema_generation.md](design/json_schema_generation.md) — the plan
+for generating JSON Schema from the Content Block definitions (issue #22;
+phases 1–2 — CLI generator, contract tests and the HTTP endpoint — are
+implemented, see [Generate JSON Schema](how-to/generate-json-schema.md)
+and [Publish JSON Schema](how-to/publish-json-schema.md)).
 
 ## Archive (internal)
 

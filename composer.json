@@ -42,6 +42,7 @@
     "b13/container": "^3.1 || ^4.0",
     "bnf/phpstan-psr-container": "^1.1",
     "friendsofphp/php-cs-fixer": "^3.22",
+    "justinrainbow/json-schema": "^5.3",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-phpunit": "^2.0",
     "phpunit/phpcov": "^10",

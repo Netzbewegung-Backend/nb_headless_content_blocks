@@ -1,0 +1,29 @@
+categories:
+  schemaEndpoint:
+    label: 'JSON Schema endpoint'
+
+settings:
+  schemaEndpoint.enabled:
+    label: 'Enable the JSON Schema endpoint outside Development contexts'
+    description: 'The endpoint (middleware) delivers the combined Content Block schema under the configured path. It is always available in Development application contexts; enable this setting to serve it in Production/Staging as well.'
+    type: bool
+    default: false
+    category: schemaEndpoint
+  schemaEndpoint.path:
+    label: 'Path of the JSON Schema endpoint'
+    description: 'Absolute path prefix without trailing slash, e.g. /api/schema. The combined schema is served at <path>/content-blocks.schema.json. Independent of the site base; requests to this exact URL are answered by the endpoint (a CMS page at the same URL becomes unreachable).'
+    type: string
+    default: '/api/schema'
+    category: schemaEndpoint
+  schemaEndpoint.idBase:
+    label: 'Base URL for the $id fields of the endpoint schema'
+    description: 'For example https://cms.example.org/api/schema — the combined schema is served with $id <idBase>/content-blocks.schema.json.'
+    type: string
+    default: ''
+    category: schemaEndpoint
+  schemaEndpoint.token:
+    label: 'Access token for the JSON Schema endpoint'
+    description: 'When set, every endpoint request must send this token via the X-API-Token header — in any application context. Requests with a missing or wrong token get a 404.'
+    type: string
+    default: ''
+    category: schemaEndpoint

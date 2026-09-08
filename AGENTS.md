@@ -15,6 +15,8 @@ TYPO3 Extension for headless Content Blocks. Converts Content Block data into JS
 
 ```
 Classes/
+├── Command/
+│   └── GenerateSchemaCommand.php            # nbheadlesscontentblocks:generate-schema
 ├── ContentBlocks/
 │   ├── ContentBlocksIdentifierMapper.php     # column -> field identifier mapping (ContentBlocks)
 │   ├── HeadlessYamlLoader.php                # loads headless.yaml image processing config
@@ -22,6 +24,12 @@ Classes/
 ├── DataProcessing/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
+├── Schema/
+│   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
+│   └── SchemaEndpointAccess.php              # pure gating helper (dev context / setting / token)
+├── Middleware/
+│   └── SchemaEndpointMiddleware.php          # HTTP endpoint serving the combined schema (after site
+│                                             # resolution, before page routing; Configuration/RequestMiddlewares.php)
 ├── FieldTransformer/
 │   ├── FieldValueTransformerChain.php
 │   ├── FieldValueTransformerInterface.php
@@ -49,8 +57,11 @@ Classes/
 Configuration/
 ├── Services.yaml                             # tagged services: nb_headless.normalizer,
 │                                             # nb_headless.field_value_transformer
+├── RequestMiddlewares.php                    # schema endpoint middleware (after site resolution)
 └── Sets/HeadlessContentBlock/
-    ├── setup.typoscript
+    ├── setup.typoscript                      # lib.contentBlock
+    ├── settings.definitions.yaml             # site settings: schemaEndpoint.enabled / .path /
+    │                                         # .idBase / .token
     └── config.yaml
 
 docs/
@@ -63,10 +74,10 @@ docs/
 ├── how-to/                                   # task guides (image variants, normalizers, ...)
 ├── reference/                                # lookup (JSON contract, normalizers, options)
 └── design/
-    └── IMPROVE_TO_ARRAY.md                   # design record: the ToArray rewrite
+    └── improve_to_array.md                   # design record: the ToArray rewrite
 ```
 
-See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
+See `docs/design/improve_to_array.md` for the architecture rationale.
 
 ## Documentation Rules
 
@@ -178,6 +189,8 @@ Tests/
 ├── Unit/
 │   ├── Event/
 │   │   └── ModifyArrayRecursiveToArrayEventTest.php
+│   ├── Schema/
+│   │   └── SchemaEndpointAccessTest.php      # gating matrix (dev / setting / token)
 │   └── Normalization/
 │       ├── RecordArrayBuilderTest.php
 │       └── Normalizer/
@@ -190,9 +203,18 @@ Tests/
 │   │   └── Fixtures/
 │   │       ├── DataSet/ (CSV fixtures)
 │   │       └── Files/ (test images)
+│   ├── Schema/
+│   │   ├── JsonSchemaGeneratorTest.php
+│   │   ├── JsonSchemaContractTest.php                  # fixtures validated against schema
+│   │   ├── CommittedSchemaArtifactTest.php             # frozen combined schema artifact
+│   │   └── Fixtures/content-blocks.schema.json         # byte-stable via sorted generator output
 │   └── Frontend/
 │       ├── ContentBlocksJsonResponseTest.php           # e2e: full frontend request,
 │       │                                               # headless page JSON frozen (issue #18)
+│       ├── SchemaEndpointTest.php                      # e2e: schema endpoint enabled via
+│       │                                               # site setting (issue #22, phase 2)
+│       ├── SchemaEndpointDisabledTest.php              # e2e: endpoint passes through by default
+│       ├── SchemaEndpointTokenTest.php                 # e2e: token required when configured
 │       └── Fixtures/DataSet/e2e_page.csv               # pages row of the e2e site
 └── Fixtures/Extensions/test_nb_headless_content_blocks/
     ├── Configuration/Sets/TestFrontend/                 # fixture site set: maps test

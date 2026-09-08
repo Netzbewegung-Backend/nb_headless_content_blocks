@@ -60,7 +60,7 @@ Before the 2026-08 rewrite, one class held a giant `switch (true)` with
 instanceof chains over ContentBlocks internals, `makeInstance()` everywhere,
 and version hacks (`property_exists(...)`) to construct those internals in
 tests. The rewrite (see the
-[design record](../design/IMPROVE_TO_ARRAY.md)) replaced it with a
+[design record](../design/improve_to_array.md)) replaced it with a
 **normalizer registry** — the Symfony Serializer pattern, hand-rolled
 without the dependency:
 
