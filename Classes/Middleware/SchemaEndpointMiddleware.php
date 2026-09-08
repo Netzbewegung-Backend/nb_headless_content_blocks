@@ -30,7 +30,7 @@ use TYPO3\CMS\Core\Site\Entity\Site;
  * Rejected requests answer with 404, indistinguishable from a disabled
  * endpoint, so the route does not leak whether it exists.
  */
-final class SchemaEndpointMiddleware implements MiddlewareInterface
+final readonly class SchemaEndpointMiddleware implements MiddlewareInterface
 {
     private const COMBINED_FILE_NAME = 'content-blocks.schema.json';
 
@@ -47,17 +47,10 @@ final class SchemaEndpointMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $path = rtrim('/' . trim($this->setting($site, 'path', self::DEFAULT_PATH), '/'), '/');
+        $path = rtrim('/' . trim((string)$this->setting($site, 'path', self::DEFAULT_PATH), '/'), '/');
+        $path = $path === '' ? self::DEFAULT_PATH : $path;
         if ($request->getUri()->getPath() !== $path . '/' . self::COMBINED_FILE_NAME) {
             return $handler->handle($request);
-        }
-
-        if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) {
-            return new JsonResponse(
-                ['error' => 'Method not allowed'],
-                405,
-                ['Allow' => 'GET, HEAD']
-            );
         }
 
         $configuredToken = trim((string)$this->setting($site, 'token', ''));
@@ -73,14 +66,26 @@ final class SchemaEndpointMiddleware implements MiddlewareInterface
             );
         }
 
+        if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) {
+            return new JsonResponse(
+                ['error' => 'Method not allowed'],
+                405,
+                ['Allow' => 'GET, HEAD']
+            );
+        }
+
         $body = (string)json_encode(
             $this->jsonSchemaGenerator->generateCombined(trim((string)$this->setting($site, 'idBase', ''))),
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
         ) . LF;
 
+        $cacheControl = $configuredToken === '' ? 'public, max-age=3600' : 'private, no-store';
         $eTag = '"' . md5($body) . '"';
         if (trim($request->getHeaderLine('If-None-Match')) === $eTag) {
-            return new Response('php://temp', 304, ['ETag' => $eTag]);
+            return new Response('php://temp', 304, [
+                'ETag' => $eTag,
+                'Cache-Control' => $cacheControl,
+            ]);
         }
 
         $response = new Response(
@@ -89,7 +94,7 @@ final class SchemaEndpointMiddleware implements MiddlewareInterface
             [
                 'Content-Type' => 'application/schema+json',
                 'ETag' => $eTag,
-                'Cache-Control' => $configuredToken === '' ? 'public, max-age=3600' : 'private, no-store',
+                'Cache-Control' => $cacheControl,
             ]
         );
         $response->getBody()->write($body);

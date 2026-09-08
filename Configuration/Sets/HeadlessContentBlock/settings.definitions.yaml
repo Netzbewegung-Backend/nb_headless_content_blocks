@@ -11,7 +11,7 @@ settings:
     category: schemaEndpoint
   schemaEndpoint.path:
     label: 'Path of the JSON Schema endpoint'
-    description: 'Absolute path prefix without trailing slash, e.g. /api/schema. The combined schema is served at <path>/content-blocks.schema.json. Independent of the site base; a page at the same path becomes unreachable while the endpoint answers.'
+    description: 'Absolute path prefix without trailing slash, e.g. /api/schema. The combined schema is served at <path>/content-blocks.schema.json. Independent of the site base; requests to this exact URL are answered by the endpoint (a CMS page at the same URL becomes unreachable).'
     type: string
     default: '/api/schema'
     category: schemaEndpoint

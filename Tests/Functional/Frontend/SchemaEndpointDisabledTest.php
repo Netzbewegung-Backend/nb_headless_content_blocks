@@ -14,10 +14,10 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * End-to-end tests of the JSON Schema endpoint middleware with the
  * site setting "schemaEndpoint.enabled" left at its default (false).
  * Functional tests run in the "Testing" application context, which is
- * not Development — the middleware must pass the request through to
- * regular page routing, which answers with a regular 404 (there is no
- * page at the endpoint path), so the content model of a site is never
- * leaked by default.
+ * not Development — requests to the endpoint URL are answered with the
+ * endpoint's own JSON 404 error (indistinguishable from a rejected
+ * token, and carrying no schema data), so the content model of a site
+ * is never leaked by default.
  *
  * Deprecations are ignored because loading EXT:headless in a TYPO3 14.3
  * test instance may trigger core deprecation-108345 (see
@@ -50,7 +50,7 @@ final class SchemaEndpointDisabledTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function disabledEndpointPassesTheRequestThrough(): void
+    public function disabledEndpointAnswersWithJson404AndNoSchema(): void
     {
         $response = $this->executeFrontendSubRequest(
             (new InternalRequest('https://example.com/api/schema/content-blocks.schema.json'))
@@ -64,6 +64,10 @@ final class SchemaEndpointDisabledTest extends FunctionalTestCase
         );
 
         self::assertSame(404, $response->getStatusCode());
+
+        $payload = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($payload);
+        self::assertArrayHasKey('error', $payload);
         self::assertStringNotContainsString('json-schema.org', (string)$response->getBody());
     }
 

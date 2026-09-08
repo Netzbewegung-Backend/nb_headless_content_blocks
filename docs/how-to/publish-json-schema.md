@@ -57,8 +57,9 @@ The middleware runs after site resolution and before page routing: the
 path is **independent of the site base** and works for every site and
 language of the installation, and the settings apply **per site** — a
 multisite installation can publish the schema on one site and keep it
-disabled on the others. Note that a CMS page at the same path becomes
-unreachable while the endpoint answers.
+disabled on the others. Requests to the exact endpoint URL are always
+answered by the endpoint (with the gated 404 when access is denied) —
+a CMS page at the same URL becomes unreachable.
 
 Access is gated:
 
