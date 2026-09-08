@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netzbewegung\NbHeadlessContentBlocks\Schema;
 
+use Netzbewegung\NbHeadlessContentBlocks\ContentBlocks\HeadlessYamlLoader;
 use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinition;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
@@ -39,6 +40,7 @@ final class JsonSchemaGenerator
 
     public function __construct(
         private readonly TableDefinitionCollection $tableDefinitionCollection,
+        private readonly HeadlessYamlLoader $headlessYamlLoader,
     ) {}
 
     /**
@@ -109,7 +111,9 @@ final class JsonSchemaGenerator
                 'type' => 'object',
                 'properties' => $this->buildPropertiesForColumns(
                     $this->getContentElementTableDefinition(),
-                    $typeDefinition->getColumns()
+                    $typeDefinition->getColumns(),
+                    $this->loadFileProcessing($typeDefinition),
+                    $typeName
                 ),
                 'definitions' => $this->getDefinitions(),
             ];
@@ -138,13 +142,35 @@ final class JsonSchemaGenerator
             'type' => 'object',
             'properties' => $this->buildPropertiesForColumns(
                 $this->getContentElementTableDefinition(),
-                $typeDefinition->getColumns()
+                $typeDefinition->getColumns(),
+                $this->loadFileProcessing($typeDefinition),
+                (string)$typeDefinition->getTypeName()
             ),
         ];
     }
 
-    private function buildPropertiesForColumns(TableDefinition $tableDefinition, array $columns): array
+    /**
+     * Declarative image processing variants from the Content Block's
+     * optional headless.yaml (see HeadlessYamlLoader). TypoScript-only
+     * overrides (options.processing) are not visible here — thumbnail
+     * properties stay loose for those (additionalProperties).
+     *
+     * @return array<string, array<string, string>> field identifier => variant name => options string
+     */
+    private function loadFileProcessing(ContentTypeInterface $typeDefinition): array
     {
+        return $this->headlessYamlLoader->getProcessingForContentBlock($typeDefinition->getName());
+    }
+
+    /**
+     * @param array<string, array<string, string>> $fileProcessing
+     */
+    private function buildPropertiesForColumns(
+        TableDefinition $tableDefinition,
+        array $columns,
+        array $fileProcessing = [],
+        string $fileDefinitionPrefix = ''
+    ): array {
         $properties = [];
         foreach ($columns as $column) {
             if (in_array($column, self::SYSTEM_FIELDS, true)) {
@@ -157,13 +183,16 @@ final class JsonSchemaGenerator
             if (in_array($field->identifier, self::SYSTEM_FIELDS, true)) {
                 continue;
             }
-            $properties[$field->identifier] = $this->mapField($field);
+            $properties[$field->identifier] = $this->mapField($field, $fileProcessing, $fileDefinitionPrefix);
         }
         ksort($properties);
         return $properties;
     }
 
-    private function mapField(TcaFieldDefinition $field): array
+    /**
+     * @param array<string, array<string, string>> $fileProcessing
+     */
+    private function mapField(TcaFieldDefinition $field, array $fileProcessing = [], string $fileDefinitionPrefix = ''): array
     {
         $config = $field->getTca()['config'] ?? [];
         $fieldType = $field->fieldType;
@@ -209,7 +238,7 @@ final class JsonSchemaGenerator
         }
 
         if ($fieldType instanceof FileFieldType) {
-            $file = ['$ref' => '#/definitions/fileObject'];
+            $file = $this->fileRefForField($field, $fileProcessing, $fileDefinitionPrefix);
             if (($config['relationship'] ?? '') === 'oneToOne') {
                 return ['anyOf' => [
                     $file,
@@ -272,6 +301,52 @@ final class JsonSchemaGenerator
         return ['type' => 'null'];
     }
 
+    /**
+     * A $ref to the file schema of this field: a dedicated definition
+     * with the concrete thumbnail variant names from headless.yaml when
+     * the field declares variants, the loose shared fileObject otherwise.
+     *
+     * @param array<string, array<string, string>> $fileProcessing
+     */
+    private function fileRefForField(TcaFieldDefinition $field, array $fileProcessing, string $definitionPrefix): array
+    {
+        $variants = array_keys($fileProcessing[$field->identifier] ?? []);
+        sort($variants);
+        if ($variants === [] || $definitionPrefix === '') {
+            return ['$ref' => '#/definitions/fileObject'];
+        }
+
+        $definitionKey = $this->definitionKey('file_' . $definitionPrefix . '_' . $field->identifier);
+        $this->recordDefinitions[$definitionKey] = $this->buildFileObject($variants);
+
+        return ['$ref' => '#/definitions/' . $definitionKey];
+    }
+
+    /**
+     * @param list<string> $thumbnailVariantNames sorted variant names from headless.yaml
+     */
+    private function buildFileObject(array $thumbnailVariantNames): array
+    {
+        $thumbnails = ['type' => 'object'];
+        if ($thumbnailVariantNames !== []) {
+            $thumbnails['properties'] = array_fill_keys($thumbnailVariantNames, ['type' => 'string']);
+        }
+        // additionalProperties stays open: TypoScript (options.processing)
+        // may add variants that headless.yaml does not declare
+        $thumbnails['additionalProperties'] = ['type' => 'string'];
+
+        return [
+            'type' => 'object',
+            'properties' => [
+                'id' => ['type' => 'integer'],
+                'alt' => ['type' => ['string', 'null']],
+                'title' => ['type' => ['string', 'null']],
+                'publicUrl' => ['type' => 'string'],
+                'thumbnails' => $thumbnails,
+            ],
+        ];
+    }
+
     private function recordSchemaForTable(string $table): array
     {
         $definitionKey = $this->definitionKey('record_' . $table);
@@ -323,19 +398,7 @@ final class JsonSchemaGenerator
                     'attr' => ['type' => 'object'],
                 ],
             ],
-            'fileObject' => [
-                'type' => 'object',
-                'properties' => [
-                    'id' => ['type' => 'integer'],
-                    'alt' => ['type' => ['string', 'null']],
-                    'title' => ['type' => ['string', 'null']],
-                    'publicUrl' => ['type' => 'string'],
-                    'thumbnails' => [
-                        'type' => 'object',
-                        'additionalProperties' => ['type' => 'string'],
-                    ],
-                ],
-            ],
+            'fileObject' => $this->buildFileObject([]),
             'errorObject' => [
                 'type' => 'object',
                 'required' => ['__errorMessage'],

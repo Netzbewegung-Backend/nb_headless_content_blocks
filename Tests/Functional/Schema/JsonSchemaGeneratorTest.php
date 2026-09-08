@@ -85,10 +85,33 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
         $properties = $schema['properties'];
 
         self::assertSame(
-            ['$ref' => '#/definitions/fileObject'],
+            ['$ref' => '#/definitions/file_test_filetest_my_image'],
             $properties['my_image']['anyOf'][0] ?? []
         );
         self::assertSame('array', $properties['my_images']['type'] ?? null);
+    }
+
+    #[Test]
+    public function headlessYamlVariantsBecomeConcreteThumbnailProperties(): void
+    {
+        $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_filetest');
+
+        // oneToOne field "my_image": mobile + desktop declared in headless.yaml
+        $imageThumbnails = $schema['definitions']['file_test_filetest_my_image']['properties']['thumbnails'];
+        self::assertSame(['desktop', 'mobile'], array_keys($imageThumbnails['properties']));
+        self::assertSame(['type' => 'string'], $imageThumbnails['properties']['mobile']);
+        // additionalProperties stays open: TypoScript may add more variants
+        self::assertSame(['type' => 'string'], $imageThumbnails['additionalProperties']);
+
+        // oneToMany field "my_images": only mobile declared
+        $imagesThumbnails = $schema['definitions']['file_test_filetest_my_images']['properties']['thumbnails'];
+        self::assertSame(['mobile'], array_keys($imagesThumbnails['properties']));
+
+        // the shared loose fileObject is still shipped for fields without variants
+        self::assertSame(
+            ['type' => 'object', 'additionalProperties' => ['type' => 'string']],
+            $schema['definitions']['fileObject']['properties']['thumbnails']
+        );
     }
 
     #[Test]

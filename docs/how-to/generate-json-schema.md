@@ -45,10 +45,15 @@ The schemas describe the **base contract** (see
 
 - shared shapes live in `definitions`: `linkObject`, `fileObject`
   (with optional `thumbnails`), `categoryObject` and the
-  `__errorMessage` `errorObject`
+  `__errorMessage` `errorObject`. File fields with variants declared in
+  the Content Block's `headless.yaml` get a dedicated definition with
+  the concrete `thumbnail` variant names as properties — see
+  [Define image variants](define-image-variants.md)
 - unknown properties are allowed (`additionalProperties` is not
   restricted), because sub data processors, `headless.php` and
-  non-Content-Block columns may add keys at runtime
+  non-Content-Block columns may add keys at runtime; `thumbnails`
+  likewise stays open for TypoScript-only variants
+  (`options.processing`) that `headless.yaml` does not declare
 - DateTime fields are `format: date-time` (the default W3C format);
   a per-site `options.dateTimeFormat` override is not reflected
 

@@ -396,7 +396,7 @@
                 "my_image": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/fileObject"
+                            "$ref": "#/definitions/file_test_filetest_my_image"
                         },
                         {
                             "$ref": "#/definitions/errorObject"
@@ -411,7 +411,7 @@
                     "items": {
                         "anyOf": [
                             {
-                                "$ref": "#/definitions/fileObject"
+                                "$ref": "#/definitions/file_test_filetest_my_images"
                             },
                             {
                                 "$ref": "#/definitions/errorObject"
@@ -631,6 +631,77 @@
                             "type": "null"
                         }
                     ]
+                }
+            }
+        },
+        "file_test_filetest_my_image": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "alt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "publicUrl": {
+                    "type": "string"
+                },
+                "thumbnails": {
+                    "type": "object",
+                    "properties": {
+                        "desktop": {
+                            "type": "string"
+                        },
+                        "mobile": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "file_test_filetest_my_images": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "alt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "publicUrl": {
+                    "type": "string"
+                },
+                "thumbnails": {
+                    "type": "object",
+                    "properties": {
+                        "mobile": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },

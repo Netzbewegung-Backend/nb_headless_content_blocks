@@ -26,6 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Drift guard: the combined schema generator output is sorted (type names,
   `oneOf` branches, definitions) and frozen byte-exactly by a committed
   artifact (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).
+- Schema refinements (issue #22, phase 3): image variants declared in a
+  Content Block's `headless.yaml` become concrete `thumbnail` properties
+  of the field's file schema (`additionalProperties` stays open for
+  TypoScript-only variants). TypoScript-aware refinements
+  (`options.processing` overrides, `options.dateTimeFormat`, sub
+  processor `as` keys) are rejected for now — they would require
+  `@internal` core APIs.
 
 ## [0.1.0] - 2026-09-04
 

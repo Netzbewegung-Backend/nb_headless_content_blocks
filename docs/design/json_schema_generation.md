@@ -1,14 +1,22 @@
 # Design: Automatically generate JSON Schema
 
-> Status: **PHASES 1–2 IMPLEMENTED (2026-09-08)** — phase 1 shipped
+> Status: **PHASES 1–3 IMPLEMENTED (2026-09-08)** — phase 1 shipped
 > `JsonSchemaGenerator`, the `nbheadlesscontentblocks:generate-schema`
 > command and the schema contract tests (issue #22); phase 2 shipped the
 > HTTP endpoint (`SchemaEndpointMiddleware`, per-site gating via site
 > settings with an optional access token, see
 > [the how-to](../how-to/publish-json-schema.md)) plus a byte-stable
 > sorted generator output frozen by a committed artifact
-> (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).
-> Phase 3 remains open. The open questions of section 8 are decided:
+> (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`);
+> phase 3 shipped partially — collection/relation item schemas are
+> resolved recursively (already since phase 1) and `headless.yaml`
+> image variants become concrete `thumbnail` properties. The remaining
+> phase 3 refinements (TypoScript `options.processing` overrides,
+> `options.dateTimeFormat`, sub processor `as` keys) are **rejected for
+> now**: they require walking the site's TypoScript, whose building
+> machinery is `@internal` core API and would break across TYPO3
+> patch releases; OpenAPI-style documentation remains a possible
+> follow-up. The open questions of section 8 are decided:
 > base contract (not per-site), URL strategy per the how-to, validator
 > `justinrainbow/json-schema`, headless wrapper included. This is a
 > historical design record; where wording differs from the code, **the
