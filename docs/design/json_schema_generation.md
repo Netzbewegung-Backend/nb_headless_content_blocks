@@ -70,7 +70,7 @@ Sketch (shortened):
 
 ```json
 {
-  "$id": "https://cms.example.org/api/schema/content-blocks.json",
+  "$id": "https://cms.example.org/api/schema/content-blocks.schema.json",
   "oneOf": [
     {
       "properties": {
