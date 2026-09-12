@@ -64,7 +64,12 @@ API migration, declarative image variants) with its decisions and rationale;
 for generating JSON Schema from the Content Block definitions (issue #22;
 phases 1–2 — CLI generator, contract tests and the HTTP endpoint — are
 implemented, see [Generate JSON Schema](how-to/generate-json-schema.md)
-and [Publish JSON Schema](how-to/publish-json-schema.md)).
+and [Publish JSON Schema](how-to/publish-json-schema.md));
+[plan_full_page_json_schema.md](design/plan_full_page_json_schema.md) —
+a proposal analyzing whether/where a schema for the **entire page
+response** (navigation, SEO, i18n) should live (upstream EXT:headless,
+a new `nb_headless_json_schema` extension, or the site package) — not
+scheduled.
 
 ## Archive (internal)
 
