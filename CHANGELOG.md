@@ -10,9 +10,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- JSON Schema output now uses **JSON Schema 2020-12** with `$defs`
+  (was draft-07 with `definitions`); the combined schema exposes the
+  element union as the `contentBlockElement` definition and references
+  it from the document root. Regenerate any published/consumed schemas
+  (issue #22).
+
+### Fixed
+
+- Select fields with a `foreign_table` are now typed as record schemas in
+  the generated JSON Schema: single record object for `renderType:
+  selectSingle` (resolved as `manyToOne` by the Core), array of record
+  objects for every other renderType — matching the JSON output, which
+  resolves these relations into records. Static selects (items list)
+  keep the string mapping (issue #22 feedback).
+- Checkbox fields are now typed as `integer`/`null` in the generated
+  JSON Schema (were wrongly `null` — the API delivers `0`/`1`, or a
+  bitmask for multi-checkbox fields) (issue #22 feedback).
+
+### Added
+
+- Optional `properties` section in a Content Block's `headless.yaml`:
+  verbatim JSON Schema fragments for additional rendered keys (sub data
+  processors, `headless.php` results) that are merged into the block's
+  data properties of the generated JSON Schema — a declaration overrides
+  a derived mapping on key collision (issue #22 feedback).
+- Loose fallback branches for tt_content types registered in TCA but
+  not defined as Content Block (core types like `html`/`shortcut`,
+  classic plugins): the command and the HTTP endpoint include them, so
+  full page columns validate against the combined schema
+  (issue #22 feedback).
+- Container blocks can declare their rendered child element lists
+  (`children:` in the Content Block's `headless.yaml`); the generated
+  schema types them as arrays of content block elements
+  (issue #22 feedback).
+- JSON Schema HTTP endpoint: the `SchemaEndpointMiddleware` (after site
+  resolution, before page routing) serves the combined Content Block
+  schema at `<schemaEndpoint.path>/content-blocks.schema.json`
+  (default `/api/schema`, independent of the site base) as
+  `application/schema+json` with ETag/304 and GET/HEAD-only (405).
+  Available in Development application contexts; everywhere else it
+  answers with 404 unless the site setting `schemaEndpoint.enabled` is
+  turned on (`schemaEndpoint.idBase` configures the `$id` base).
+  An optional `schemaEndpoint.token` requires authentication on every
+  request (`X-API-Token` header) in any application context. See
+  `docs/how-to/publish-json-schema.md` (issue #22, phase 2).
+- Drift guard: the combined schema generator output is sorted (type names,
+  `oneOf` branches, definitions) and frozen byte-exactly by a committed
+  artifact (`Tests/Functional/Schema/Fixtures/content-blocks.schema.json`).
+- Schema refinements (issue #22, phase 3): image variants declared in a
+  Content Block's `headless.yaml` become concrete `thumbnail` properties
+  of the field's file schema (`additionalProperties` stays open for
+  TypoScript-only variants). TypoScript-aware refinements
+  (`options.processing` overrides, `options.dateTimeFormat`, sub
+  processor `as` keys) are rejected for now — they would require
+  `@internal` core APIs.
+
 ## [0.1.0] - 2026-09-04
 
-Rewrite of the ToArray conversion (see `docs/design/IMPROVE_TO_ARRAY.md`).
+Rewrite of the ToArray conversion (see `docs/design/improve_to_array.md`).
 The JSON output contract is unchanged and frozen by characterization tests.
 
 ### Added

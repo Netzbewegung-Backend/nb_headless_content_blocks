@@ -1,0 +1,21 @@
+name: test/selectrelation
+group: common
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: single_relation
+    type: Select
+    renderType: selectSingle
+    foreign_table: tx_test_select_relation_item
+  - identifier: multi_relation
+    type: Select
+    renderType: selectMultipleSideBySide
+    foreign_table: tx_test_select_relation_item
+  - identifier: static_select
+    type: Select
+    renderType: selectSingle
+    items:
+      - label: 'One'
+        value: one
+      - label: 'Two'
+        value: two

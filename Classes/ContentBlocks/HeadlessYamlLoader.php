@@ -10,8 +10,10 @@ use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Loads per-Content-Block image processing definitions from an optional
+ * Loads per-Content-Block headless declarations from an optional
  * headless.yaml file next to the Content Block config.yaml:
+ *
+ * Image processing variants per field:
  *
  *     fields:
  *       image:
@@ -19,8 +21,26 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *           mobile: "width=883c,fileExtension=webp"
  *           desktop: "width=1564c,fileExtension=webp"
  *
- * Values follow the ext:headless ProcessingConfiguration option syntax
- * ("key=value" pairs, comma separated).
+ * Rendered child element lists of container blocks (the JSON keys the
+ * site package renders children into, TypoScript "as"):
+ *
+ *     children:
+ *       - main
+ *       - left
+ *       - right
+ *
+ * Declared JSON Schema fragments for additional rendered keys (sub data
+ * processors, headless.php results — everything not derivable from the
+ * Content Block definition):
+ *
+ *     properties:
+ *       categories:
+ *         type: array
+ *         items:
+ *           type: string
+ *
+ * Processing values follow the ext:headless ProcessingConfiguration option
+ * syntax ("key=value" pairs, comma separated).
  */
 final class HeadlessYamlLoader
 {
@@ -57,6 +77,57 @@ final class HeadlessYamlLoader
         }
 
         return $processing;
+    }
+
+    /**
+     * JSON keys of rendered child element lists, as declared in the
+     * optional "children" section.
+     *
+     * @return list<string>
+     */
+    public function getChildrenForContentBlock(string $contentBlockName): array
+    {
+        $config = $this->loadConfig($contentBlockName);
+
+        $children = $config['children'] ?? [];
+        if (!is_array($children)) {
+            return [];
+        }
+
+        $childKeys = [];
+        foreach ($children as $child) {
+            if (is_string($child) && $child !== '' && !in_array($child, $childKeys, true)) {
+                $childKeys[] = $child;
+            }
+        }
+
+        return $childKeys;
+    }
+
+    /**
+     * Declared JSON Schema fragments for additional rendered keys, as
+     * declared in the optional "properties" section. They are merged
+     * verbatim into the block's data properties.
+     *
+     * @return array<string, mixed> property key => JSON Schema fragment
+     */
+    public function getDeclaredPropertiesForContentBlock(string $contentBlockName): array
+    {
+        $config = $this->loadConfig($contentBlockName);
+
+        $properties = $config['properties'] ?? [];
+        if (!is_array($properties)) {
+            return [];
+        }
+
+        $declaredProperties = [];
+        foreach ($properties as $propertyKey => $schema) {
+            if (is_string($propertyKey) && $propertyKey !== '' && is_array($schema)) {
+                $declaredProperties[$propertyKey] = $schema;
+            }
+        }
+
+        return $declaredProperties;
     }
 
     /**

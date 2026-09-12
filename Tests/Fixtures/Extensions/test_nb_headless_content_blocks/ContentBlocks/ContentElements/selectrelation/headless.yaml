@@ -1,0 +1,8 @@
+# Declared JSON Schema fragments for rendered keys that a sub data
+# processor (or headless.php) adds to the block's data object at runtime
+# and that are not derivable from the Content Block definition.
+properties:
+  categories:
+    type: array
+    items:
+      type: string

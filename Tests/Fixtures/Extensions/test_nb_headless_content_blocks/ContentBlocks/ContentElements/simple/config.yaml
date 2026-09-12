@@ -19,6 +19,8 @@ fields:
         value: one
       - label: 'The second'
         value: two
+  - identifier: my_checkbox
+    type: Checkbox
   - identifier: my_password
     type: Password
   - identifier: my_json
