@@ -10,8 +10,10 @@ use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Loads per-Content-Block image processing definitions from an optional
+ * Loads per-Content-Block headless declarations from an optional
  * headless.yaml file next to the Content Block config.yaml:
+ *
+ * Image processing variants per field:
  *
  *     fields:
  *       image:
@@ -19,8 +21,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *           mobile: "width=883c,fileExtension=webp"
  *           desktop: "width=1564c,fileExtension=webp"
  *
- * Values follow the ext:headless ProcessingConfiguration option syntax
- * ("key=value" pairs, comma separated).
+ * Rendered child element lists of container blocks (the JSON keys the
+ * site package renders children into, TypoScript "as"):
+ *
+ *     children:
+ *       - main
+ *       - left
+ *       - right
+ *
+ * Processing values follow the ext:headless ProcessingConfiguration option
+ * syntax ("key=value" pairs, comma separated).
  */
 final class HeadlessYamlLoader
 {
@@ -57,6 +67,31 @@ final class HeadlessYamlLoader
         }
 
         return $processing;
+    }
+
+    /**
+     * JSON keys of rendered child element lists, as declared in the
+     * optional "children" section.
+     *
+     * @return list<string>
+     */
+    public function getChildrenForContentBlock(string $contentBlockName): array
+    {
+        $config = $this->loadConfig($contentBlockName);
+
+        $children = $config['children'] ?? [];
+        if (!is_array($children)) {
+            return [];
+        }
+
+        $childKeys = [];
+        foreach ($children as $child) {
+            if (is_string($child) && $child !== '' && !in_array($child, $childKeys, true)) {
+                $childKeys[] = $child;
+            }
+        }
+
+        return $childKeys;
     }
 
     /**

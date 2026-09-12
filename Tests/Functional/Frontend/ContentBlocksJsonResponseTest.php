@@ -132,6 +132,7 @@ final class ContentBlocksJsonResponseTest extends FunctionalTestCase
                         'title' => 'Category one',
                     ],
                 ],
+                'my_checkbox' => 0,
                 'my_collection' => [
                     [
                         'text' => 'Collection item one',

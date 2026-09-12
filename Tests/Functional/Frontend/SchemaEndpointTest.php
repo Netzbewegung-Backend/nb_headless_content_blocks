@@ -63,7 +63,7 @@ final class SchemaEndpointTest extends FunctionalTestCase
 
         $schema = $this->decodeJsonResponse($response);
 
-        self::assertSame('http://json-schema.org/draft-07/schema#', $schema['$schema']);
+        self::assertSame('https://json-schema.org/draft/2020-12/schema', $schema['$schema']);
         self::assertSame(
             'https://example.com/api/schema/content-blocks.schema.json',
             $schema['$id']
@@ -78,17 +78,32 @@ final class SchemaEndpointTest extends FunctionalTestCase
         );
 
         $blockTypes = [];
-        foreach ($schema['oneOf'] as $branch) {
-            $blockTypes[] = $branch['properties']['type']['const'];
-            self::assertSame(['$ref' => '#/definitions/ctype_' . $branch['properties']['type']['const']], $branch['properties']['data']);
+        $fallbackTypes = [];
+        foreach ($schema['$defs']['contentBlockElement']['oneOf'] as $branch) {
+            $type = $branch['properties']['type']['const'];
+            if (isset($branch['properties']['data']['$ref'])) {
+                $blockTypes[] = $type;
+                self::assertSame(
+                    ['$ref' => '#/$defs/ctype_' . $type],
+                    $branch['properties']['data']
+                );
+            } else {
+                $fallbackTypes[] = $type;
+                self::assertSame(['type' => 'object'], $branch['properties']['data']);
+            }
         }
 
         self::assertContains('test_simple', $blockTypes);
         self::assertContains('test_filetest', $blockTypes);
         self::assertContains('test_richtext', $blockTypes);
 
+        // TCA types without Content Block definition (present in every
+        // test environment) become loose fallback branches
+        self::assertContains('html', $fallbackTypes);
+        self::assertContains('shortcut', $fallbackTypes);
+
         foreach (['linkObject', 'fileObject', 'categoryObject', 'errorObject'] as $sharedDefinition) {
-            self::assertArrayHasKey($sharedDefinition, $schema['definitions']);
+            self::assertArrayHasKey($sharedDefinition, $schema['$defs']);
         }
     }
 

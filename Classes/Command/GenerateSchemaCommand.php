@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netzbewegung\NbHeadlessContentBlocks\Command;
 
 use Netzbewegung\NbHeadlessContentBlocks\Schema\JsonSchemaGenerator;
+use Netzbewegung\NbHeadlessContentBlocks\Schema\TcaContentTypesProvider;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +21,7 @@ final class GenerateSchemaCommand extends Command
 {
     public function __construct(
         private readonly JsonSchemaGenerator $jsonSchemaGenerator,
+        private readonly TcaContentTypesProvider $tcaContentTypesProvider,
     ) {
         parent::__construct();
     }
@@ -56,6 +58,7 @@ final class GenerateSchemaCommand extends Command
         }
 
         $idBase = (string)$input->getOption('id-base');
+        $tcaTypeNames = $this->tcaContentTypesProvider->getTypeNames();
         GeneralUtility::mkdir_deep($targetDir);
 
         $typeNames = $this->jsonSchemaGenerator->getContentElementTypeNames();
@@ -64,14 +67,14 @@ final class GenerateSchemaCommand extends Command
             return Command::SUCCESS;
         }
         foreach ($typeNames as $typeName) {
-            $schema = $this->jsonSchemaGenerator->generateForTypeName($typeName, $idBase);
+            $schema = $this->jsonSchemaGenerator->generateForTypeName($typeName, $idBase, $tcaTypeNames);
             if ($schema === null) {
                 continue;
             }
             $this->writeSchemaFile(rtrim($targetDir, '/') . '/' . $typeName . '.schema.json', $schema);
         }
 
-        $combinedSchema = $this->jsonSchemaGenerator->generateCombined($idBase);
+        $combinedSchema = $this->jsonSchemaGenerator->generateCombined($idBase, $tcaTypeNames);
         $this->writeSchemaFile(rtrim($targetDir, '/') . '/content-blocks.schema.json', $combinedSchema);
 
         $output->writeln(sprintf(

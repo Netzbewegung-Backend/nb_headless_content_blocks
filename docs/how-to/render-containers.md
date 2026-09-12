@@ -132,3 +132,18 @@ The processor accepts `colPos` (container column to fetch, required) and
 ([processor options](../reference/processor-options.md) like
 `options.processing` or `options.dateTimeFormat`) are configured there,
 not on `nb-container-json`.
+
+## Describe the children in the generated JSON Schema
+
+The JSON keys of the child lists come from the TypoScript `as` values,
+so they are invisible to the schema generator. Declare them in the
+container block's `headless.yaml` (variant 2 keys live inside `data`):
+
+```yaml
+children:
+  - left
+  - right
+```
+
+They then appear in the generated schema as arrays of content block
+elements — see [Generate JSON Schema](generate-json-schema.md).

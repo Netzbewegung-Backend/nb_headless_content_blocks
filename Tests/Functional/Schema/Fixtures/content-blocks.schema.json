@@ -1,249 +1,8 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Content Block elements",
-    "oneOf": [
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_collectiontest"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_collectiontest"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_coloremailslug"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_coloremailslug"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_containerblock"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_containerblock"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_filetest"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_filetest"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_flexformtest"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_flexformtest"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_foldertest"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_foldertest"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_headless"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_headless"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_richtext"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_richtext"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_simple"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_simple"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_textarea"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_textarea"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_yamlbroken"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_yamlbroken"
-                }
-            }
-        },
-        {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "const": "test_yamledges"
-                },
-                "colPos": {
-                    "type": "integer"
-                },
-                "appearance": {
-                    "type": "object"
-                },
-                "data": {
-                    "$ref": "#/definitions/ctype_test_yamledges"
-                }
-            }
-        }
-    ],
-    "definitions": {
+    "$ref": "#/$defs/contentBlockElement",
+    "$defs": {
         "linkObject": {
             "type": "object",
             "properties": {
@@ -321,6 +80,250 @@
                 }
             }
         },
+        "contentBlockElement": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_collectiontest"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_collectiontest"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_coloremailslug"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_coloremailslug"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_containerblock"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_containerblock"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_filetest"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_filetest"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_flexformtest"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_flexformtest"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_foldertest"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_foldertest"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_headless"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_headless"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_richtext"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_richtext"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_simple"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_simple"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_textarea"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_textarea"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_yamlbroken"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_yamlbroken"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "const": "test_yamledges"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_yamledges"
+                        }
+                    }
+                }
+            ]
+        },
         "ctype_test_collectiontest": {
             "type": "object",
             "properties": {
@@ -333,7 +336,7 @@
                 "my_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/record_test_collectiontest_my_items"
+                        "$ref": "#/$defs/record_test_collectiontest_my_items"
                     }
                 }
             }
@@ -376,6 +379,12 @@
                         "null"
                     ]
                 },
+                "main": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/contentBlockElement"
+                    }
+                },
                 "my_text": {
                     "type": [
                         "string",
@@ -396,10 +405,10 @@
                 "my_image": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/file_test_filetest_my_image"
+                            "$ref": "#/$defs/file_test_filetest_my_image"
                         },
                         {
-                            "$ref": "#/definitions/errorObject"
+                            "$ref": "#/$defs/errorObject"
                         },
                         {
                             "type": "null"
@@ -411,10 +420,10 @@
                     "items": {
                         "anyOf": [
                             {
-                                "$ref": "#/definitions/file_test_filetest_my_images"
+                                "$ref": "#/$defs/file_test_filetest_my_images"
                             },
                             {
-                                "$ref": "#/definitions/errorObject"
+                                "$ref": "#/$defs/errorObject"
                             }
                         ]
                     }
@@ -507,13 +516,19 @@
                 "my_categories": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/categoryObject"
+                        "$ref": "#/$defs/categoryObject"
                     }
+                },
+                "my_checkbox": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
                 },
                 "my_collection": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/record_test_simple_my_collection"
+                        "$ref": "#/$defs/record_test_simple_my_collection"
                     }
                 },
                 "my_datetime": {
@@ -533,7 +548,7 @@
                 "my_link": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/linkObject"
+                            "$ref": "#/$defs/linkObject"
                         },
                         {
                             "type": "null"
@@ -622,10 +637,10 @@
                 "my_unprocessed_image": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/fileObject"
+                            "$ref": "#/$defs/fileObject"
                         },
                         {
-                            "$ref": "#/definitions/errorObject"
+                            "$ref": "#/$defs/errorObject"
                         },
                         {
                             "type": "null"

@@ -32,10 +32,10 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
     {
         $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_simple');
 
-        self::assertSame('http://json-schema.org/draft-07/schema#', $schema['$schema']);
+        self::assertSame('https://json-schema.org/draft/2020-12/schema', $schema['$schema']);
         self::assertSame('test/simple', $schema['title']);
         self::assertSame(
-            ['bodytext', 'header', 'my_categories', 'my_collection', 'my_datetime', 'my_json', 'my_link', 'my_number', 'my_password', 'my_select', 'my_text'],
+            ['bodytext', 'header', 'my_categories', 'my_checkbox', 'my_collection', 'my_datetime', 'my_json', 'my_link', 'my_number', 'my_password', 'my_select', 'my_text'],
             array_keys($schema['properties'])
         );
     }
@@ -48,6 +48,7 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
 
         self::assertSame(['type' => ['string', 'null']], $properties['my_text']);
         self::assertSame(['type' => ['number', 'null']], $properties['my_number']);
+        self::assertSame(['type' => ['integer', 'null']], $properties['my_checkbox']);
         self::assertSame(['type' => ['string', 'null'], 'format' => 'date-time'], $properties['my_datetime']);
         self::assertSame(['const' => ''], $properties['my_password']);
         self::assertSame(['type' => ['object', 'array', 'null']], $properties['my_json']);
@@ -56,11 +57,11 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
             $properties['my_select']
         );
         self::assertSame(
-            ['anyOf' => [['$ref' => '#/definitions/linkObject'], ['type' => 'null']]],
+            ['anyOf' => [['$ref' => '#/$defs/linkObject'], ['type' => 'null']]],
             $properties['my_link']
         );
         self::assertSame(
-            ['type' => 'array', 'items' => ['$ref' => '#/definitions/categoryObject']],
+            ['type' => 'array', 'items' => ['$ref' => '#/$defs/categoryObject']],
             $properties['my_categories']
         );
     }
@@ -71,11 +72,11 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
         $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_simple');
         $itemRef = $schema['properties']['my_collection']['items']['$ref'];
 
-        self::assertStringStartsWith('#/definitions/record_', $itemRef);
+        self::assertStringStartsWith('#/$defs/record_', $itemRef);
 
-        $definitionKey = substr($itemRef, strlen('#/definitions/'));
-        self::assertArrayHasKey($definitionKey, $schema['definitions']);
-        self::assertSame(['type' => ['string', 'null']], $schema['definitions'][$definitionKey]['properties']['text']);
+        $definitionKey = substr($itemRef, strlen('#/$defs/'));
+        self::assertArrayHasKey($definitionKey, $schema['$defs']);
+        self::assertSame(['type' => ['string', 'null']], $schema['$defs'][$definitionKey]['properties']['text']);
     }
 
     #[Test]
@@ -85,7 +86,7 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
         $properties = $schema['properties'];
 
         self::assertSame(
-            ['$ref' => '#/definitions/file_test_filetest_my_image'],
+            ['$ref' => '#/$defs/file_test_filetest_my_image'],
             $properties['my_image']['anyOf'][0] ?? []
         );
         self::assertSame('array', $properties['my_images']['type'] ?? null);
@@ -97,21 +98,40 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
         $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_filetest');
 
         // oneToOne field "my_image": mobile + desktop declared in headless.yaml
-        $imageThumbnails = $schema['definitions']['file_test_filetest_my_image']['properties']['thumbnails'];
+        $imageThumbnails = $schema['$defs']['file_test_filetest_my_image']['properties']['thumbnails'];
         self::assertSame(['desktop', 'mobile'], array_keys($imageThumbnails['properties']));
         self::assertSame(['type' => 'string'], $imageThumbnails['properties']['mobile']);
         // additionalProperties stays open: TypoScript may add more variants
         self::assertSame(['type' => 'string'], $imageThumbnails['additionalProperties']);
 
         // oneToMany field "my_images": only mobile declared
-        $imagesThumbnails = $schema['definitions']['file_test_filetest_my_images']['properties']['thumbnails'];
+        $imagesThumbnails = $schema['$defs']['file_test_filetest_my_images']['properties']['thumbnails'];
         self::assertSame(['mobile'], array_keys($imagesThumbnails['properties']));
 
         // the shared loose fileObject is still shipped for fields without variants
         self::assertSame(
             ['type' => 'object', 'additionalProperties' => ['type' => 'string']],
-            $schema['definitions']['fileObject']['properties']['thumbnails']
+            $schema['$defs']['fileObject']['properties']['thumbnails']
         );
+    }
+
+    #[Test]
+    public function containerChildrenFromHeadlessYamlBecomeRecursiveElementLists(): void
+    {
+        $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_containerblock');
+
+        self::assertSame(
+            ['type' => 'array', 'items' => ['$ref' => '#/$defs/contentBlockElement']],
+            $schema['properties']['main']
+        );
+
+        // the recursive element definition is shipped with the block schema
+        $typeConstants = [];
+        foreach ($schema['$defs']['contentBlockElement']['oneOf'] as $branch) {
+            $typeConstants[] = $branch['properties']['type']['const'];
+        }
+        self::assertContains('test_containerblock', $typeConstants);
+        self::assertContains('test_simple', $typeConstants);
     }
 
     #[Test]
@@ -119,16 +139,44 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
     {
         $schema = $this->get(JsonSchemaGenerator::class)->generateCombined();
 
-        self::assertArrayHasKey('oneOf', $schema);
+        self::assertSame('#/$defs/contentBlockElement', $schema['$ref']);
         $typeConstants = [];
-        foreach ($schema['oneOf'] as $branch) {
-            $typeConstants[] = $branch['properties']['type']['const'] ?? null;
+        foreach ($schema['$defs']['contentBlockElement']['oneOf'] as $branch) {
+            $typeConstants[] = $branch['properties']['type']['const'];
         }
         self::assertContains('test_simple', $typeConstants);
         self::assertContains('test_filetest', $typeConstants);
 
-        foreach (['linkObject', 'fileObject', 'errorObject', 'categoryObject'] as $sharedDefinition) {
-            self::assertArrayHasKey($sharedDefinition, $schema['definitions']);
+        foreach (['linkObject', 'fileObject', 'errorObject', 'categoryObject', 'contentBlockElement'] as $sharedDefinition) {
+            self::assertArrayHasKey($sharedDefinition, $schema['$defs']);
+        }
+    }
+
+    #[Test]
+    public function tcaTypesWithoutContentBlockBecomeFallbackBranches(): void
+    {
+        $schema = $this->get(JsonSchemaGenerator::class)
+            ->generateCombined('', ['html', 'shortcut', 'test_simple', '1']);
+
+        $branchesByType = [];
+        foreach ($schema['$defs']['contentBlockElement']['oneOf'] as $branch) {
+            $branchesByType[$branch['properties']['type']['const']] = $branch;
+        }
+
+        // TCA's internal default record type is never delivered as element
+        self::assertArrayNotHasKey('1', $branchesByType);
+        // Content Block types keep their typed data schema
+        self::assertSame(
+            ['$ref' => '#/$defs/ctype_test_simple'],
+            $branchesByType['test_simple']['properties']['data']
+        );
+        // non-Content-Block types get the loose fallback envelope
+        foreach (['html', 'shortcut'] as $fallbackType) {
+            self::assertSame(['type' => 'object'], $branchesByType[$fallbackType]['properties']['data']);
+            self::assertStringContainsString(
+                sprintf('"%s"', $fallbackType),
+                $branchesByType[$fallbackType]['description']
+            );
         }
     }
 

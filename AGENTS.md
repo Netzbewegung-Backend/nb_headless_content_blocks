@@ -19,13 +19,17 @@ Classes/
 │   └── GenerateSchemaCommand.php            # nbheadlesscontentblocks:generate-schema
 ├── ContentBlocks/
 │   ├── ContentBlocksIdentifierMapper.php     # column -> field identifier mapping (ContentBlocks)
-│   ├── HeadlessYamlLoader.php                # loads headless.yaml image processing config
+│   ├── HeadlessYamlLoader.php                # loads headless.yaml (image processing config,
+│   │                                         # container children declaration)
 │   └── IdentifierMapperInterface.php
 ├── DataProcessing/
 │   ├── ContentBlocksJsonDataProcessor.php    # Main processor for Content Blocks
 │   └── ContainerJsonDataProcessor.php        # Processor for EXT:container
 ├── Schema/
-│   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (draft-07)
+│   ├── JsonSchemaGenerator.php               # Content Block definitions -> JSON Schema (2020-12,
+│   │                                         # $defs, recursive contentBlockElement union, fallback
+│   │                                         # branches, headless.yaml children)
+│   ├── TcaContentTypesProvider.php           # TCA tt_content type names (input for fallback branches)
 │   └── SchemaEndpointAccess.php              # pure gating helper (dev context / setting / token)
 ├── Middleware/
 │   └── SchemaEndpointMiddleware.php          # HTTP endpoint serving the combined schema (after site

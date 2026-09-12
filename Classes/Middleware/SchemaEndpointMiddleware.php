@@ -6,6 +6,7 @@ namespace Netzbewegung\NbHeadlessContentBlocks\Middleware;
 
 use Netzbewegung\NbHeadlessContentBlocks\Schema\JsonSchemaGenerator;
 use Netzbewegung\NbHeadlessContentBlocks\Schema\SchemaEndpointAccess;
+use Netzbewegung\NbHeadlessContentBlocks\Schema\TcaContentTypesProvider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -38,6 +39,7 @@ final readonly class SchemaEndpointMiddleware implements MiddlewareInterface
 
     public function __construct(
         private readonly JsonSchemaGenerator $jsonSchemaGenerator,
+        private readonly TcaContentTypesProvider $tcaContentTypesProvider,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -75,7 +77,10 @@ final readonly class SchemaEndpointMiddleware implements MiddlewareInterface
         }
 
         $body = (string)json_encode(
-            $this->jsonSchemaGenerator->generateCombined(trim((string)$this->setting($site, 'idBase', ''))),
+            $this->jsonSchemaGenerator->generateCombined(
+                trim((string)$this->setting($site, 'idBase', '')),
+                $this->tcaContentTypesProvider->getTypeNames()
+            ),
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
         ) . LF;
 

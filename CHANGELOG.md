@@ -10,8 +10,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- JSON Schema output now uses **JSON Schema 2020-12** with `$defs`
+  (was draft-07 with `definitions`); the combined schema exposes the
+  element union as the `contentBlockElement` definition and references
+  it from the document root. Regenerate any published/consumed schemas
+  (issue #22).
+
+### Fixed
+
+- Checkbox fields are now typed as `integer`/`null` in the generated
+  JSON Schema (were wrongly `null` — the API delivers `0`/`1`, or a
+  bitmask for multi-checkbox fields) (issue #22 feedback).
+
 ### Added
 
+- Loose fallback branches for tt_content types registered in TCA but
+  not defined as Content Block (core types like `html`/`shortcut`,
+  classic plugins): the command and the HTTP endpoint include them, so
+  full page columns validate against the combined schema
+  (issue #22 feedback).
+- Container blocks can declare their rendered child element lists
+  (`children:` in the Content Block's `headless.yaml`); the generated
+  schema types them as arrays of content block elements
+  (issue #22 feedback).
 - JSON Schema HTTP endpoint: the `SchemaEndpointMiddleware` (after site
   resolution, before page routing) serves the combined Content Block
   schema at `<schemaEndpoint.path>/content-blocks.schema.json`

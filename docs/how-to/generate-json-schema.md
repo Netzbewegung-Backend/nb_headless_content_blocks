@@ -17,9 +17,10 @@ The command writes into `--target` (created if needed):
 - one `<ctype>.schema.json` per Content Block — describes the block's
   `data` object (field identifiers as properties, one JSON Schema type
   per Content Block field type)
-- `content-blocks.schema.json` — all blocks combined in a `oneOf`,
-  discriminated by the `type` wrapper field, including the
-  `id`/`type`/`colPos`/`appearance` wrapper built by EXT:headless
+- `content-blocks.schema.json` — all blocks combined in the
+  `contentBlockElement` `oneOf` (discriminated by the `type` wrapper
+  field), including the `id`/`type`/`colPos`/`appearance` wrapper built
+  by EXT:headless
 
 `--id-base` (optional) sets stable `$id` URLs on all files so editors
 and tools can reference them, e.g.:
@@ -43,12 +44,21 @@ the extension's HTTP endpoint):
 The schemas describe the **base contract** (see
 [JSON contract](../reference/json-contract.md)):
 
-- shared shapes live in `definitions`: `linkObject`, `fileObject`
+- shared shapes live in `$defs`: `linkObject`, `fileObject`
   (with optional `thumbnails`), `categoryObject` and the
   `__errorMessage` `errorObject`. File fields with variants declared in
   the Content Block's `headless.yaml` get a dedicated definition with
   the concrete `thumbnail` variant names as properties — see
   [Define image variants](define-image-variants.md)
+- Checkbox fields are `integer` (TCA check fields are delivered as
+  `0`/`1`, or a bitmask for multi-checkbox fields)
+- every tt_content type registered in TCA but **not** defined as
+  Content Block (core types like `html` or `shortcut`, classic plugins
+  like form framework or Extbase plugins) gets a loose fallback branch:
+  the element envelope with `data: object`, because their JSON shape is
+  not derivable from Content Block definitions
+- container blocks can declare their rendered child element lists in
+  `headless.yaml` (see below); they become arrays of `contentBlockElement`
 - unknown properties are allowed (`additionalProperties` is not
   restricted), because sub data processors, `headless.php` and
   non-Content-Block columns may add keys at runtime; `thumbnails`
@@ -57,16 +67,41 @@ The schemas describe the **base contract** (see
 - DateTime fields are `format: date-time` (the default W3C format);
   a per-site `options.dateTimeFormat` override is not reflected
 
-The schemas use JSON Schema **draft-07** — the dialect with the widest
-tool support (VS Code, JetBrains, ajv, most code generators).
+The schemas use **JSON Schema 2020-12** (the current standard dialect —
+same vocabulary as draft-07 for everything used here, supported by VS
+Code, JetBrains, ajv 8 and common code generators).
+
+## Declare container children
+
+Container blocks render their children into JSON keys defined by the
+site package's TypoScript (`as` of the container data processor, e.g.
+`main`, `left`, `right`) — not derivable from the Content Block
+definition. Declare them in the block's `headless.yaml` so they appear
+in the generated schema as arrays of content block elements:
+
+```yaml
+children:
+  - main
+  # or, for a two-column container:
+  # - left
+  # - right
+```
+
+The keys must match the TypoScript `as` values exactly, and should not
+collide with field identifiers of the block.
 
 ## Using the schemas
 
 - **IDE**: bind the schema to fixture/mock files via `$schema`
 - **Frontend types**: feed `content-blocks.schema.json` to a code
   generator (`quicktype`, `json-schema-to-typescript`, ...)
-- **Contract tests**: validate API responses with any draft-07
+- **Contract tests**: validate API responses with any 2020-12-capable
   validator (e.g. `ajv` in the frontend CI)
+
+Data that the CMS assembles at runtime (`headless.php` results, sub
+data processors) is by design not covered by the schema — keep manual
+view models for it in the frontend. The loose fallback branches make
+sure page columns containing non-Content-Block elements still validate.
 
 The extension's own test suite validates its frozen characterization
 fixtures against the generated schemas

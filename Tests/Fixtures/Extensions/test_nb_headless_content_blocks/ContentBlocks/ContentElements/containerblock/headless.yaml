@@ -1,0 +1,5 @@
+# Rendered child element lists of this container block: the JSON keys
+# the site package renders children into (TypoScript "as"). They become
+# arrays of content block elements in the generated JSON Schema.
+children:
+  - main

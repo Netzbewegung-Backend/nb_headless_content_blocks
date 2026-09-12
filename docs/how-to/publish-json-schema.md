@@ -50,7 +50,11 @@ https://cms.example.org/api/schema/content-blocks.schema.json
 
 The response has the content type `application/schema+json`, an `ETag`
 (answering `304 Not Modified` on `If-None-Match`) and is always
-generated from the currently registered Content Block definitions.
+generated from the currently registered Content Block definitions,
+including loose fallback branches for every tt_content type registered
+in TCA but not defined as Content Block (core types like `html` or
+`shortcut`, classic plugins) — see
+[Generate JSON Schema](generate-json-schema.md).
 Only `GET`/`HEAD` are allowed — other methods get `405`.
 
 The middleware runs after site resolution and before page routing: the

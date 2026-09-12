@@ -96,8 +96,8 @@ final class SchemaEndpointTokenTest extends FunctionalTestCase
     {
         $schema = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertIsArray($schema);
-        self::assertSame('http://json-schema.org/draft-07/schema#', $schema['$schema']);
-        self::assertNotEmpty($schema['oneOf']);
+        self::assertSame('https://json-schema.org/draft/2020-12/schema', $schema['$schema']);
+        self::assertNotEmpty($schema['$defs']['contentBlockElement']['oneOf']);
     }
 
     private function writeSiteConfiguration(): void

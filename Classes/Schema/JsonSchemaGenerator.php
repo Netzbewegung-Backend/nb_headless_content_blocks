@@ -30,13 +30,17 @@ use TYPO3\CMS\ContentBlocks\FieldType\TextFieldType;
 
 final class JsonSchemaGenerator
 {
-    private const SCHEMA_DRAFT = 'http://json-schema.org/draft-07/schema#';
+    private const SCHEMA_DRAFT = 'https://json-schema.org/draft/2020-12/schema';
 
     private const SYSTEM_FIELDS = ['uid', 'pid', 'colPos', 'CType', 'foreign_table_parent_uid', 'tx_container_parent'];
+
+    private const ELEMENT_DEFINITION_KEY = 'contentBlockElement';
 
     private array $recordDefinitions = [];
 
     private array $recordDefinitionsInProgress = [];
+
+    private bool $elementDefinitionRequired = false;
 
     public function __construct(
         private readonly TableDefinitionCollection $tableDefinitionCollection,
@@ -60,34 +64,21 @@ final class JsonSchemaGenerator
         return $typeNames;
     }
 
-    public function generateCombined(string $idBase = ''): array
+    /**
+     * @param list<string> $tcaTypeNames tt_content type names registered in
+     *        TCA; every name without a Content Block definition becomes a
+     *        loose fallback branch (core types like "html" or "shortcut",
+     *        classic plugins) so full page columns validate against the schema
+     */
+    public function generateCombined(string $idBase = '', array $tcaTypeNames = []): array
     {
         $this->reset();
-        $branches = [];
-        if ($this->tableDefinitionCollection->hasTable('tt_content')) {
-            foreach ($this->getContentElementTableDefinition()->contentTypeDefinitionCollection as $typeDefinition) {
-                $typeName = (string)$typeDefinition->getTypeName();
-                $definitionKey = $this->definitionKey('ctype_' . $typeName);
-                $this->recordDefinitions[$definitionKey] = $this->buildDataObject($typeDefinition);
-                $branches[$typeName] = [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer'],
-                        'type' => ['const' => $typeName],
-                        'colPos' => ['type' => 'integer'],
-                        'appearance' => ['type' => 'object'],
-                        'data' => ['$ref' => '#/definitions/' . $definitionKey],
-                    ],
-                ];
-            }
-        }
-        // sorted, so generated artifacts stay byte-stable across environments
-        ksort($branches);
+        $this->buildElementDefinition($tcaTypeNames);
         $schema = [
             '$schema' => self::SCHEMA_DRAFT,
             'title' => 'Content Block elements',
-            'oneOf' => array_values($branches),
-            'definitions' => $this->getDefinitions(),
+            '$ref' => '#/$defs/' . self::ELEMENT_DEFINITION_KEY,
+            '$defs' => $this->getDefinitions(),
         ];
         if ($idBase !== '') {
             $schema['$id'] = rtrim($idBase, '/') . '/content-blocks.schema.json';
@@ -95,7 +86,11 @@ final class JsonSchemaGenerator
         return $schema;
     }
 
-    public function generateForTypeName(string $typeName, string $idBase = ''): ?array
+    /**
+     * @param list<string> $tcaTypeNames tt_content type names registered in
+     *        TCA, used for fallback branches when the block renders children
+     */
+    public function generateForTypeName(string $typeName, string $idBase = '', array $tcaTypeNames = []): ?array
     {
         $this->reset();
         if (!in_array($typeName, $this->getContentElementTypeNames(), true)) {
@@ -105,17 +100,17 @@ final class JsonSchemaGenerator
             if ((string)$typeDefinition->getTypeName() !== $typeName) {
                 continue;
             }
+            $dataObject = $this->buildDataObject($typeDefinition);
+            if ($this->elementDefinitionRequired) {
+                // the block declares rendered children, so the schema needs
+                // the recursive element definition to resolve their $ref
+                $this->buildElementDefinition($tcaTypeNames);
+            }
             $schema = [
                 '$schema' => self::SCHEMA_DRAFT,
                 'title' => $typeDefinition->getName(),
-                'type' => 'object',
-                'properties' => $this->buildPropertiesForColumns(
-                    $this->getContentElementTableDefinition(),
-                    $typeDefinition->getColumns(),
-                    $this->loadFileProcessing($typeDefinition),
-                    $typeName
-                ),
-                'definitions' => $this->getDefinitions(),
+                ...$dataObject,
+                '$defs' => $this->getDefinitions(),
             ];
             if ($idBase !== '') {
                 $schema['$id'] = rtrim($idBase, '/') . '/' . $typeName . '.schema.json';
@@ -129,6 +124,7 @@ final class JsonSchemaGenerator
     {
         $this->recordDefinitions = [];
         $this->recordDefinitionsInProgress = [];
+        $this->elementDefinitionRequired = false;
     }
 
     private function getContentElementTableDefinition(): TableDefinition
@@ -138,15 +134,115 @@ final class JsonSchemaGenerator
 
     private function buildDataObject(ContentTypeInterface $typeDefinition): array
     {
+        $properties = $this->buildPropertiesForColumns(
+            $this->getContentElementTableDefinition(),
+            $typeDefinition->getColumns(),
+            $this->loadFileProcessing($typeDefinition),
+            (string)$typeDefinition->getTypeName()
+        );
+
+        // Rendered child element lists declared in headless.yaml ("children"):
+        // the JSON keys the site package renders container children into
+        // (TypoScript "as"), typed as arrays of content block elements
+        foreach ($this->headlessYamlLoader->getChildrenForContentBlock($typeDefinition->getName()) as $childKey) {
+            $properties[$childKey] = [
+                'type' => 'array',
+                'items' => ['$ref' => '#/$defs/' . self::ELEMENT_DEFINITION_KEY],
+            ];
+            $this->elementDefinitionRequired = true;
+        }
+        ksort($properties);
+
         return [
             'type' => 'object',
-            'properties' => $this->buildPropertiesForColumns(
-                $this->getContentElementTableDefinition(),
-                $typeDefinition->getColumns(),
-                $this->loadFileProcessing($typeDefinition),
-                (string)$typeDefinition->getTypeName()
-            ),
+            'properties' => $properties,
         ];
+    }
+
+    /**
+     * The discriminated union of all element branches: one per Content Block,
+     * plus a loose fallback branch for every tt_content type that is
+     * registered in TCA but not defined as Content Block.
+     *
+     * @param list<string> $tcaTypeNames
+     */
+    private function buildElementDefinition(array $tcaTypeNames = []): array
+    {
+        $branches = [];
+        $contentBlockTypeNames = [];
+        if ($this->tableDefinitionCollection->hasTable('tt_content')) {
+            foreach ($this->getContentElementTableDefinition()->contentTypeDefinitionCollection as $typeDefinition) {
+                $typeName = (string)$typeDefinition->getTypeName();
+                $contentBlockTypeNames[] = $typeName;
+                $definitionKey = $this->definitionKey('ctype_' . $typeName);
+                $this->recordDefinitions[$definitionKey] = $this->buildDataObject($typeDefinition);
+                $branches[$typeName] = $this->buildElementBranch($typeName, ['$ref' => '#/$defs/' . $definitionKey]);
+            }
+        }
+        foreach ($this->fallbackTypeNames($tcaTypeNames, $contentBlockTypeNames) as $typeName) {
+            $branches[$typeName] = $this->buildFallbackBranch($typeName);
+        }
+        // sorted, so generated artifacts stay byte-stable across environments
+        ksort($branches);
+
+        $elementDefinition = ['oneOf' => array_values($branches)];
+        $this->recordDefinitions[self::ELEMENT_DEFINITION_KEY] = $elementDefinition;
+
+        return $elementDefinition;
+    }
+
+    /**
+     * @param array<string, mixed> $dataSchema
+     * @return array<string, mixed>
+     */
+    private function buildElementBranch(string $typeName, array $dataSchema): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'id' => ['type' => 'integer'],
+                'type' => ['const' => $typeName],
+                'colPos' => ['type' => 'integer'],
+                'appearance' => ['type' => 'object'],
+                'data' => $dataSchema,
+            ],
+        ];
+    }
+
+    /**
+     * Elements that are not Content Blocks (core types like "html" or
+     * "shortcut", classic plugins such as "nbcontact_*") keep the generic
+     * element envelope, but their data shape is not described by this schema.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildFallbackBranch(string $typeName): array
+    {
+        return $this->buildElementBranch($typeName, ['type' => 'object'])
+            + ['description' => sprintf(
+                'Fallback for tt_content type "%s": not defined as Content Block, the data shape is not described by this schema.',
+                $typeName
+            )];
+    }
+
+    /**
+     * TCA type names without a Content Block definition, without TCA's
+     * internal default record type "1", sorted.
+     *
+     * @param list<string> $tcaTypeNames
+     * @param list<string> $contentBlockTypeNames
+     * @return list<string>
+     */
+    private function fallbackTypeNames(array $tcaTypeNames, array $contentBlockTypeNames): array
+    {
+        $fallbackTypeNames = array_diff($tcaTypeNames, $contentBlockTypeNames);
+        $fallbackTypeNames = array_filter(
+            $fallbackTypeNames,
+            static fn(string $typeName): bool => $typeName !== '1'
+        );
+        sort($fallbackTypeNames);
+
+        return $fallbackTypeNames;
     }
 
     /**
@@ -232,7 +328,7 @@ final class JsonSchemaGenerator
 
         if ($fieldType instanceof LinkFieldType) {
             return ['anyOf' => [
-                ['$ref' => '#/definitions/linkObject'],
+                ['$ref' => '#/$defs/linkObject'],
                 ['type' => 'null'],
             ]];
         }
@@ -242,13 +338,13 @@ final class JsonSchemaGenerator
             if (($config['relationship'] ?? '') === 'oneToOne') {
                 return ['anyOf' => [
                     $file,
-                    ['$ref' => '#/definitions/errorObject'],
+                    ['$ref' => '#/$defs/errorObject'],
                     ['type' => 'null'],
                 ]];
             }
             return ['type' => 'array', 'items' => ['anyOf' => [
                 $file,
-                ['$ref' => '#/definitions/errorObject'],
+                ['$ref' => '#/$defs/errorObject'],
             ]]];
         }
 
@@ -259,11 +355,11 @@ final class JsonSchemaGenerator
         if ($fieldType instanceof CategoryFieldType) {
             if (($config['relationship'] ?? '') === 'oneToOne') {
                 return ['anyOf' => [
-                    ['$ref' => '#/definitions/categoryObject'],
+                    ['$ref' => '#/$defs/categoryObject'],
                     ['type' => 'null'],
                 ]];
             }
-            return ['type' => 'array', 'items' => ['$ref' => '#/definitions/categoryObject']];
+            return ['type' => 'array', 'items' => ['$ref' => '#/$defs/categoryObject']];
         }
 
         if ($fieldType instanceof CollectionFieldType) {
@@ -295,7 +391,9 @@ final class JsonSchemaGenerator
         }
 
         if ($fieldType instanceof CheckboxFieldType) {
-            return ['type' => 'null'];
+            // TCA check fields are delivered as integer (0/1, or a bitmask
+            // for multi-checkbox fields), never as null-typed values
+            return ['type' => ['integer', 'null']];
         }
 
         return ['type' => 'null'];
@@ -313,13 +411,13 @@ final class JsonSchemaGenerator
         $variants = array_keys($fileProcessing[$field->identifier] ?? []);
         sort($variants);
         if ($variants === [] || $definitionPrefix === '') {
-            return ['$ref' => '#/definitions/fileObject'];
+            return ['$ref' => '#/$defs/fileObject'];
         }
 
         $definitionKey = $this->definitionKey('file_' . $definitionPrefix . '_' . $field->identifier);
         $this->recordDefinitions[$definitionKey] = $this->buildFileObject($variants);
 
-        return ['$ref' => '#/definitions/' . $definitionKey];
+        return ['$ref' => '#/$defs/' . $definitionKey];
     }
 
     /**
@@ -351,7 +449,7 @@ final class JsonSchemaGenerator
     {
         $definitionKey = $this->definitionKey('record_' . $table);
         if (isset($this->recordDefinitionsInProgress[$definitionKey])) {
-            return ['$ref' => '#/definitions/' . $definitionKey];
+            return ['$ref' => '#/$defs/' . $definitionKey];
         }
         if (!$this->tableDefinitionCollection->hasTable($table)) {
             return ['type' => 'object'];
@@ -374,7 +472,7 @@ final class JsonSchemaGenerator
             'properties' => $properties,
         ];
 
-        return ['$ref' => '#/definitions/' . $definitionKey];
+        return ['$ref' => '#/$defs/' . $definitionKey];
     }
 
     private function getDefinitions(): array

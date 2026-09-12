@@ -62,6 +62,7 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
                     'title' => 'Category one',
                 ],
             ],
+            'my_checkbox' => 0,
             'my_collection' => [
                 [
                     'text' => 'Collection item one',
@@ -97,6 +98,7 @@ final class ContentBlocksJsonDataProcessorCharTest extends FunctionalTestCase
             'bodytext' => null,
             'header' => 'EmptyLink',
             'my_categories' => [],
+            'my_checkbox' => 0,
             'my_collection' => [],
             'my_datetime' => null,
             'my_json' => null,

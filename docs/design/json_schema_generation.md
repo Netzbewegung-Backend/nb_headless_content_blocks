@@ -1,6 +1,6 @@
 # Design: Automatically generate JSON Schema
 
-> Status: **PHASES 1–3 IMPLEMENTED (2026-09-08)** — phase 1 shipped
+> Status: **PHASES 1–4 IMPLEMENTED (2026-09-12)** — phase 1 shipped
 > `JsonSchemaGenerator`, the `nbheadlesscontentblocks:generate-schema`
 > command and the schema contract tests (issue #22); phase 2 shipped the
 > HTTP endpoint (`SchemaEndpointMiddleware`, per-site gating via site
@@ -18,10 +18,18 @@
 > patch releases; OpenAPI-style documentation remains a possible
 > follow-up. The open questions of section 8 are decided:
 > base contract (not per-site), URL strategy per the how-to, validator
-> `justinrainbow/json-schema`, headless wrapper included. This is a
-> historical design record; where wording differs from the code, **the
-> code wins** — notably the implementation emits **draft-07** with
-> `definitions` (instead of the 2020-12/`$defs` sketch below), maps
+> `justinrainbow/json-schema`, headless wrapper included. Phase 4
+> (2026-09-12, rework after first real-project feedback) switched the
+> output to **2020-12 with `$defs`** (the original sketch), fixed
+> Checkbox fields to `integer` (were wrongly `null`), added recursive
+> `children` lists declared in `headless.yaml` (replacing the rejected
+> TypoScript walk for container children with a declarative opt-in),
+> and added loose fallback branches for TCA types without Content
+> Block definition (served by endpoint/command via
+> `TcaContentTypesProvider`; the committed artifact stays free of
+> them to remain stable across TYPO3 versions, whose core type sets
+> differ). This is a historical design record; where wording differs
+> from the code, **the code wins** — notably the implementation maps
 > field types as nullable unions (see the contract tests instead of
 > the sketch table below), and the endpoint is delivered as middleware
 > after site resolution (not as a page type).
