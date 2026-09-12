@@ -521,6 +521,12 @@
         "ctype_test_selectrelation": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "header": {
                     "type": [
                         "string",

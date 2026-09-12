@@ -29,6 +29,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *       - left
  *       - right
  *
+ * Declared JSON Schema fragments for additional rendered keys (sub data
+ * processors, headless.php results — everything not derivable from the
+ * Content Block definition):
+ *
+ *     properties:
+ *       categories:
+ *         type: array
+ *         items:
+ *           type: string
+ *
  * Processing values follow the ext:headless ProcessingConfiguration option
  * syntax ("key=value" pairs, comma separated).
  */
@@ -92,6 +102,32 @@ final class HeadlessYamlLoader
         }
 
         return $childKeys;
+    }
+
+    /**
+     * Declared JSON Schema fragments for additional rendered keys, as
+     * declared in the optional "properties" section. They are merged
+     * verbatim into the block's data properties.
+     *
+     * @return array<string, mixed> property key => JSON Schema fragment
+     */
+    public function getDeclaredPropertiesForContentBlock(string $contentBlockName): array
+    {
+        $config = $this->loadConfig($contentBlockName);
+
+        $properties = $config['properties'] ?? [];
+        if (!is_array($properties)) {
+            return [];
+        }
+
+        $declaredProperties = [];
+        foreach ($properties as $propertyKey => $schema) {
+            if (is_string($propertyKey) && $propertyKey !== '' && is_array($schema)) {
+                $declaredProperties[$propertyKey] = $schema;
+            }
+        }
+
+        return $declaredProperties;
     }
 
     /**

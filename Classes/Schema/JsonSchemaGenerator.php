@@ -151,6 +151,15 @@ final class JsonSchemaGenerator
             ];
             $this->elementDefinitionRequired = true;
         }
+
+        // Declared JSON Schema fragments from headless.yaml ("properties"):
+        // additional rendered keys not derivable from the Content Block
+        // definition (sub data processors, headless.php results). Merged
+        // last, so a declaration also overrides a derived mapping.
+        $properties = array_merge(
+            $properties,
+            $this->headlessYamlLoader->getDeclaredPropertiesForContentBlock($typeDefinition->getName())
+        );
         ksort($properties);
 
         return [

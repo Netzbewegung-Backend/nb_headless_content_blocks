@@ -116,6 +116,21 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function headlessYamlPropertiesAreMergedVerbatim(): void
+    {
+        $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_selectrelation');
+
+        // declared fragment for a sub data processor key, merged verbatim
+        self::assertSame(
+            ['type' => 'array', 'items' => ['type' => 'string']],
+            $schema['properties']['categories']
+        );
+
+        // the declared key takes part in the sorted data properties
+        self::assertContains('categories', array_keys($schema['properties']));
+    }
+
+    #[Test]
     public function fileFieldSchemaDependsOnRelationship(): void
     {
         $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_filetest');

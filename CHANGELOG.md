@@ -32,6 +32,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Optional `properties` section in a Content Block's `headless.yaml`:
+  verbatim JSON Schema fragments for additional rendered keys (sub data
+  processors, `headless.php` results) that are merged into the block's
+  data properties of the generated JSON Schema — a declaration overrides
+  a derived mapping on key collision (issue #22 feedback).
 - Loose fallback branches for tt_content types registered in TCA but
   not defined as Content Block (core types like `html`/`shortcut`,
   classic plugins): the command and the HTTP endpoint include them, so

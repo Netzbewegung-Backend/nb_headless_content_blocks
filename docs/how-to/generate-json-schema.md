@@ -96,6 +96,26 @@ children:
 The keys must match the TypoScript `as` values exactly, and should not
 collide with field identifiers of the block.
 
+## Declare additional rendered keys
+
+Sub data processors and `headless.php` can add keys to the block's
+`data` object that are not derivable from the Content Block definition
+(their schema is assembled at runtime). Declare them in the block's
+`headless.yaml` with verbatim JSON Schema fragments:
+
+```yaml
+properties:
+  categories:
+    type: array
+    items:
+      type: string
+```
+
+They are merged after the field-derived properties and `children`, so a
+declaration also overrides a derived mapping on key collision. Use them
+sparingly — for everything the JSON conversion itself outputs, the
+generated mapping is the source of truth.
+
 ## Using the schemas
 
 - **IDE**: bind the schema to fixture/mock files via `$schema`
@@ -105,9 +125,11 @@ collide with field identifiers of the block.
   validator (e.g. `ajv` in the frontend CI)
 
 Data that the CMS assembles at runtime (`headless.php` results, sub
-data processors) is by design not covered by the schema — keep manual
-view models for it in the frontend. The loose fallback branches make
-sure page columns containing non-Content-Block elements still validate.
+data processors) is not derivable from the Content Block definitions —
+declare such keys in the block's `headless.yaml` (see above), or keep
+manual view models for them in the frontend. The loose fallback
+branches make sure page columns containing non-Content-Block elements
+still validate.
 
 The extension's own test suite validates its frozen characterization
 fixtures against the generated schemas
