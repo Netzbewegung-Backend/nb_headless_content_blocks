@@ -249,6 +249,26 @@
                             "type": "integer"
                         },
                         "type": {
+                            "const": "test_selectrelation"
+                        },
+                        "colPos": {
+                            "type": "integer"
+                        },
+                        "appearance": {
+                            "type": "object"
+                        },
+                        "data": {
+                            "$ref": "#/$defs/ctype_test_selectrelation"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "type": {
                             "const": "test_simple"
                         },
                         "colPos": {
@@ -494,6 +514,46 @@
                     "type": [
                         "string",
                         "null"
+                    ]
+                }
+            }
+        },
+        "ctype_test_selectrelation": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "multi_relation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/record_tx_test_select_relation_item"
+                    }
+                },
+                "single_relation": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/record_tx_test_select_relation_item"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "static_select": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
                     ]
                 }
             }
@@ -747,6 +807,27 @@
             "type": "object",
             "properties": {
                 "text": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "record_tx_test_select_relation_item": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/linkObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "title": {
                     "type": [
                         "string",
                         "null"

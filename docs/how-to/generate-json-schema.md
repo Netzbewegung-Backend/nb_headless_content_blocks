@@ -52,6 +52,12 @@ The schemas describe the **base contract** (see
   [Define image variants](define-image-variants.md)
 - Checkbox fields are `integer` (TCA check fields are delivered as
   `0`/`1`, or a bitmask for multi-checkbox fields)
+- Select fields with a `foreign_table` resolve to records in the JSON
+  output (single object for `renderType: selectSingle`, array of
+  objects otherwise — same as Relation fields), so the schema uses the
+  record schema of the target table when it is defined as Content Block
+  RecordType, a loose `object` otherwise; static selects (fixed items)
+  stay `string`/`array of strings`
 - every tt_content type registered in TCA but **not** defined as
   Content Block (core types like `html` or `shortcut`, classic plugins
   like form framework or Extbase plugins) gets a loose fallback branch:

@@ -80,6 +80,42 @@ final class JsonSchemaGeneratorTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function selectWithForeignTableBecomesRecordSchema(): void
+    {
+        $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_selectrelation');
+        $properties = $schema['properties'];
+
+        // selectSingle with foreign_table: single record (manyToOne) or null
+        self::assertSame(
+            ['$ref' => '#/$defs/record_tx_test_select_relation_item'],
+            $properties['single_relation']['anyOf'][0] ?? []
+        );
+        self::assertSame(['type' => 'null'], $properties['single_relation']['anyOf'][1] ?? []);
+
+        // every other renderType with foreign_table: list of records
+        self::assertSame('array', $properties['multi_relation']['type'] ?? null);
+        self::assertSame(
+            ['$ref' => '#/$defs/record_tx_test_select_relation_item'],
+            $properties['multi_relation']['items'] ?? []
+        );
+
+        // the referenced definition carries the RecordType fields
+        $recordDefinition = $schema['$defs']['record_tx_test_select_relation_item'] ?? null;
+        self::assertIsArray($recordDefinition);
+        self::assertSame(['type' => ['string', 'null']], $recordDefinition['properties']['title']);
+        self::assertSame(
+            ['anyOf' => [['$ref' => '#/$defs/linkObject'], ['type' => 'null']]],
+            $recordDefinition['properties']['link']
+        );
+
+        // a static select without foreign_table keeps the string mapping
+        self::assertSame(
+            ['anyOf' => [['type' => 'string'], ['type' => 'array', 'items' => ['type' => 'string']]]],
+            $properties['static_select']
+        );
+    }
+
+    #[Test]
     public function fileFieldSchemaDependsOnRelationship(): void
     {
         $schema = $this->get(JsonSchemaGenerator::class)->generateForTypeName('test_filetest');

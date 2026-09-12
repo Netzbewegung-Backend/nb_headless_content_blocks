@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Select fields with a `foreign_table` are now typed as record schemas in
+  the generated JSON Schema: single record object for `renderType:
+  selectSingle` (resolved as `manyToOne` by the Core), array of record
+  objects for every other renderType — matching the JSON output, which
+  resolves these relations into records. Static selects (items list)
+  keep the string mapping (issue #22 feedback).
 - Checkbox fields are now typed as `integer`/`null` in the generated
   JSON Schema (were wrongly `null` — the API delivers `0`/`1`, or a
   bitmask for multi-checkbox fields) (issue #22 feedback).

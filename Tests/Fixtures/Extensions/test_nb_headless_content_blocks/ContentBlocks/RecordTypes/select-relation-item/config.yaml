@@ -1,0 +1,9 @@
+name: test/select-relation-item
+table: tx_test_select_relation_item
+prefixFields: false
+labelField: title
+fields:
+  - identifier: title
+    type: Text
+  - identifier: link
+    type: Link

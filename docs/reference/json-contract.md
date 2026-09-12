@@ -29,7 +29,7 @@ per fixture record); changes are deliberate decisions, not accidents.
 | Richtext (Text with `enableRichtext`) | HTML string via `lib.parseFunc_RTE` |
 | Number | int (or float), `0`/`null` when empty |
 | DateTime | W3C string `2023-10-20T14:08:34+00:00` (configurable via `options.dateTimeFormat`), `null` when empty |
-| Select | selected value(s): string or array of strings, `""` when empty |
+| Select | static items: selected value(s) — string or array of strings, `""` when empty. With `foreign_table`: resolved record(s) — object for `selectSingle`, array of objects otherwise (same shape as Relation) |
 | Password | `""` — always blanked, hashes never leave the system |
 | Email / Color / Slug | string |
 | Json | parsed array (`null` when the column is empty) |

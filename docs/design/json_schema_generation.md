@@ -195,7 +195,7 @@ reduction) would live in `$defs` — the schema twin of the contract page.
 | Text (richtext) | `{"type": "string"}` (HTML) |
 | Number | `{"type": ["integer", "number"]}` |
 | DateTime | `{"type": "string", "format": "date-time"}` (default W3C; per-site format makes it a pattern) |
-| Select | `{"type": ["string", "array"], "items": {"type": "string"}}` |
+| Select | static items: `{"type": ["string", "array"], "items": {"type": "string"}}`; with `foreign_table`: record schema per target table (single object for `selectSingle`, array otherwise — like Relation) |
 | Password | `{"const": ""}` |
 | Json | `{}` / `{"type": ["object", "array", "null"]}` |
 | Link | `$defs/linkObject` or `null`; unresolvable → object with `__errorMessage` |

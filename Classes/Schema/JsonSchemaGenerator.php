@@ -312,6 +312,22 @@ final class JsonSchemaGenerator
         }
 
         if ($fieldType instanceof SelectFieldType) {
+            // A select with a foreign_table resolves to record(s) at runtime
+            // (TcaPreparation::configureSelectSingle() marks selectSingle as
+            // manyToOne, RelationshipType::fromTcaConfiguration() everything
+            // else as list), so mirror the Relation mapping instead of the
+            // static string mapping.
+            $foreignTable = (string)($config['foreign_table'] ?? '');
+            if ($foreignTable !== '') {
+                $recordSchema = $this->recordSchemaForTable($foreignTable);
+                if ((string)($config['renderType'] ?? '') === 'selectSingle' && !isset($config['MM'])) {
+                    return ['anyOf' => [
+                        $recordSchema,
+                        ['type' => 'null'],
+                    ]];
+                }
+                return ['type' => 'array', 'items' => $recordSchema];
+            }
             return ['anyOf' => [
                 ['type' => 'string'],
                 ['type' => 'array', 'items' => ['type' => 'string']],
