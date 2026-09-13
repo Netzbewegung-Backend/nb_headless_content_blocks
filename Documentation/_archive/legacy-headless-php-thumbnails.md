@@ -6,7 +6,7 @@
 > historical reference for migrating existing blocks; production sites
 > carry many copies of this file (13 on the site this extension was built
 > for). One case is **not** yet replaceable: images inside Collection
-> items — see the [migration guide](../how-to/migrate-legacy-thumbnails.md#known-limitation).
+> items — see the [migration guide](../how-to/migrate-legacy-thumbnails.md).
 
 ## The pattern
 

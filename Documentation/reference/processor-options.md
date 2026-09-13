@@ -66,7 +66,7 @@ The extension ships the Site Set
 `lib.contentElement` clone with the processor wired. EXT:content_blocks
 auto-maps every Content Block with a frontend template onto
 `lib.contentBlock`, so no manual TypoScript is needed — see
-[Getting started → How it works](../getting-started.md#how-it-works)
+[Getting started → How it works](../getting-started.md)
 for the two cases that do need one. Include the set in your site's
 `config.yaml`:
 

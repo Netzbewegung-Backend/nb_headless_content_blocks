@@ -11,8 +11,10 @@
 //
 // Own additions on top of the defaults (mirroring the .gitattributes
 // export-ignore list — keep both in sync):
-// - docs/ (directories)
 // - AGENTS.md, CONTRIBUTING.md (files)
+// Note: Documentation/ ships on purpose (TER/renderdocs convention) —
+// do NOT add a 'docs' directory entry: the prefix match is
+// case-insensitive and would also exclude Documentation/.
 
 return [
     'directories' => [
@@ -26,7 +28,6 @@ return [
         '.phive',
         'bin',
         'build',
-        'docs',
         'public',
         'tailor-version-artefact',
         'tailor-version-upload',

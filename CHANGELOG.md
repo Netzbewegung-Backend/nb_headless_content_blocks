@@ -10,13 +10,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Documentation now renders to docs.typo3.org via the official
+  render-guides toolchain: `Documentation/guides.xml` + Markdown sources
+  (moved from `docs/`, index is `Documentation/index.md`),
+  `make docs` / `make test-docs` and a CI render check
+  (`.github/workflows/test-documentation.yml`). Links inside
+  `Documentation/` no longer use `#anchor` suffixes (render-guides
+  cannot resolve them).
+- README link table (Repository / Documentation / TER / Packagist).
+
 ### Changed
 
-- The TER distribution zip no longer ships `docs/`, `AGENTS.md` and
+- The TER distribution zip no longer ships `AGENTS.md` and
   `CONTRIBUTING.md`: the publish workflow passes a custom tailor
   exclusion list (`Build/tailor/ExcludeFromPackaging.php`) that mirrors
   the `.gitattributes` export-ignores (tailor does not read
-  export-ignore itself).
+  export-ignore itself). `Documentation/` ships on purpose
+  (TER/renderdocs convention).
 
 ## [0.1.2] - 2026-09-13
 

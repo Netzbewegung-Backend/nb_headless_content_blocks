@@ -11,7 +11,7 @@
 # clean. NOTE: tailor's TER upload ignores export-ignore — it filters by
 # Build/tailor/ExcludeFromPackaging.php (wired via the
 # TYPO3_EXCLUDE_FROM_PACKAGING env var in publish.yml). Keep both lists
-# in sync.
+# in sync. Documentation/ ships on purpose (TER/renderdocs convention).
 /.Build/ export-ignore
 /.ddev/ export-ignore
 /.github/ export-ignore
@@ -19,6 +19,5 @@
 /.gitignore export-ignore
 /Build/ export-ignore
 /Tests/ export-ignore
-/docs/ export-ignore
 /AGENTS.md export-ignore
 /CONTRIBUTING.md export-ignore

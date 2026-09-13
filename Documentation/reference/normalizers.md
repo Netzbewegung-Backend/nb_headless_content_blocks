@@ -26,10 +26,10 @@ Built-in normalizers (`Classes/Normalization/Normalizer/`):
 | `ScalarNormalizer` | `null`, int, string, plain arrays | passthrough (arrays recurse via the chain) |
 | `DateTimeNormalizer` | `\DateTimeInterface` | formatted string, `options.dateTimeFormat` (default W3C) |
 | `FlexFormNormalizer` | `FlexFormFieldValues` | parsed array |
-| `TypolinkNormalizer` | `TypolinkParameter` | [link object](json-contract.md#link-object); `null` when empty; `__errorMessage` shape when unresolvable |
+| `TypolinkNormalizer` | `TypolinkParameter` | [link object](json-contract.md); `null` when empty; `__errorMessage` shape when unresolvable |
 | `RecordNormalizer` | `Record` | full record conversion via `Context::buildRecord()` |
 | `RecordCollectionNormalizer` | `LazyRecordCollection` | array; `sys_category` → reduced `uid/pid/title`, everything else per-record recursion |
-| `FileReferenceNormalizer` | `FileReference`, `LazyFileReferenceCollection` | [file object](json-contract.md#file-object) incl. crop-aware `publicUrl` and declarative `thumbnails` |
+| `FileReferenceNormalizer` | `FileReference`, `LazyFileReferenceCollection` | [file object](json-contract.md) incl. crop-aware `publicUrl` and declarative `thumbnails` |
 | `FolderCollectionNormalizer` | `LazyFolderCollection` | array of storage-absolute paths |
 | `UnknownTypeNormalizer` | everything (fallback, not tagged) | `null` + debug log |
 

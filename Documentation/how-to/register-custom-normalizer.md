@@ -7,7 +7,7 @@ domain objects or field types the built-in normalizers do not cover.
 
 A normalizer claims a *value type*. You need one when a field value
 arrives at the end of the chain and would become `null` (see
-[Troubleshooting](../troubleshooting.md#a-field-is-null-in-the-json-and-the-log-mentions-an-unknown-type)) —
+[Troubleshooting](../troubleshooting.md)) —
 typically because your extension introduced a custom relation type, or you
 want to change the shape of an existing one (e.g. categories with more
 fields than the frozen `uid/pid/title` shape).

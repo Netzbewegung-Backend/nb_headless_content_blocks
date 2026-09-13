@@ -97,4 +97,4 @@ usual.
 ## Troubleshooting
 
 If `thumbnails` do not show up, see
-[Troubleshooting → thumbnails are missing](../troubleshooting.md#thumbnails-are-missing-on-image-fields).
+[Troubleshooting → thumbnails are missing](../troubleshooting.md).

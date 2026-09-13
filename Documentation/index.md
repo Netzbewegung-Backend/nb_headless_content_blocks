@@ -2,7 +2,7 @@
 
 This page explains what the extension's documentation covers and where to find
 it. The docs are written for developers who build a headless TYPO3 frontend
-with EXT:headless and EXT:content_blocks — see the [README](../README.md)
+with EXT:headless and EXT:content_blocks — see the [README](https://github.com/Netzbewegung-Backend/nb_headless_content_blocks)
 whether the extension fits your setup.
 
 ## Getting started

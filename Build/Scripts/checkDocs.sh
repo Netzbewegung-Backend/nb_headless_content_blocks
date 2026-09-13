@@ -2,7 +2,7 @@
 #
 # checkDocs.sh — link checker for relative Markdown links and anchors.
 # Verifies that every relative link and every #anchor in the project's
-# Markdown files (README, CONTRIBUTING, docs/, .github/) resolves.
+# Markdown files (README, CONTRIBUTING, Documentation/, .github/) resolves.
 #
 # Usage: Build/Scripts/checkDocs.sh
 # Exits non-zero on the first broken link/anchor found (all findings are
@@ -16,7 +16,7 @@ STATUS=0
 declare -a SEEN_DIRS
 
 # All markdown files relevant for the docs (vendor/build output excluded)
-mapfile -t FILES < <(find README.md CONTRIBUTING.md AGENTS.md docs .github -name '*.md' -type f 2>/dev/null | sort)
+mapfile -t FILES < <(find README.md CONTRIBUTING.md AGENTS.md Documentation .github -name '*.md' -type f 2>/dev/null | sort)
 
 check_anchor() {
     local file="$1" anchor="$2" target="$3"
