@@ -7,7 +7,10 @@
 *.typoscript text eol=lf
 *.ts text eol=lf
 
-# Keep the TER distribution zip clean (tailor builds it via git archive)
+# Keep git archive distributions (GitHub source zips, composer archive)
+# clean. NOTE: tailor's TER upload ignores export-ignore — it filters by
+# its own fixed list (conf/ExcludeFromPackaging.php, overridable via the
+# TYPO3_EXCLUDE_FROM_PACKAGING env var in publish.yml).
 /.Build/ export-ignore
 /.ddev/ export-ignore
 /.github/ export-ignore
