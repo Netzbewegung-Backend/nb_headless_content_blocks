@@ -21,6 +21,10 @@ jobs:
     env:
       TYPO3_EXTENSION_KEY: nb_headless_content_blocks
       TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
+      # tailor does not read .gitattributes export-ignore; this custom
+      # exclusion list (tailor defaults + the .gitattributes additions)
+      # keeps the TER zip clean. Must exist in the tagged commit.
+      TYPO3_EXCLUDE_FROM_PACKAGING: ${{ github.workspace }}/Build/tailor/ExcludeFromPackaging.php
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The TER distribution zip no longer ships `docs/`, `AGENTS.md` and
+  `CONTRIBUTING.md`: the publish workflow passes a custom tailor
+  exclusion list (`Build/tailor/ExcludeFromPackaging.php`) that mirrors
+  the `.gitattributes` export-ignores (tailor does not read
+  export-ignore itself).
+
 ## [0.1.2] - 2026-09-13
 
 ### Added

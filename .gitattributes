@@ -9,8 +9,9 @@
 
 # Keep git archive distributions (GitHub source zips, composer archive)
 # clean. NOTE: tailor's TER upload ignores export-ignore — it filters by
-# its own fixed list (conf/ExcludeFromPackaging.php, overridable via the
-# TYPO3_EXCLUDE_FROM_PACKAGING env var in publish.yml).
+# Build/tailor/ExcludeFromPackaging.php (wired via the
+# TYPO3_EXCLUDE_FROM_PACKAGING env var in publish.yml). Keep both lists
+# in sync.
 /.Build/ export-ignore
 /.ddev/ export-ignore
 /.github/ export-ignore

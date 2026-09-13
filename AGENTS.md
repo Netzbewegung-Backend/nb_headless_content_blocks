@@ -126,6 +126,10 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
   version to TER via typo3/tailor (requires the `TYPO3_API_TOKEN` repo secret and
   a registered TER extension key). The workflow can also be started manually
   ("Run workflow") with an existing tag and an optional release comment.
+- TER zip content is controlled by `Build/tailor/ExcludeFromPackaging.php`
+  (tailor ignores .gitattributes export-ignore and uses the file via the
+  `TYPO3_EXCLUDE_FROM_PACKAGING` env var). It replicates tailor's default
+  list plus the `.gitattributes` export-ignores — keep both in sync.
 - Before releasing a new version: update `CHANGELOG.md` — turn the
   `[Unreleased]` section into the new version with the release date
   (Keep a Changelog format, including the compare link definitions at

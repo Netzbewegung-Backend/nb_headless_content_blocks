@@ -1,0 +1,106 @@
+<?php
+
+// Custom exclusion list for tailor's TER upload. publish.yml points the
+// TYPO3_EXCLUDE_FROM_PACKAGING environment variable to this file.
+//
+// It REPLACES tailor's default list (typo3/tailor conf/ExcludeFromPackaging.php)
+// — no merging — so the defaults are replicated below and must be kept in
+// sync manually when tailor changes them. Matching is case-insensitive:
+// directories are matched against the beginning of the path, files against
+// the end of the filename.
+//
+// Own additions on top of the defaults (mirroring the .gitattributes
+// export-ignore list — keep both in sync):
+// - docs/ (directories)
+// - AGENTS.md, CONTRIBUTING.md (files)
+
+return [
+    'directories' => [
+        '.build',
+        '.ddev',
+        '.git',
+        '.github',
+        '.gitlab',
+        '.gitlab-ci',
+        '.idea',
+        '.phive',
+        'bin',
+        'build',
+        'docs',
+        'public',
+        'tailor-version-artefact',
+        'tailor-version-upload',
+        'tests',
+        'tools',
+        'vendor',
+    ],
+    'files' => [
+        'bitbucket-pipelines.yaml',
+        'bitbucket-pipelines.yml',
+        'bower.json',
+        'CODE_OF_CONDUCT.md',
+        'codeception.yaml',
+        'codeception.yml',
+        'composer.lock',
+        'crowdin.yaml',
+        'crowdin.yml',
+        'deploy.yaml',
+        'deploy.yml',
+        'docker-compose.yaml',
+        'docker-compose.yml',
+        'Dockerfile',
+        'DS_Store',
+        'dynamicReturnTypeMeta.json',
+        'ecs.php',
+        'editorconfig',
+        'env',
+        'env.dist',
+        'eslintignore',
+        'eslintrc.json',
+        'ExtensionBuilder.json',
+        'fractor.php',
+        'gitattributes',
+        'gitignore',
+        'gitlab-ci.yaml',
+        'gitlab-ci.yml',
+        'gitmodules',
+        'gitreview',
+        'Makefile',
+        'nvmrc',
+        'package-lock.json',
+        'package.json',
+        'phive.xml',
+        'php-cs-fixer.dist.php',
+        'php-cs-fixer.php',
+        'php_cs',
+        'php_cs.php',
+        'phpcs.xml',
+        'phpcs.xml.dist',
+        'phplint.yml',
+        'phpstan-baseline.neon',
+        'phpstan.neon',
+        'phpstan.neon.dist',
+        'phpstorm.meta.php',
+        'phpunit.xml',
+        'phpunit.xml.dist',
+        'prettierrc.json',
+        'rector.php',
+        'renovate.json',
+        'scrutinizer.yml',
+        'styleci.yml',
+        'stylelint.config.js',
+        'stylelintrc',
+        'travis.yml',
+        'tslint.yaml',
+        'tslint.yml',
+        'typoscript-lint.yaml',
+        'typoscript-lint.yml',
+        'typoscriptlint.yaml',
+        'typoscriptlint.yml',
+        'webpack.config.js',
+        'webpack.mix.js',
+        'yarn.lock',
+        'AGENTS.md',
+        'CONTRIBUTING.md',
+    ],
+];
