@@ -87,5 +87,5 @@ are not yet covered: nested collection records are built without the
 processor options, and their custom table has no Content Block
 `headless.yaml`. For that case, keep the `headless.php` generator for
 now — follow the design record
-([`IMPROVE_TO_ARRAY.md`](../design/IMPROVE_TO_ARRAY.md)) for the
+([`improve-to-array.md`](../design/improve-to-array.md)) for the
 planned extension of the `Context`-based API.

@@ -15,10 +15,9 @@ frontends — with a stable, test-frozen JSON contract.
 | **TER:**           | https://extensions.typo3.org/extension/nb_headless_content_blocks                          |
 | **Packagist:**     | https://packagist.org/packages/netzbewegung/nb-headless-content-blocks                     |
 
-**Documentation:** rendered on docs.typo3.org (see table above) from
-[Documentation/index.md](Documentation/index.md) — start with
-[Getting started](Documentation/getting-started.md). Changes are tracked in the
-[CHANGELOG](CHANGELOG.md).
+Start with the
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html).
+Changes are tracked in the [CHANGELOG](CHANGELOG.md).
 
 ## What it does
 
@@ -58,7 +57,7 @@ sets:
 ```
 
 You are ready to go — the walkthrough with an example response lives in
-[Getting started](Documentation/getting-started.md).
+[Getting started](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html).
 
 ## Development
 

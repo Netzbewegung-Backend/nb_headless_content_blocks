@@ -64,11 +64,11 @@ Documentation/
 ├── how-to/                                   # task guides (image variants, normalizers, ...)
 ├── reference/                                # lookup (JSON contract, normalizers, options)
 ├── design/
-│   └── IMPROVE_TO_ARRAY.md                   # design record: the ToArray rewrite
+│   └── improve-to-array.md                   # design record: the ToArray rewrite
 └── _archive/                                 # superseded docs, still rendered
 ```
 
-See `Documentation/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
+See `Documentation/design/improve-to-array.md` for the architecture rationale.
 
 ## Documentation Rules
 
