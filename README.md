@@ -11,12 +11,12 @@ frontends — with a stable, test-frozen JSON contract.
 |                    | URL                                                                                        |
 |--------------------|--------------------------------------------------------------------------------------------|
 | **Repository:**    | https://github.com/Netzbewegung-Backend/nb_headless_content_blocks                         |
-| **Documentation:** | https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/               |
+| **Documentation:** | https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/               |
 | **TER:**           | https://extensions.typo3.org/extension/nb_headless_content_blocks                          |
 | **Packagist:**     | https://packagist.org/packages/netzbewegung/nb-headless-content-blocks                     |
 
 Start with the
-[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html).
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/getting-started.html).
 Changes are tracked in the [CHANGELOG](CHANGELOG.md).
 
 ## What it does
@@ -57,7 +57,7 @@ dependencies:
 ```
 
 You are ready to go — verify your first JSON response as shown in the
-[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html#verify).
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/getting-started.html#verify).
 
 ## Development
 
