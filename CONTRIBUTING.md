@@ -136,8 +136,16 @@ definitions at the bottom of the file). Then create the release with
     Build/Scripts/tag-version.sh <x.y.z> "Release comment"
 
 which sets the version in both files, commits and creates an annotated
-tag. Pushing the tag publishes the version to the TER automatically via
-typo3/tailor (`.github/workflows/publish.yml`); the tag annotation
-becomes the TER release comment. The workflow can also be started
-manually ("Run workflow") for an existing tag and requires the
-`TYPO3_API_TOKEN` repository secret.
+tag. Push master and the tag separately:
+
+    git push origin master
+    # wait for the Tests workflow to pass (Actions tab)
+    git push origin <x.y.z>
+
+This order is deliberate: publishing a tag does not wait for the test
+results, so the tag is only pushed after the build is green. The tag
+push publishes the version to the TER automatically via typo3/tailor
+(`.github/workflows/publish.yml`); the tag annotation becomes the TER
+release comment. The workflow can also be started manually ("Run
+workflow") for an existing tag and requires the `TYPO3_API_TOKEN`
+repository secret.

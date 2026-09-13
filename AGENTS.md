@@ -118,6 +118,10 @@ See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
 - New releases/tags: `Build/Scripts/tag-version.sh <x.y.z> [message]` — sets the version in
   `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
   and creates the annotated git tag (requires a clean working tree).
+- Push master and the tag separately: `git push origin master` first, wait for
+  the Tests workflow to pass, then `git push origin <tag>`. The TER publish on
+  tag push does NOT wait for the test results — the split keeps a red build
+  from reaching the TER.
 - Pushing a tag triggers `.github/workflows/publish.yml`, which publishes the
   version to TER via typo3/tailor (requires the `TYPO3_API_TOKEN` repo secret and
   a registered TER extension key). The workflow can also be started manually
