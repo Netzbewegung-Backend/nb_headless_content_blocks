@@ -9,8 +9,10 @@ at the end.
 - TYPO3 ≥ 13.4 (13.4 and 14.3 are tested in CI)
 - A headless frontend based on [EXT:headless](https://github.com/TYPO3-Headless/headless) ≥ 4.5
 - Content Blocks created with [EXT:content_blocks](https://github.com/FriendsOfTYPO3/content-blocks) ≥ 1.2.3
-- [Composer](https://getcomposer.org) — installation is Composer-only,
-  the extension is not published to TER
+- [Composer](https://getcomposer.org) — the recommended installation
+  method; the extension is also published to the
+  [TER](https://extensions.typo3.org/extension/nb_headless_content_blocks)
+  (from version 0.1.2)
 
 EXT:headless and EXT:content_blocks are installed automatically as
 dependencies when you require this extension.
