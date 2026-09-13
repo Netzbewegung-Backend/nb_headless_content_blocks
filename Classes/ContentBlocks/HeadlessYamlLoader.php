@@ -26,6 +26,15 @@ final class HeadlessYamlLoader
 {
     private const FILENAME = 'headless.yaml';
 
+    /**
+     * Per-request memo (the loader is a shared service): repeated access for
+     * the same Content Block skips the registry lookup, filemtime() call and
+     * cache round-trip.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    private array $memoizedConfigs = [];
+
     public function __construct(
         private readonly ?PhpFrontend $cache = null,
         private readonly ?ContentBlockRegistry $contentBlockRegistry = null,
@@ -64,31 +73,36 @@ final class HeadlessYamlLoader
      */
     private function loadConfig(string $contentBlockName): array
     {
+        if (isset($this->memoizedConfigs[$contentBlockName])) {
+            return $this->memoizedConfigs[$contentBlockName];
+        }
+
+        $config = [];
+
         $filePath = $this->resolveFilePath($contentBlockName);
-        if ($filePath === '') {
-            return [];
+        if ($filePath !== '') {
+            // The file modification time is part of the cache identifier, so a
+            // changed headless.yaml is picked up automatically (the entry itself
+            // lives until the TYPO3 caches are flushed).
+            $cacheIdentifier = 'headless_yaml_' . md5($contentBlockName . '|' . (string)filemtime($filePath));
+            if ($this->cache !== null && $this->cache->has($cacheIdentifier)) {
+                // PhpFrontend::require() evaluates the cached "return array(...)"
+                // source (get() would return the raw source string). Unlike
+                // requireOnce(), require() also works for repeated access to the
+                // same entry within one request.
+                $cached = $this->cache->require($cacheIdentifier);
+                $config = is_array($cached) ? $cached : [];
+            } else {
+                $config = $this->parseFile($filePath);
+
+                if ($this->cache !== null) {
+                    // PhpFrontend stores PHP source code, not values
+                    $this->cache->set($cacheIdentifier, 'return ' . var_export($config, true) . ';');
+                }
+            }
         }
 
-        // The file modification time is part of the cache identifier, so a
-        // changed headless.yaml is picked up automatically (the entry itself
-        // lives until the TYPO3 caches are flushed).
-        $cacheIdentifier = 'headless_yaml_' . md5($contentBlockName . '|' . (string)filemtime($filePath));
-        if ($this->cache !== null && $this->cache->has($cacheIdentifier)) {
-            // PhpFrontend::require() evaluates the cached "return array(...)"
-            // source (get() would return the raw source string). Unlike
-            // requireOnce(), require() also works for repeated access to the
-            // same entry within one request.
-            $cached = $this->cache->require($cacheIdentifier);
-
-            return is_array($cached) ? $cached : [];
-        }
-
-        $config = $this->parseFile($filePath);
-
-        if ($this->cache !== null) {
-            // PhpFrontend stores PHP source code, not values
-            $this->cache->set($cacheIdentifier, 'return ' . var_export($config, true) . ';');
-        }
+        $this->memoizedConfigs[$contentBlockName] = $config;
 
         return $config;
     }

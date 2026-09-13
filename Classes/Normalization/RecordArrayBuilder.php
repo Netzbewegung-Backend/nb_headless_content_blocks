@@ -63,20 +63,22 @@ final class RecordArrayBuilder
         $context = $this->createContext($tcaSchema, $fileProcessing, $typoScriptOptions, $contentObjectRenderer);
 
         $data = [];
+
+        // The table definition is loop-invariant; resolve it once per record
+        // instead of once per field.
+        $tableDefinition = $this->tableDefinitionCollection->hasTable($table)
+            ? $this->tableDefinitionCollection->getTable($table)
+            : null;
+        $tcaFieldDefinitionCollection = $tableDefinition?->tcaFieldDefinitionCollection;
+
         foreach ($array as $key => $value) {
             $decoratedKey = $this->identifierMapper->mapColumnToIdentifier($table, $recordType, (string)$key) ?? $key;
 
             // Dispatch event to allow custom processing (deprecated, kept for
             // backwards compatibility until the next minor release).
             $tcaFieldDefinition = null;
-            if (
-                $this->tableDefinitionCollection->hasTable($table)
-                && is_string($key)
-            ) {
-                $tableDefinition = $this->tableDefinitionCollection->getTable($table);
-                if ($tableDefinition->tcaFieldDefinitionCollection->hasField($key)) {
-                    $tcaFieldDefinition = $tableDefinition->tcaFieldDefinitionCollection->getField($key);
-                }
+            if ($tcaFieldDefinitionCollection !== null && is_string($key) && $tcaFieldDefinitionCollection->hasField($key)) {
+                $tcaFieldDefinition = $tcaFieldDefinitionCollection->getField($key);
             }
 
             $event = new ModifyArrayRecursiveToArrayEvent($key, $value, $tcaFieldDefinition);

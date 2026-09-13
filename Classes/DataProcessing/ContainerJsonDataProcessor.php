@@ -29,10 +29,15 @@ readonly class ContainerJsonDataProcessor implements DataProcessorInterface
 
         $as = $contentObjectRenderer->stdWrapValue('as', $processorConfiguration, 'children');
 
+        // The b13 ContainerProcessor leaves the key unset when the container
+        // cannot be built (hidden/moved record) and omits "renderedContent"
+        // per child when "skipRenderingChildContent" is used.
+        $children = is_array($processedData[$as] ?? null) ? $processedData[$as] : [];
+
         $contents = [];
 
-        foreach ($processedData[$as] as $contentElement) {
-            $contents[] = $contentElement['renderedContent'];
+        foreach ($children as $contentElement) {
+            $contents[] = is_array($contentElement) ? ($contentElement['renderedContent'] ?? null) : null;
         }
 
         $processedData[$as] = $contents;

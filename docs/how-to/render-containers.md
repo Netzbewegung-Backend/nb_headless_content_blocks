@@ -132,3 +132,8 @@ The processor accepts `colPos` (container column to fetch, required) and
 ([processor options](../reference/processor-options.md) like
 `options.processing` or `options.dateTimeFormat`) are configured there,
 not on `nb-container-json`.
+
+If the container cannot be built (e.g. the record is hidden), `as` is an
+empty list. Children without a `renderedContent` key — e.g. with b13's
+`skipRenderingChildContent` and no substitute data processor — become
+`null` entries.

@@ -98,7 +98,15 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
 
     protected function includeLocalHeadlessPhp(array $data, string $headlessPhpFile): array
     {
-        return require $headlessPhpFile;
+        $result = require $headlessPhpFile;
+
+        if (!is_array($result)) {
+            // A headless.php without a return statement would break the JSON
+            // response (TypeError on array_merge); keep the unmodified data.
+            return $data;
+        }
+
+        return $result;
     }
 
     protected function processAdditionalDataProcessors(ContentObjectRenderer $contentObjectRenderer, array $data, array $processorConfiguration): array

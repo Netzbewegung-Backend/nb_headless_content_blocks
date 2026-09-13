@@ -106,6 +106,42 @@ final class ContainerJsonDataProcessorTest extends FunctionalTestCase
         self::assertArrayNotHasKey('left', $result);
     }
 
+    #[Test]
+    public function processUsesNullForChildrenWithoutRenderedContent(): void
+    {
+        $row = $this->fetchContentRow(10);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContainerJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [
+            'colPos' => 201,
+            'as' => 'left',
+            'skipRenderingChildContent' => 1,
+        ], ['data' => $row]);
+
+        // One child in colPos 201, no renderedContent (skipRenderingChildContent
+        // without a data processor setting it)
+        self::assertSame([null], $result['left']);
+    }
+
+    #[Test]
+    public function processReturnsEmptyListWhenContainerCannotBeBuilt(): void
+    {
+        // A child element is not a container: the b13 ContainerProcessor
+        // returns the processedData unchanged (no "left" key at all).
+        $row = $this->fetchContentRow(11);
+        $contentObjectRenderer = $this->createContentObjectRenderer($row);
+
+        $subject = $this->get(ContainerJsonDataProcessor::class);
+        $result = $subject->process($contentObjectRenderer, [], [
+            'colPos' => 201,
+            'as' => 'left',
+            'skipRenderingChildContent' => 1,
+        ], ['data' => $row]);
+
+        self::assertSame([], $result['left']);
+    }
+
     /**
      * @return array<string, mixed>
      */

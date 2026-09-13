@@ -19,7 +19,7 @@ final class FolderCollectionNormalizer implements NormalizerInterface
     {
         $data = [];
         foreach ($value as $key => $folder) {
-            $path = '/' . $folder->getStorage()->getConfiguration()['basePath'] . ltrim((string)$folder->getIdentifier(), '/');
+            $path = '/' . ((string)($folder->getStorage()->getConfiguration()['basePath'] ?? '')) . ltrim((string)$folder->getIdentifier(), '/');
             $data[$key] = $path;
         }
 

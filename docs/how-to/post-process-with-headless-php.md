@@ -58,7 +58,8 @@ Rules:
 
 - The file is plain PHP included via `require` — keep it side-effect free
   apart from building the return value.
-- Return the array; anything else breaks the processor contract.
+- Return the array; if the file returns anything else (e.g. no `return`
+  statement at all), the processor falls back to the unmodified data.
 - The file runs on **every** render of this block type.
 
 ## Compatibility

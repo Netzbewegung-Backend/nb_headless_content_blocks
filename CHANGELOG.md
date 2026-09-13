@@ -10,6 +10,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-13
+
+### Changed
+
+- composer.json now sets `extra.typo3/cms.skip-ter-packagist-import` to
+  `true`: makes TER unpublish the auto-imported Packagist listing so the
+  extension key `nb_headless_content_blocks` can be registered for TER
+  publishing. No functional change to the extension itself.
+- Documentation: getting-started guide reworked (issue #21) — explains
+  the automatic `tt_content` mapping of EXT:content_blocks in a new
+  "How it works" section.
+- Documentation: troubleshooting split into a user page and a contributor
+  page, plus a new entry for content blocks rendering
+  "has no rendering definition!".
+- The act how-to moved from `.github/TEST-GITHUB-WORKFLOWS.md` to
+  `CONTRIBUTING.md`.
+- Performance: a Content Block's `headless.yaml` is now parsed once per
+  request instead of once per rendered element; the Content Block table
+  definition is resolved once per record instead of once per field.
+
+### Added
+
+- GitHub issue templates for bug reports and feature requests.
+- Weekly scheduled run of the test workflow.
+
+### Fixed
+
+- A `headless.php` without a `return` statement no longer breaks the whole
+  JSON response with a TypeError; the unmodified data is kept.
+- `nb-container-json` no longer breaks when the container cannot be built
+  (e.g. hidden record) or when children have no `renderedContent`
+  (b13 `skipRenderingChildContent` without a substitute data processor);
+  the JSON degrades to an empty list / `null` entries instead.
+- Folder paths no longer assume a `basePath` in the storage configuration.
+- E2E test now supports the cleaned-up page response of
+  EXT:headless >= 5.0.0-rc2 (test-only change).
+
 ## [0.1.0] - 2026-09-04
 
 Rewrite of the ToArray conversion (see `docs/design/IMPROVE_TO_ARRAY.md`).
