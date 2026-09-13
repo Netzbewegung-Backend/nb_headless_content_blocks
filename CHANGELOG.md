@@ -10,6 +10,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-13
+
+### Added
+
+- TER publishing: pushing a tag now publishes the version to the TYPO3
+  Extension Repository via typo3/tailor (`.github/workflows/publish.yml`);
+  an existing tag can also be published manually ("Run workflow").
+  Requires the `TYPO3_API_TOKEN` repository secret.
+
+### Changed
+
+- `Build/Scripts/tag-version.sh` creates annotated tags; the optional
+  message becomes the TER release comment.
+- The TER distribution zip stays clean: `.gitattributes` export-ignores
+  build, test and documentation files.
+
 ### Fixed
 
 - `ext_emconf.php` now declares the TYPO3 version constraint
@@ -287,7 +303,9 @@ The JSON output contract is unchanged and frozen by characterization tests.
 - Initial release: connects EXT:headless with EXT:content_blocks, converts
   Content Block records to JSON-compatible arrays.
 
-[Unreleased]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.1.1...0.1.2
+[0.1.1]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.26...0.1.0
 [0.0.26]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.23...0.0.26
 [0.0.23]: https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/compare/0.0.22...0.0.23

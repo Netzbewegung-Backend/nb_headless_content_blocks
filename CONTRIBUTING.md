@@ -128,3 +128,16 @@ Build/Scripts/checkDocs.sh
 Do not bump the version unless a maintainer asks for a release. The
 version is tracked in `composer.json` (`extra.typo3/cms.version`) and
 mirrored in `ext_emconf.php`.
+
+Before a release, turn the `[Unreleased]` section of `CHANGELOG.md` into
+the new version (Keep a Changelog format, including the compare link
+definitions at the bottom of the file). Then create the release with
+
+    Build/Scripts/tag-version.sh <x.y.z> "Release comment"
+
+which sets the version in both files, commits and creates an annotated
+tag. Pushing the tag publishes the version to the TER automatically via
+typo3/tailor (`.github/workflows/publish.yml`); the tag annotation
+becomes the TER release comment. The workflow can also be started
+manually ("Run workflow") for an existing tag and requires the
+`TYPO3_API_TOKEN` repository secret.
