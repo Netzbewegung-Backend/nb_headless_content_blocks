@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `ext_emconf.php` now declares the TYPO3 version constraint
+  (`13.4.0-14.9.99`, matching composer's `^13.4 || ^14.3`) required for
+  TER uploads via tailor.
+
 ## [0.1.1] - 2026-09-13
 
 ### Changed
