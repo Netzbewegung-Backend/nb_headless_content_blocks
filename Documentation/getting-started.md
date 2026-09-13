@@ -20,7 +20,7 @@ dependencies when you require this extension.
 ## Install
 
 ```bash
-composer require netzbewegung/nb_headless_content_blocks
+composer require netzbewegung/nb-headless-content-blocks
 ```
 
 Then include the extension's Site Set in your site package's

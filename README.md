@@ -45,19 +45,19 @@ Changes are tracked in the [CHANGELOG](CHANGELOG.md).
 ## Installation
 
 ```bash
-composer require netzbewegung/nb_headless_content_blocks
+composer require netzbewegung/nb-headless-content-blocks
 ```
 
 Include the Site Set "Headless Content Blocks" in your site's
 `config.yaml`:
 
 ```yaml
-sets:
+dependencies:
   - nb-headless-content-blocks/headless-content-blocks
 ```
 
-You are ready to go — the walkthrough with an example response lives in
-[Getting started](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html).
+You are ready to go — verify your first JSON response as shown in the
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html#verify).
 
 ## Development
 
