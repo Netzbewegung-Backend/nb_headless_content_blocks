@@ -53,8 +53,9 @@ Configuration/
     ├── setup.typoscript
     └── config.yaml
 
-docs/
-├── README.md                                 # documentation index (Diátaxis)
+Documentation/
+├── guides.xml                                # render-guides config (docs.typo3.org)
+├── index.md                                  # documentation index (Diátaxis)
 ├── getting-started.md                        # tutorial: install → include Site Set → verify
 ├── troubleshooting.md                        # symptom → cause → fix (end users)
 ├── testing-troubleshooting.md                # symptom → cause → fix (test setup, contributors)
@@ -62,19 +63,28 @@ docs/
 │   └── architecture.md
 ├── how-to/                                   # task guides (image variants, normalizers, ...)
 ├── reference/                                # lookup (JSON contract, normalizers, options)
-└── design/
-    └── IMPROVE_TO_ARRAY.md                   # design record: the ToArray rewrite
+├── design/
+│   └── improve-to-array.md                   # design record: the ToArray rewrite
+└── _archive/                                 # superseded docs, still rendered
 ```
 
-See `docs/design/IMPROVE_TO_ARRAY.md` for the architecture rationale.
+See `Documentation/design/improve-to-array.md` for the architecture rationale.
 
 ## Documentation Rules
 
 - **Docs change with the code in the same PR/commit** — a behavior change
   without a docs change is incomplete.
 - **One page = one topic type** (tutorial / how-to / reference / concept),
-  with a first-line purpose statement. The docs index is `docs/README.md`.
-- **Design records** (`docs/design/`) open with a status blockquote
+  with a first-line purpose statement. The docs index is `Documentation/index.md`.
+- **Rendered docs**: `Documentation/` renders via the official render-guides
+  toolchain to docs.typo3.org (renderdocs webhook / TER upload). Entry point
+  is `Documentation/index.md`; config in `Documentation/guides.xml`.
+  Local: `make docs` renders, `make test-docs` fails on warnings (CI runs
+  the same via `.github/workflows/test-documentation.yml`).
+  Toolchain constraints: relative links inside `Documentation/` must NOT use
+  `#anchor` suffixes (render-guides cannot resolve them — link to the page
+  instead); links to files outside `Documentation/` must be absolute URLs.
+- **Design records** (`Documentation/design/`) open with a status blockquote
   (`> Status: IMPLEMENTED|CURRENT|...`) and are historical records — where
   wording differs from the code, **the code wins**.
 - **Troubleshooting** entries follow **symptom → cause → fix**, the

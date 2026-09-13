@@ -16,4 +16,5 @@ opencode.jsonc
 
 # Directory patterns
 /Build/phpunit/.phpunit.cache/
+/Documentation-GENERATED-temp/
 /Tests/Fixtures/Extensions/*/Resources/Public/ContentBlocks

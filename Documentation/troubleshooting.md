@@ -125,7 +125,7 @@ processors) or map it yourself in your site package's TypoScript:
 tt_content.vendor_myblock =< lib.contentBlock
 ```
 
-See [How it works](getting-started.md#how-it-works).
+See [How it works](getting-started.md).
 
 ## Container children do not render / render twice
 

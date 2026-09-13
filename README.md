@@ -8,9 +8,16 @@ Connects [EXT:headless](https://github.com/TYPO3-Headless/headless) and
 converts Content Block records into JSON-compatible arrays for headless
 frontends — with a stable, test-frozen JSON contract.
 
-**Documentation:** [docs/README.md](docs/README.md) — start with
-[Getting started](docs/getting-started.md). Changes are tracked in the
-[CHANGELOG](CHANGELOG.md).
+|                    | URL                                                                                        |
+|--------------------|--------------------------------------------------------------------------------------------|
+| **Repository:**    | https://github.com/Netzbewegung-Backend/nb_headless_content_blocks                         |
+| **Documentation:** | https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/               |
+| **TER:**           | https://extensions.typo3.org/extension/nb_headless_content_blocks                          |
+| **Packagist:**     | https://packagist.org/packages/netzbewegung/nb-headless-content-blocks                     |
+
+Start with the
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html).
+Changes are tracked in the [CHANGELOG](CHANGELOG.md).
 
 ## What it does
 
@@ -19,38 +26,38 @@ frontends — with a stable, test-frozen JSON contract.
   `{url, target, type, title, config, attr}`, files as
   `{id, alt, title, publicUrl}`, categories, collections, relations,
   FlexForms, date times, and more — see the
-  [JSON contract](docs/reference/json-contract.md).
+  [JSON contract](Documentation/reference/json-contract.md).
 - Field identifiers (not database columns) as JSON keys, alphabetically
   sorted — stable for frontend consumers.
 - **Declarative image variants:** responsive thumbnails per field via an
   optional `headless.yaml` in the Content Block, overridable per site via
   TypoScript — no PHP needed.
 - Extensible conversion pipeline: register your own
-  [normalizers](docs/how-to/register-custom-normalizer.md) and
-  [field value transformers](docs/how-to/register-field-value-transformer.md)
+  [normalizers](Documentation/how-to/register-custom-normalizer.md) and
+  [field value transformers](Documentation/how-to/register-field-value-transformer.md)
   via DI tags.
-- Escape hatches: per-block [headless.php](docs/how-to/post-process-with-headless-php.md),
-  [sub data processors](docs/how-to/add-sub-dataprocessors.md), and a
-  [PSR-14 event](docs/how-to/modify-fields-with-event.md) (deprecated).
-- Support for [EXT:container](docs/how-to/render-containers.md) via the
+- Escape hatches: per-block [headless.php](Documentation/how-to/post-process-with-headless-php.md),
+  [sub data processors](Documentation/how-to/add-sub-dataprocessors.md), and a
+  [PSR-14 event](Documentation/how-to/modify-fields-with-event.md) (deprecated).
+- Support for [EXT:container](Documentation/how-to/render-containers.md) via the
   `nb-container-json` processor.
 
 ## Installation
 
 ```bash
-composer require netzbewegung/nb_headless_content_blocks
+composer require netzbewegung/nb-headless-content-blocks
 ```
 
 Include the Site Set "Headless Content Blocks" in your site's
 `config.yaml`:
 
 ```yaml
-sets:
+dependencies:
   - nb-headless-content-blocks/headless-content-blocks
 ```
 
-You are ready to go — the walkthrough with an example response lives in
-[Getting started](docs/getting-started.md).
+You are ready to go — verify your first JSON response as shown in the
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/master/en-us/getting-started.html#verify).
 
 ## Development
 
