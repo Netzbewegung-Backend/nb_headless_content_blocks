@@ -124,6 +124,13 @@ See `Documentation/design/improve-to-array.md` for the architecture rationale.
 
 ### Git Workflow
 
+- Documentation renders to docs.typo3.org on every master push via the
+  repo webhook (`https://docs-hook.typo3.org`, push events, no secret —
+  the legacy `renderdocs.typo3.org/hook` endpoint is dead). The repo
+  needed a one-time approval by the TYPO3 Documentation Team (extension
+  published on TER with matching key + repo linked on the TER detail
+  page); first pushes may answer `412` until approved. Render status:
+  https://intercept.typo3.com/admin/docs/deployments
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
 - New releases/tags: `Build/Scripts/tag-version.sh <x.y.z> [message]` — sets the version in
   `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both
