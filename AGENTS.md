@@ -131,6 +131,10 @@ See `Documentation/design/improve-to-array.md` for the architecture rationale.
   published on TER with matching key + repo linked on the TER detail
   page); first pushes may answer `412` until approved. Render status:
   https://intercept.typo3.com/admin/docs/deployments
+- docs.typo3.org renders only supported branches: `master` (published as
+  `main`), `documentation-draft` (unindexed draft URL for testing) and
+  numeric `X.Y` version branches. Feature branches are ignored by the
+  server; versioned docs come from TER releases automatically.
 - Before every commit: Run CGL and PHPStan (`Build/Scripts/runTests.sh -s cgl` / `-s phpstan`)
 - New releases/tags: `Build/Scripts/tag-version.sh <x.y.z> [message]` — sets the version in
   `composer.json` (`extra.typo3/cms.version`) and `ext_emconf.php`, commits both

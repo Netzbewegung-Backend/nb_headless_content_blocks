@@ -123,6 +123,19 @@ Before committing docs changes, run the link checker:
 Build/Scripts/checkDocs.sh
 ```
 
+### Where changes render
+
+docs.typo3.org renders only supported branches — pushes to feature
+branches are ignored by the rendering server:
+
+- `master`: published as `…/main/en-us/` (the branch name is normalized)
+- `documentation-draft`: unindexed draft rendering at `…/draft/en-us/`
+  for testing doc changes before they hit main
+- numeric `X.Y` branches (e.g. `13.4`): versioned rendering at `…/X.Y/en-us/`
+
+Versioned docs (`…/0.1/en-us/` etc.) are rendered automatically from
+the `Documentation/` folder shipped in TER releases.
+
 ## Releasing
 
 Do not bump the version unless a maintainer asks for a release. The
