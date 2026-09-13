@@ -9,6 +9,7 @@ use TYPO3\CMS\ContentBlocks\DataProcessing\ContentTypeResolver;
 use TYPO3\CMS\ContentBlocks\Definition\ContentType\ContentTypeInterface;
 use TYPO3\CMS\ContentBlocks\Definition\TableDefinitionCollection;
 use TYPO3\CMS\ContentBlocks\Registry\ContentBlockRegistry;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
@@ -101,8 +102,18 @@ readonly class ContentBlocksJsonDataProcessor implements DataProcessorInterface
         $result = require $headlessPhpFile;
 
         if (!is_array($result)) {
-            // A headless.php without a return statement would break the JSON
-            // response (TypeError on array_merge); keep the unmodified data.
+            if (Environment::getContext()->isDevelopment()) {
+                // Fail fast while developing: a headless.php without an
+                // array return is a programming error.
+                throw new \RuntimeException(
+                    sprintf('The headless.php "%s" must return the (modified) data array.', $headlessPhpFile),
+                    1789432146,
+                );
+            }
+
+            // In production the JSON response must not break because of a
+            // broken headless.php (TypeError on array_merge); keep the
+            // unmodified data.
             return $data;
         }
 

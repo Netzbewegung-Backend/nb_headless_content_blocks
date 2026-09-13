@@ -38,7 +38,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - A `headless.php` without a `return` statement no longer breaks the whole
-  JSON response with a TypeError; the unmodified data is kept.
+  JSON response in production with a TypeError; the unmodified data is kept.
+  In a Development application context it fails fast with a clear exception.
 - `nb-container-json` no longer breaks when the container cannot be built
   (e.g. hidden record) or when children have no `renderedContent`
   (b13 `skipRenderingChildContent` without a substitute data processor);
