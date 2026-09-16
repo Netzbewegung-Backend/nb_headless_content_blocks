@@ -54,24 +54,24 @@ Configuration/
     └── config.yaml
 
 Documentation/
-├── guides.xml                                # render-guides config (docs.typo3.org)
-├── Index.md                                  # documentation index (Diátaxis) — MUST be
-│                                             # named Index.md (capital I): render-guides
-│                                             # maps it to Index.html, which docs.typo3.org
-│                                             # expects as the entry page (issue #29)
-├── getting-started.md                        # tutorial: install → include Site Set → verify
-├── troubleshooting.md                        # symptom → cause → fix (end users)
-├── testing-troubleshooting.md                # symptom → cause → fix (test setup, contributors)
-├── concepts/                                 # why it works this way
-│   └── architecture.md
-├── how-to/                                   # task guides (image variants, normalizers, ...)
-├── reference/                                # lookup (JSON contract, normalizers, options)
-├── design/
-│   └── improve-to-array.md                   # design record: the ToArray rewrite
-└── _archive/                                 # superseded docs, still rendered
+├── guides.xml                               # render-guides config (docs.typo3.org)
+├── Index.md                                 # documentation index (Diátaxis) — MUST be
+│                                            # named Index.md (capital I): render-guides
+│                                            # maps it to Index.html, which docs.typo3.org
+│                                            # expects as the entry page (issue #29)
+├── GettingStarted.md                        # tutorial: install → include Site Set → verify
+├── Troubleshooting.md                       # symptom → cause → fix (end users)
+├── TestingTroubleshooting.md                # symptom → cause → fix (test setup, contributors)
+├── Concepts/                                # why it works this way
+│   └── Architecture.md
+├── Howto/                                   # task guides (image variants, normalizers, ...)
+├── Reference/                               # lookup (JSON contract, normalizers, options)
+├── Design/
+│   └── ImproveToArray.md                    # design record: the ToArray rewrite
+└── _archive/                                # superseded docs, still rendered
 ```
 
-See `Documentation/design/improve-to-array.md` for the architecture rationale.
+See `Documentation/Design/ImproveToArray.md` for the architecture rationale.
 
 ## Documentation Rules
 
@@ -90,7 +90,7 @@ See `Documentation/design/improve-to-array.md` for the architecture rationale.
   Toolchain constraints: relative links inside `Documentation/` must NOT use
   `#anchor` suffixes (render-guides cannot resolve them — link to the page
   instead); links to files outside `Documentation/` must be absolute URLs.
-- **Design records** (`Documentation/design/`) open with a status blockquote
+- **Design records** (`Documentation/Design/`) open with a status blockquote
   (`> Status: IMPLEMENTED|CURRENT|...`) and are historical records — where
   wording differs from the code, **the code wins**.
 - **Troubleshooting** entries follow **symptom → cause → fix**, the

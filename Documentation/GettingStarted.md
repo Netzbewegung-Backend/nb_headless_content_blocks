@@ -66,10 +66,10 @@ whose keys are the **field identifiers** from your Content Block YAML
 The `id`/`type`/`colPos` wrapper is built by EXT:headless around this
 extension's processor output; everything inside `data` comes from
 `nb-content-blocks-json`. The exact shapes per field type are listed in the
-[JSON contract](reference/json-contract.md).
+[JSON contract](Reference/JsonContract.md).
 
 If the block renders but a field is missing or `null`, see
-[Troubleshooting](troubleshooting.md).
+[Troubleshooting](Troubleshooting.md).
 
 ## How it works
 
@@ -113,13 +113,13 @@ tt_content.vendor_puredatablock =< lib.contentBlock
 ```
 
 How the processor turns a record into the `data` JSON is covered in
-[Architecture](concepts/architecture.md).
+[Architecture](Concepts/Architecture.md).
 
 ## Next steps
 
 - Responsive image variants without PHP:
-  [Define image variants](how-to/define-image-variants.md)
+  [Define image variants](Howto/DefineImageVariants.md)
 - Add menus or other TypoScript data to a block:
-  [Add sub data processors](how-to/add-sub-dataprocessors.md)
-- Use containers: [Render containers](how-to/render-containers.md)
-- Understand the pipeline: [Architecture](concepts/architecture.md)
+  [Add sub data processors](Howto/AddSubDataprocessors.md)
+- Use containers: [Render containers](Howto/RenderContainers.md)
+- Understand the pipeline: [Architecture](Concepts/Architecture.md)

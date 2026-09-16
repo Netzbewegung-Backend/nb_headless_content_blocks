@@ -63,12 +63,12 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
   Compatibility) and restore `composer.json` afterwards.
 - Pitfalls of the test setup itself (version switches, `act`, extension
   loading) are collected in
-  [Testing troubleshooting](Documentation/testing-troubleshooting.md).
+  [Testing troubleshooting](Documentation/TestingTroubleshooting.md).
 - The JSON output contract is frozen by characterization tests
   (`ContentBlocksJsonDataProcessorCharTest`). If a change deliberately
   alters the contract, update the frozen fixtures and document it in the
   [CHANGELOG](CHANGELOG.md) and the
-  [JSON contract](Documentation/reference/json-contract.md) in the same PR.
+  [JSON contract](Documentation/Reference/JsonContract.md) in the same PR.
 
 ## Running the GitHub Actions workflows locally (act)
 
@@ -100,7 +100,7 @@ act -j functional_tests --matrix typo3:^14.3 --matrix php:8.4 --matrix content-b
 > `Can not connect ... Aborting`. Run them strictly one after another.
 
 More `act` pitfalls (composer cache eviction, root-owned test folders):
-[Testing troubleshooting](Documentation/testing-troubleshooting.md) and
+[Testing troubleshooting](Documentation/TestingTroubleshooting.md) and
 [AGENTS.md](AGENTS.md).
 
 ## Documentation
@@ -113,7 +113,7 @@ User-facing documentation lives in `Documentation/` and is organized by topic ty
 - One page = one topic type, with a first-line purpose statement.
 - All shipped content (code, docs, comments) is in English.
 
-Design records for larger decisions live in `Documentation/design/` — historical
+Design records for larger decisions live in `Documentation/Design/` — historical
 records with a status header; where wording differs from the code, the
 code wins.
 

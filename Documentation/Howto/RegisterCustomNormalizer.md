@@ -7,7 +7,7 @@ domain objects or field types the built-in normalizers do not cover.
 
 A normalizer claims a *value type*. You need one when a field value
 arrives at the end of the chain and would become `null` (see
-[Troubleshooting](../troubleshooting.md)) —
+[Troubleshooting](../Troubleshooting.md)) —
 typically because your extension introduced a custom relation type, or you
 want to change the shape of an existing one (e.g. categories with more
 fields than the frozen `uid/pid/title` shape).
@@ -70,7 +70,7 @@ services via a tagged iterator.
 
 ## Built-in normalizers
 
-See [Normalizers and transformers](../reference/normalizers.md) for the
+See [Normalizers and transformers](../Reference/Normalizers.md) for the
 built-in chain and its frozen output shapes — do not change them
 accidentally: the shapes are part of the
-[JSON contract](../reference/json-contract.md).
+[JSON contract](../Reference/JsonContract.md).

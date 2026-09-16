@@ -12,9 +12,9 @@ Headless frontends need each image in several sizes (`mobile`, `desktop`,
 site this extension was built for, **13 identical `headless.php` files**
 existed, all doing the same thing with different widths. The old pattern
 is archived here:
-[legacy thumbnails via headless.php](../_archive/legacy-headless-php-thumbnails.md);
+[legacy thumbnails via headless.php](../_archive/LegacyHeadlessPhpThumbnails.md);
 for migrating existing blocks see
-[Migrate legacy thumbnails](migrate-legacy-thumbnails.md).
+[Migrate legacy thumbnails](MigrateLegacyThumbnails.md).
 
 ## Define variants in headless.yaml
 
@@ -91,10 +91,10 @@ tt_content.vendor_myblock.fields.data.dataProcessing.10 {
 }
 ```
 
-All other [processor options](../reference/processor-options.md) work as
+All other [processor options](../Reference/ProcessorOptions.md) work as
 usual.
 
 ## Troubleshooting
 
 If `thumbnails` do not show up, see
-[Troubleshooting → thumbnails are missing](../troubleshooting.md).
+[Troubleshooting → thumbnails are missing](../Troubleshooting.md).

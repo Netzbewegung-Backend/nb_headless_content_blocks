@@ -19,7 +19,7 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen — ideally
 the expected JSON output (see the
-[JSON contract](https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/blob/master/docs/reference/json-contract.md)
+[JSON contract](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/Reference/JsonContract.html)
 for the documented shape per field type).
 
 **JSON output / screenshots**

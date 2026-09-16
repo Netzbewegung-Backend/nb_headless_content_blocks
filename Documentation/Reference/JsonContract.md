@@ -41,7 +41,7 @@ per fixture record); changes are deliberate decisions, not accidents.
 | Collection | array of item objects, each fully converted (identifier keys, sorted) |
 | Relation | resolved records, fully converted per target table |
 | FlexForm | parsed FlexForm values as array |
-| Checkbox | `null` + debug log — the Core Record API resolves checkboxes to booleans, and booleans are not part of the frozen contract. Register a [custom normalizer](../how-to/register-custom-normalizer.md) if you need checkbox values. |
+| Checkbox | `null` + debug log — the Core Record API resolves checkboxes to booleans, and booleans are not part of the frozen contract. Register a [custom normalizer](../Howto/RegisterCustomNormalizer.md) if you need checkbox values. |
 | unknown types | `null` + debug log entry |
 
 ## Link object
@@ -81,7 +81,7 @@ per fixture record); changes are deliberate decisions, not accidents.
 - `id` is the `sys_file_reference` uid.
 - `publicUrl` is absolute and respects manual Backend crops.
 - `thumbnails` exists only when image variants are defined for the field
-  — see [Define image variants](../how-to/define-image-variants.md).
+  — see [Define image variants](../Howto/DefineImageVariants.md).
 - A missing/deleted file turns the whole field into
   `{"__errorMessage": "…"}`.
 
@@ -89,7 +89,7 @@ per fixture record); changes are deliberate decisions, not accidents.
 
 Categories use the reduced `{uid, pid, title}` shape for historical
 contract reasons (the production consumer depends on it). If you need
-more fields, register a [custom normalizer](../how-to/register-custom-normalizer.md)
+more fields, register a [custom normalizer](../Howto/RegisterCustomNormalizer.md)
 that claims `LazyRecordCollection` of `sys_category` records with a
 higher priority.
 

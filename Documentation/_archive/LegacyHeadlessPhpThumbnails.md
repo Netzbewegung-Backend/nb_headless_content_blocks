@@ -2,11 +2,11 @@
 
 > Status: **SUPERSEDED by declarative image variants** — for File fields of
 > a Content Block, replace this pattern with
-> [`headless.yaml`](../how-to/define-image-variants.md). Kept as the
+> [`headless.yaml`](../Howto/DefineImageVariants.md). Kept as the
 > historical reference for migrating existing blocks; production sites
 > carry many copies of this file (13 on the site this extension was built
 > for). One case is **not** yet replaceable: images inside Collection
-> items — see the [migration guide](../how-to/migrate-legacy-thumbnails.md).
+> items — see the [migration guide](../Howto/MigrateLegacyThumbnails.md).
 
 ## The pattern
 
@@ -64,4 +64,4 @@ return $data;
 
 The declarative replacement produces the same `thumbnails` map next to
 the frozen `id/alt/title/publicUrl` shape:
-[Define image variants](../how-to/define-image-variants.md).
+[Define image variants](../Howto/DefineImageVariants.md).

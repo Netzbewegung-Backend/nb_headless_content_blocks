@@ -13,9 +13,9 @@ cannot express value-type dispatch cleanly. The modern equivalents:
 
 | Legacy (event) | Modern |
 |---|---|
-| Override by field name | [Field value transformer](register-field-value-transformer.md) (strings) |
-| Override by value type | [Custom normalizer](register-custom-normalizer.md) |
-| Whole-block post-processing | [headless.php](post-process-with-headless-php.md) |
+| Override by field name | [Field value transformer](RegisterFieldValueTransformer.md) (strings) |
+| Override by value type | [Custom normalizer](RegisterCustomNormalizer.md) |
+| Whole-block post-processing | [headless.php](PostProcessWithHeadlessPhp.md) |
 
 The event keeps firing with its original payload until the next minor
 release; listeners continue to work unchanged until then.

@@ -1,7 +1,7 @@
 # Design: Improve / Rewrite the ToArray conversion
 
 > Status: **IMPLEMENTED (all phases done), 2026-08-26** — see git history
-> on `feature/improve-to-array`. This is a historical design record;
+> on `feature/ImproveToArray`. This is a historical design record;
 > where wording differs from the code, **the code wins**.
 
 Date: 2026-08-26

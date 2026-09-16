@@ -16,7 +16,7 @@ frontends — with a stable, test-frozen JSON contract.
 | **Packagist:**     | https://packagist.org/packages/netzbewegung/nb-headless-content-blocks                     |
 
 Start with the
-[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/getting-started.html).
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/GettingStarted.html).
 Changes are tracked in the [CHANGELOG](CHANGELOG.md).
 
 ## What it does
@@ -26,20 +26,20 @@ Changes are tracked in the [CHANGELOG](CHANGELOG.md).
   `{url, target, type, title, config, attr}`, files as
   `{id, alt, title, publicUrl}`, categories, collections, relations,
   FlexForms, date times, and more — see the
-  [JSON contract](Documentation/reference/json-contract.md).
+  [JSON contract](Documentation/Reference/JsonContract.md).
 - Field identifiers (not database columns) as JSON keys, alphabetically
   sorted — stable for frontend consumers.
 - **Declarative image variants:** responsive thumbnails per field via an
   optional `headless.yaml` in the Content Block, overridable per site via
   TypoScript — no PHP needed.
 - Extensible conversion pipeline: register your own
-  [normalizers](Documentation/how-to/register-custom-normalizer.md) and
-  [field value transformers](Documentation/how-to/register-field-value-transformer.md)
+  [normalizers](Documentation/Howto/RegisterCustomNormalizer.md) and
+  [field value transformers](Documentation/Howto/RegisterFieldValueTransformer.md)
   via DI tags.
-- Escape hatches: per-block [headless.php](Documentation/how-to/post-process-with-headless-php.md),
-  [sub data processors](Documentation/how-to/add-sub-dataprocessors.md), and a
-  [PSR-14 event](Documentation/how-to/modify-fields-with-event.md) (deprecated).
-- Support for [EXT:container](Documentation/how-to/render-containers.md) via the
+- Escape hatches: per-block [headless.php](Documentation/Howto/PostProcessWithHeadlessPhp.md),
+  [sub data processors](Documentation/Howto/AddSubDataprocessors.md), and a
+  [PSR-14 event](Documentation/Howto/ModifyFieldsWithEvent.md) (deprecated).
+- Support for [EXT:container](Documentation/Howto/RenderContainers.md) via the
   `nb-container-json` processor.
 
 ## Installation
@@ -57,7 +57,7 @@ dependencies:
 ```
 
 You are ready to go — verify your first JSON response as shown in the
-[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/getting-started.html#verify).
+[Getting started tutorial](https://docs.typo3.org/p/netzbewegung/nb-headless-content-blocks/main/en-us/GettingStarted.html#verify).
 
 ## Development
 

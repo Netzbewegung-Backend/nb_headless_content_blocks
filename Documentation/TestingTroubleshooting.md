@@ -3,7 +3,7 @@
 Symptom → cause → fix for problems in this extension's **own test setup**
 (composer version switches, `runTests.sh`, GitHub Actions/`act`). Problems
 when *using* the extension are covered in
-[Troubleshooting](troubleshooting.md).
+[Troubleshooting](Troubleshooting.md).
 
 ## Unit tests fail with `GeneralUtility::makeInstance` of container-only services
 

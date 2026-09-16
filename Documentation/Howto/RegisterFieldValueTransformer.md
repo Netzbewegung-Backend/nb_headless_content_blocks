@@ -16,7 +16,7 @@ type, configuration, richtext flag, ...). Use one when:
   `PasswordBlanker` blanks password fields.
 
 For whole objects (files, links, relations) use a
-[custom normalizer](register-custom-normalizer.md) instead — transformers
+[custom normalizer](RegisterCustomNormalizer.md) instead — transformers
 only ever see strings.
 
 ## Implement the interface
@@ -71,7 +71,7 @@ services:
 
 The chain asks every tagged transformer; the first `supports() === true`
 wins, and only strings pass through it (arrays and objects go to the
-[normalizer chain](../reference/normalizers.md) instead).
+[normalizer chain](../Reference/Normalizers.md) instead).
 
 ## Built-in transformers
 

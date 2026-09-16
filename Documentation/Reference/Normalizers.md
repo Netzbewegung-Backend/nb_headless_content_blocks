@@ -2,7 +2,7 @@
 
 This page lists the built-in conversion services, their interfaces and
 their DI tags — the lookup companion to
-[Architecture](../concepts/architecture.md).
+[Architecture](../Concepts/Architecture.md).
 
 ## Normalizer chain
 
@@ -26,10 +26,10 @@ Built-in normalizers (`Classes/Normalization/Normalizer/`):
 | `ScalarNormalizer` | `null`, int, string, plain arrays | passthrough (arrays recurse via the chain) |
 | `DateTimeNormalizer` | `\DateTimeInterface` | formatted string, `options.dateTimeFormat` (default W3C) |
 | `FlexFormNormalizer` | `FlexFormFieldValues` | parsed array |
-| `TypolinkNormalizer` | `TypolinkParameter` | [link object](json-contract.md); `null` when empty; `__errorMessage` shape when unresolvable |
+| `TypolinkNormalizer` | `TypolinkParameter` | [link object](JsonContract.md); `null` when empty; `__errorMessage` shape when unresolvable |
 | `RecordNormalizer` | `Record` | full record conversion via `Context::buildRecord()` |
 | `RecordCollectionNormalizer` | `LazyRecordCollection` | array; `sys_category` → reduced `uid/pid/title`, everything else per-record recursion |
-| `FileReferenceNormalizer` | `FileReference`, `LazyFileReferenceCollection` | [file object](json-contract.md) incl. crop-aware `publicUrl` and declarative `thumbnails` |
+| `FileReferenceNormalizer` | `FileReference`, `LazyFileReferenceCollection` | [file object](JsonContract.md) incl. crop-aware `publicUrl` and declarative `thumbnails` |
 | `FolderCollectionNormalizer` | `LazyFolderCollection` | array of storage-absolute paths |
 | `UnknownTypeNormalizer` | everything (fallback, not tagged) | `null` + debug log |
 
@@ -73,5 +73,5 @@ Built-in transformers (`Classes/FieldTransformer/String/`):
 ## Registering your own
 
 See the how-to guides:
-[register a custom normalizer](../how-to/register-custom-normalizer.md) and
-[register a field value transformer](../how-to/register-field-value-transformer.md).
+[register a custom normalizer](../Howto/RegisterCustomNormalizer.md) and
+[register a field value transformer](../Howto/RegisterFieldValueTransformer.md).

@@ -83,7 +83,7 @@ tt_content.b13_2_columns_container.fields.data.dataProcessing.10 {
 ```
 
 This is the sub data processor pattern from
-[Add sub data processors](add-sub-dataprocessors.md) — the columns land as
+[Add sub data processors](AddSubDataprocessors.md) — the columns land as
 keys inside `data`.
 
 ## How it works
@@ -92,7 +92,7 @@ keys inside `data`.
 children for the given `colPos` via b13/container's `ContainerProcessor`
 and renders each child through the same conversion as
 `nb-content-blocks-json` — field identifiers as keys, same
-[JSON contract](../reference/json-contract.md).
+[JSON contract](../Reference/JsonContract.md).
 
 Both variants are covered end-to-end by
 `Tests/Functional/Frontend/ContentBlocksJsonResponseTest.php`.
@@ -129,7 +129,7 @@ appear twice: once in the page's content array and once in their column.
 The processor accepts `colPos` (container column to fetch, required) and
 `as` (key of the children array). Children are rendered through their own
 `tt_content.<CType>` mapping, so their conversion options
-([processor options](../reference/processor-options.md) like
+([processor options](../Reference/ProcessorOptions.md) like
 `options.processing` or `options.dateTimeFormat`) are configured there,
 not on `nb-container-json`.
 

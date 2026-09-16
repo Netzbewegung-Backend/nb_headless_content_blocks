@@ -48,7 +48,7 @@ and renders each through the same `RecordArrayBuilder`.
 | `DataProcessing/ContainerJsonDataProcessor` | Same for EXT:container children (`nb-container-json`), via b13/container's `ContainerProcessor` |
 | `Normalization/RecordArrayBuilder` | Orchestrates one record: system fields, identifier mapping, event, transformers, normalizers, `ksort` |
 | `Normalization/NormalizerChain` | Iterates the tagged normalizers; falls back to `UnknownTypeNormalizer` |
-| `Normalization/Normalizer/*` | One class per value type — see [Normalizers and transformers](../reference/normalizers.md) |
+| `Normalization/Normalizer/*` | One class per value type — see [Normalizers and transformers](../Reference/Normalizers.md) |
 | `FieldTransformer/*` | String shaping driven by the field's schema type (password → `""`, richtext → `parseFunc_RTE`) |
 | `ContentBlocks/ContentBlocksIdentifierMapper` | Column → field identifier mapping; the only ContentBlocks definition still in the conversion path |
 | `ContentBlocks/HeadlessYamlLoader` | Loads the optional per-block `headless.yaml` (declarative image variants), with caching |
@@ -60,7 +60,7 @@ Before the 2026-08 rewrite, one class held a giant `switch (true)` with
 instanceof chains over ContentBlocks internals, `makeInstance()` everywhere,
 and version hacks (`property_exists(...)`) to construct those internals in
 tests. The rewrite (see the
-[design record](../design/improve-to-array.md)) replaced it with a
+[design record](../Design/ImproveToArray.md)) replaced it with a
 **normalizer registry** — the Symfony Serializer pattern, hand-rolled
 without the dependency:
 
@@ -92,12 +92,12 @@ consumer's JSON contract) and resolving the Content Block folder
 
 | Extension point | Mechanism | Use for | Documentation |
 |---|---|---|---|
-| Normalizer | DI tag `nb_headless.normalizer` | own value types in the JSON output | [How-to](../how-to/register-custom-normalizer.md) |
-| Field value transformer | DI tag `nb_headless.field_value_transformer` | own string field shaping | [How-to](../how-to/register-field-value-transformer.md) |
-| `headless.php` | per-Content Block PHP file | per-block post-processing of the whole `data` array | [How-to](../how-to/post-process-with-headless-php.md) |
-| `ModifyArrayRecursiveToArrayEvent` | PSR-14 event per field | legacy field overrides | [How-to](../how-to/modify-fields-with-event.md) (deprecated) |
-| Sub data processors | TypoScript `dataProcessing.` | TypoScript-computed data (menus, record lists) | [How-to](../how-to/add-sub-dataprocessors.md) |
-| Image variants | `headless.yaml` + TypoScript `options.processing.` | responsive thumbnails | [How-to](../how-to/define-image-variants.md) |
+| Normalizer | DI tag `nb_headless.normalizer` | own value types in the JSON output | [How-to](../Howto/RegisterCustomNormalizer.md) |
+| Field value transformer | DI tag `nb_headless.field_value_transformer` | own string field shaping | [How-to](../Howto/RegisterFieldValueTransformer.md) |
+| `headless.php` | per-Content Block PHP file | per-block post-processing of the whole `data` array | [How-to](../Howto/PostProcessWithHeadlessPhp.md) |
+| `ModifyArrayRecursiveToArrayEvent` | PSR-14 event per field | legacy field overrides | [How-to](../Howto/ModifyFieldsWithEvent.md) (deprecated) |
+| Sub data processors | TypoScript `dataProcessing.` | TypoScript-computed data (menus, record lists) | [How-to](../Howto/AddSubDataprocessors.md) |
+| Image variants | `headless.yaml` + TypoScript `options.processing.` | responsive thumbnails | [How-to](../Howto/DefineImageVariants.md) |
 
 When several extension points could solve a problem, prefer the most
 declarative one (image variants over `headless.php`, transformer over event).

@@ -2,7 +2,7 @@
 
 This page lists the TypoScript options of the two data processors. Look
 them up here; for the surrounding pipeline see
-[Architecture](../concepts/architecture.md).
+[Architecture](../Concepts/Architecture.md).
 
 ## nb-content-blocks-json
 
@@ -12,8 +12,8 @@ Set's `lib.contentBlock`):
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `as` | string | `data` | key of the built array in the processor result |
-| `dataProcessing.` | array | — | sub data processors, results merged into `data` — see [Add sub data processors](../how-to/add-sub-dataprocessors.md) |
-| `options.processing.<field>.<variant>` | string | — | image variant override per field identifier; merges over `headless.yaml` (TypoScript wins) — see [Define image variants](../how-to/define-image-variants.md) |
+| `dataProcessing.` | array | — | sub data processors, results merged into `data` — see [Add sub data processors](../Howto/AddSubDataprocessors.md) |
+| `options.processing.<field>.<variant>` | string | — | image variant override per field identifier; merges over `headless.yaml` (TypoScript wins) — see [Define image variants](../Howto/DefineImageVariants.md) |
 | `options.dateTimeFormat` | string | `DATE_W3C` | format for DateTime fields (PHP date format, e.g. `U` for timestamps) |
 
 Example:
@@ -47,7 +47,7 @@ TYPO3 image processing instructions (`width`, `height`, `fileExtension`,
 ## nb-container-json
 
 Used inside container Content Types (see
-[Render containers](../how-to/render-containers.md)):
+[Render containers](../Howto/RenderContainers.md)):
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -66,7 +66,7 @@ The extension ships the Site Set
 `lib.contentElement` clone with the processor wired. EXT:content_blocks
 auto-maps every Content Block with a frontend template onto
 `lib.contentBlock`, so no manual TypoScript is needed — see
-[Getting started → How it works](../getting-started.md)
+[Getting started → How it works](../GettingStarted.md)
 for the two cases that do need one. Include the set in your site's
 `config.yaml`:
 

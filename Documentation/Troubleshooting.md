@@ -3,7 +3,7 @@
 This page lists known failure modes **when using the extension** — each
 entry follows **symptom → cause → fix**. Problems with the extension's own
 test setup are covered in
-[Testing troubleshooting](testing-troubleshooting.md); if your case is
+[Testing troubleshooting](TestingTroubleshooting.md); if your case is
 missing, open an issue.
 
 ## A field is `null` in the JSON and the log mentions an unknown type
@@ -17,7 +17,7 @@ normalizer claiming it. Unconvertible values become `null` **by design**
 do not occur in real Content Block records. Previously such values were
 dropped silently; now they are visible.
 
-**Fix:** register a [custom normalizer](how-to/register-custom-normalizer.md)
+**Fix:** register a [custom normalizer](Howto/RegisterCustomNormalizer.md)
 for the value type. If the field should not be in the response at all, remove
 it from the Content Block.
 
@@ -34,7 +34,7 @@ pass through unmapped — the raw column name is the documented fallback.
 **Fix:** none needed if the column is intentional (e.g.
 `useExistingField` entries are mapped when defined). Otherwise define the
 field in the Content Block YAML, or drop the column from the output with a
-[field value transformer](how-to/register-field-value-transformer.md) /
+[field value transformer](Howto/RegisterFieldValueTransformer.md) /
 event listener.
 
 ## `thumbnails` are missing on image fields
@@ -53,7 +53,7 @@ although a `headless.yaml` exists.
 - The field is not a File/FileReference field.
 
 **Fix:** correct the file and clear the cache. See
-[Define image variants](how-to/define-image-variants.md) for the schema and
+[Define image variants](Howto/DefineImageVariants.md) for the schema and
 the TypoScript override that wins over `headless.yaml`.
 
 ## JSON contains a `__errorMessage` key
@@ -75,7 +75,7 @@ link target. The message text names the affected record/target.
 
 **Cause:** by design — `PasswordBlanker` blanks password values before they
 reach any headless client. See
-[Normalizers and transformers](reference/normalizers.md).
+[Normalizers and transformers](Reference/Normalizers.md).
 
 **Fix:** none — expected behavior. Do not send password hashes to the
 frontend.
@@ -87,7 +87,7 @@ Block YAML.
 
 **Cause:** by design — the output is `ksort`ed. Consumers already rely on
 the sorted order; it is part of the frozen
-[JSON contract](reference/json-contract.md).
+[JSON contract](Reference/JsonContract.md).
 
 **Fix:** none — expected behavior. Sort concerns belong to the frontend.
 
@@ -125,7 +125,7 @@ processors) or map it yourself in your site package's TypoScript:
 tt_content.vendor_myblock =< lib.contentBlock
 ```
 
-See [How it works](getting-started.md).
+See [How it works](GettingStarted.md).
 
 ## Container children do not render / render twice
 
@@ -137,4 +137,4 @@ container column positions, otherwise the children are rendered by the page
 content query as well.
 
 **Fix:** add the exclusion and map the columns via `nb-container-json` —
-see [Render containers](how-to/render-containers.md).
+see [Render containers](Howto/RenderContainers.md).

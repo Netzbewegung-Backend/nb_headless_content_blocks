@@ -2,7 +2,7 @@
 
 This guide shows how to replace a legacy `headless.php` thumbnail
 generator (the archived
-[ImageViewHelper pattern](../_archive/legacy-headless-php-thumbnails.md))
+[ImageViewHelper pattern](../_archive/LegacyHeadlessPhpThumbnails.md))
 with declarative image variants.
 
 ## Identify the block
@@ -87,5 +87,5 @@ are not yet covered: nested collection records are built without the
 processor options, and their custom table has no Content Block
 `headless.yaml`. For that case, keep the `headless.php` generator for
 now — follow the design record
-([`improve-to-array.md`](../design/improve-to-array.md)) for the
+([`ImproveToArray.md`](../Design/ImproveToArray.md)) for the
 planned extension of the `Context`-based API.

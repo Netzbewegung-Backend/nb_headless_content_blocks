@@ -60,5 +60,5 @@ result first, so they cannot collide with your fields.
   block's record.
 - This mechanism is used in production (e.g. dynamic card lists rendered
   by an additional processor with `as = cards`).
-- Prefer it over [headless.php](post-process-with-headless-php.md) for
+- Prefer it over [headless.php](PostProcessWithHeadlessPhp.md) for
   anything TypoScript already provides.

@@ -9,9 +9,9 @@ Reach for `headless.php` only for what the built-in features cannot do:
 
 | Need | Use instead |
 |---|---|
-| Responsive image variants | [Define image variants](define-image-variants.md) (`headless.yaml`) |
-| Menus, record lists, TypoScript data | [Add sub data processors](add-sub-dataprocessors.md) |
-| Custom value/string shaping | [Custom normalizer](register-custom-normalizer.md) / [transformer](register-field-value-transformer.md) |
+| Responsive image variants | [Define image variants](DefineImageVariants.md) (`headless.yaml`) |
+| Menus, record lists, TypoScript data | [Add sub data processors](AddSubDataprocessors.md) |
+| Custom value/string shaping | [Custom normalizer](RegisterCustomNormalizer.md) / [transformer](RegisterFieldValueTransformer.md) |
 
 `headless.php` remains for genuinely block-specific logic — merging two
 fields, calling an API, reshaping the whole payload.
@@ -20,8 +20,8 @@ fields, calling an API, reshaping the whole payload.
 > for, 13 `headless.php` files existed whose only job was thumbnail
 > generation. All of them are candidates for deletion since declarative
 > image variants exist — see
-> [Migrate legacy thumbnails](migrate-legacy-thumbnails.md) and the
-> archived [legacy pattern](../_archive/legacy-headless-php-thumbnails.md).
+> [Migrate legacy thumbnails](MigrateLegacyThumbnails.md) and the
+> archived [legacy pattern](../_archive/LegacyHeadlessPhpThumbnails.md).
 
 ## Create the file
 
@@ -68,7 +68,7 @@ Rules:
 The extension plans to pass a second parameter with the normalization
 `Context` (`function (array $data, Context $context)`) — not yet part of
 the stable API. Do not rely on it yet; see the
-[design record](../design/improve-to-array.md) (decision 4).
+[design record](../Design/ImproveToArray.md) (decision 4).
 
 ## Troubleshooting
 
