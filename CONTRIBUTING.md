@@ -84,7 +84,7 @@ act -l
 
 # single jobs
 act -j early_cgl
-act -j PHPStan
+act -j phpstan
 
 # functional tests - TYPO3 13.4
 act -j functional_tests --matrix typo3:^13.4 --matrix php:8.2 --matrix content-blocks:^1.2 --matrix headless:^4.5 --matrix container:^3.1

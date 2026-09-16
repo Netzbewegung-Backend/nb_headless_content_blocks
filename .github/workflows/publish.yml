@@ -1,4 +1,4 @@
-name: publish
+name: Publish
 on:
   push:
     tags:
@@ -26,7 +26,7 @@ jobs:
       # keeps the TER zip clean. Must exist in the tagged commit.
       TYPO3_EXCLUDE_FROM_PACKAGING: ${{ github.workspace }}/Build/tailor/ExcludeFromPackaging.php
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 0

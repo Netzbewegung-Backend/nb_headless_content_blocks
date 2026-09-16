@@ -1,14 +1,12 @@
-name: test documentation
-
+name: Test documentation
 on:
   push:
     branches:
       - master
   pull_request:
-
 jobs:
   tests:
-    name: documentation
+    name: Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

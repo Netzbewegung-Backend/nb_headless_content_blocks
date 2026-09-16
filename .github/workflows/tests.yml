@@ -17,7 +17,8 @@ jobs:
         with:
           php-version: 8.2
 
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -64,7 +65,8 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
 
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Get composer cache directory
         id: composer-cache
@@ -111,7 +113,8 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
 
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Get composer cache directory
         id: composer-cache
@@ -135,7 +138,7 @@ jobs:
       - name: Functional
         run: Build/Scripts/runTests.sh -s functional -d sqlite -p ${{ matrix.php }}
 
-  PHPStan:
+  phpstan:
     name: PHPStan PHP 8.4
     runs-on: ubuntu-latest
     steps:
@@ -144,7 +147,8 @@ jobs:
         with:
           php-version: 8.4
 
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Get composer cache directory
         id: composer-cache
