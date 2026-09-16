@@ -2,7 +2,7 @@
 
 This page explains how a Content Block record becomes JSON — the pipeline,
 the building blocks and the extension points. It is background, not a
-tutorial; for concrete tasks see the [how-to guides](../index.md).
+tutorial; for concrete tasks see the [how-to guides](../Index.md).
 
 ## The short version
 

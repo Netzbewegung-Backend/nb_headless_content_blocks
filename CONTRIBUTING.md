@@ -2,7 +2,7 @@
 
 Thanks for your interest in EXT:nb_headless_content_blocks. This page
 explains how to work on the code. For what the extension does, see the
-[README](README.md) and the [documentation index](Documentation/index.md);
+[README](README.md) and the [documentation index](Documentation/Index.md);
 machine-oriented onboarding lives in [AGENTS.md](AGENTS.md).
 
 ## Workflow
@@ -106,7 +106,7 @@ More `act` pitfalls (composer cache eviction, root-owned test folders):
 ## Documentation
 
 User-facing documentation lives in `Documentation/` and is organized by topic type
-(concepts, how-to guides, reference — see `Documentation/index.md`):
+(concepts, how-to guides, reference — see `Documentation/Index.md`):
 
 - A PR that changes user-facing behavior updates the affected page **in
   the same PR**.

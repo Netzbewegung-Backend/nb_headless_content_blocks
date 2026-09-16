@@ -55,7 +55,10 @@ Configuration/
 
 Documentation/
 ├── guides.xml                                # render-guides config (docs.typo3.org)
-├── index.md                                  # documentation index (Diátaxis)
+├── Index.md                                  # documentation index (Diátaxis) — MUST be
+│                                             # named Index.md (capital I): render-guides
+│                                             # maps it to Index.html, which docs.typo3.org
+│                                             # expects as the entry page (issue #29)
 ├── getting-started.md                        # tutorial: install → include Site Set → verify
 ├── troubleshooting.md                        # symptom → cause → fix (end users)
 ├── testing-troubleshooting.md                # symptom → cause → fix (test setup, contributors)
@@ -75,10 +78,13 @@ See `Documentation/design/improve-to-array.md` for the architecture rationale.
 - **Docs change with the code in the same PR/commit** — a behavior change
   without a docs change is incomplete.
 - **One page = one topic type** (tutorial / how-to / reference / concept),
-  with a first-line purpose statement. The docs index is `Documentation/index.md`.
+  with a first-line purpose statement. The docs index is `Documentation/Index.md`.
+  It MUST be named `Index.md` (capital I) — the entry point for Markdown docs
+  per the official "How to Document TYPO3" guide; a lowercase `index.md`
+  renders to lowercase `index.html` and the docs.typo3.org entry URL 404s.
 - **Rendered docs**: `Documentation/` renders via the official render-guides
   toolchain to docs.typo3.org (renderdocs webhook / TER upload). Entry point
-  is `Documentation/index.md`; config in `Documentation/guides.xml`.
+  is `Documentation/Index.md`; config in `Documentation/guides.xml`.
   Local: `make docs` renders, `make test-docs` fails on warnings (CI runs
   the same via `.github/workflows/test-documentation.yml`).
   Toolchain constraints: relative links inside `Documentation/` must NOT use
