@@ -2,7 +2,7 @@
 Architecture
 ============
 
-This page explains how a Content Block record becomes JSON — the pipeline, the building blocks and the extension points. It is background, not a tutorial; for concrete tasks see the `how-to guides <../Index.rst>`__.
+This page explains how a Content Block record becomes JSON — the pipeline, the building blocks and the extension points. It is background, not a tutorial; for concrete tasks see the `how-to guides <../Howto/Index.rst>`__.
 
 The short version
 =================
