@@ -113,7 +113,7 @@ tt_content.vendor_puredatablock =< lib.contentBlock
 ```
 
 How the processor turns a record into the `data` JSON is covered in
-[Architecture](Concepts/Architecture.md).
+[Architecture](Concepts/Index.md).
 
 ## Next steps
 
@@ -122,4 +122,4 @@ How the processor turns a record into the `data` JSON is covered in
 - Add menus or other TypoScript data to a block:
   [Add sub data processors](Howto/AddSubDataprocessors.md)
 - Use containers: [Render containers](Howto/RenderContainers.md)
-- Understand the pipeline: [Architecture](Concepts/Architecture.md)
+- Understand the pipeline: [Architecture](Concepts/Index.md)

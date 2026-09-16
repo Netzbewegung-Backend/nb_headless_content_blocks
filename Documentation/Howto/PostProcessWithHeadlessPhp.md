@@ -68,7 +68,7 @@ Rules:
 The extension plans to pass a second parameter with the normalization
 `Context` (`function (array $data, Context $context)`) — not yet part of
 the stable API. Do not rely on it yet; see the
-[design record](../Design/ImproveToArray.md) (decision 4).
+[design record](../Design/Index.md) (decision 4).
 
 ## Troubleshooting
 

@@ -2,7 +2,7 @@
 
 This page lists the built-in conversion services, their interfaces and
 their DI tags — the lookup companion to
-[Architecture](../Concepts/Architecture.md).
+[Architecture](../Concepts/Index.md).
 
 ## Normalizer chain
 

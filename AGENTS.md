@@ -63,15 +63,18 @@ Documentation/
 ├── Troubleshooting.md                       # symptom → cause → fix (end users)
 ├── TestingTroubleshooting.md                # symptom → cause → fix (test setup, contributors)
 ├── Concepts/                                # why it works this way
-│   └── Architecture.md
+│   └── Index.md                             # Architecture
 ├── Howto/                                   # task guides (image variants, normalizers, ...)
+│   └── Index.md                             # how-to overview
 ├── Reference/                               # lookup (JSON contract, normalizers, options)
+│   └── Index.md                             # reference overview
 ├── Design/
-│   └── ImproveToArray.md                    # design record: the ToArray rewrite
-└── _archive/                                # superseded docs, still rendered
+│   └── Index.md                             # design record: the ToArray rewrite
+└── _archive/                                # superseded docs, still rendered (no Index.md,
+                                              # so it stays out of the navigation menu)
 ```
 
-See `Documentation/Design/ImproveToArray.md` for the architecture rationale.
+See `Documentation/Design/Index.md` for the architecture rationale.
 
 ## Documentation Rules
 
@@ -87,6 +90,10 @@ See `Documentation/Design/ImproveToArray.md` for the architecture rationale.
   is `Documentation/Index.md`; config in `Documentation/guides.xml`.
   Local: `make docs` renders, `make test-docs` fails on warnings (CI runs
   the same via `.github/workflows/test-documentation.yml`).
+  The left navigation on docs.typo3.org is built by
+  `automatic-menu="true"` in `guides.xml`; every folder that should
+  appear in it needs an `Index.md` (single-page folders use their
+  only page as the folder's `Index.md`).
   Toolchain constraints: relative links inside `Documentation/` must NOT use
   `#anchor` suffixes (render-guides cannot resolve them — link to the page
   instead); links to files outside `Documentation/` must be absolute URLs.

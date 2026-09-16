@@ -13,7 +13,7 @@ on [docs.typo3.org](https://docs.typo3.org/p/netzbewegung/nb-headless-content-bl
 
 ## Concepts (why it works this way)
 
-- [Architecture](Concepts/Architecture.md) — the normalization pipeline from
+- [Architecture](Concepts/Index.md) — the normalization pipeline from
   Content Block record to JSON: DataProcessor, `RecordArrayBuilder`,
   normalizers, field value transformers, and the extension points
 
@@ -53,7 +53,7 @@ on [docs.typo3.org](https://docs.typo3.org/p/netzbewegung/nb-headless-content-bl
 ## Design records (internal)
 
 `Design/` holds planning and analysis records — where wording differs from
-the code, the code wins. Notable: [ImproveToArray.md](Design/ImproveToArray.md)
+the code, the code wins. Notable: [Improve ToArray design record](Design/Index.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
 API migration, declarative image variants) with its decisions and rationale.
 

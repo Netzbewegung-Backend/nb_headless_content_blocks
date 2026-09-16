@@ -2,7 +2,7 @@
 
 This page lists the TypoScript options of the two data processors. Look
 them up here; for the surrounding pipeline see
-[Architecture](../Concepts/Architecture.md).
+[Architecture](../Concepts/Index.md).
 
 ## nb-content-blocks-json
 

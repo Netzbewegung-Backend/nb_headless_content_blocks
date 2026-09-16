@@ -3,6 +3,7 @@
         links-are-relative="true"
         default-code-language="php"
         input-format="md"
+        automatic-menu="true"
         index-name="Index"
 >
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
