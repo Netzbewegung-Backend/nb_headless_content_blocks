@@ -162,7 +162,7 @@ Investigated the example project (`/var/www/vhosts/cms-netzbewegung-v5-2025`) an
 *   richtext `bodytext` rendered with custom parseFunc classes (`p-text …`)
 *   `processAdditionalDataProcessors` is actively used (`nb-job-cards-dynamic` etc. via TypoScript `dataProcessing.20 { as = cards }`)
 
-3.7 How others do &quot;object → array/JSON&quot;
+3.7 How others do "object → array/JSON"
 -----------------------------------------
 
 +-------------------------------------------+--------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+

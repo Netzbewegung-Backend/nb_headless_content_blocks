@@ -28,7 +28,7 @@ Functional tests fail with `Can not remove folder` after running GitHub Actions 
 
 and have a user with root delete those folders (`sudo rm -rf <folder>`). More `act` gotchas (matrix parallelism, composer cache eviction): see `AGENTS.md` → Testing Gotchas and `CONTRIBUTING.md <https://github.com/Netzbewegung-Backend/nb_headless_content_blocks/blob/master/CONTRIBUTING.md#running-the-github-actions-workflows-locally-act>`__.
 
-Functional tests fail with `Package &quot;headless&quot; depends on package &quot;install&quot; which does not exist.`
+Functional tests fail with `Package "headless" depends on package "install" which does not exist.`
 ==================================================================================================
 
 **Symptom:** a functional test that loads EXT:headless aborts during test instance creation with the message above (thrown by the testing framework's `PackageCollection`).

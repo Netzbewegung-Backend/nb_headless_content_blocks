@@ -67,7 +67,7 @@ Keys inside `data` are alphabetically sorted
 
 **Fix:** none — expected behavior. Sort concerns belong to the frontend.
 
-Rich text renders without the expected wrapping (`&lt;p&gt;` classes, etc.)
+Rich text renders without the expected wrapping (`<p>` classes, etc.)
 =====================================================================
 
 **Symptom:** richtext fields come back as HTML, but without the site's `parseFunc` classes/wrappers.
@@ -76,7 +76,7 @@ Rich text renders without the expected wrapping (`&lt;p&gt;` classes, etc.)
 
 **Fix:** configure `lib.parseFunc_RTE` in your site package (typically via fluid_styled_content's richContentObject or your own setup).
 
-A block renders `&quot;has no rendering definition!&quot;` instead of JSON
+A block renders `"has no rendering definition!"` instead of JSON
 ================================================================
 
 **Symptom:** the block appears in the page JSON, but instead of a `data` object it carries an error text like `Content Element with uid "1" and type "vendor_myblock" has no rendering definition!`.
