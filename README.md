@@ -26,20 +26,20 @@ Changes are tracked in the [CHANGELOG](CHANGELOG.md).
   `{url, target, type, title, config, attr}`, files as
   `{id, alt, title, publicUrl}`, categories, collections, relations,
   FlexForms, date times, and more — see the
-  [JSON contract](Documentation/Reference/JsonContract.md).
+  [JSON contract](Documentation/Reference/JsonContract.rst).
 - Field identifiers (not database columns) as JSON keys, alphabetically
   sorted — stable for frontend consumers.
 - **Declarative image variants:** responsive thumbnails per field via an
   optional `headless.yaml` in the Content Block, overridable per site via
   TypoScript — no PHP needed.
 - Extensible conversion pipeline: register your own
-  [normalizers](Documentation/Howto/RegisterCustomNormalizer.md) and
-  [field value transformers](Documentation/Howto/RegisterFieldValueTransformer.md)
+  [normalizers](Documentation/Howto/RegisterCustomNormalizer.rst) and
+  [field value transformers](Documentation/Howto/RegisterFieldValueTransformer.rst)
   via DI tags.
-- Escape hatches: per-block [headless.php](Documentation/Howto/PostProcessWithHeadlessPhp.md),
-  [sub data processors](Documentation/Howto/AddSubDataprocessors.md), and a
-  [PSR-14 event](Documentation/Howto/ModifyFieldsWithEvent.md) (deprecated).
-- Support for [EXT:container](Documentation/Howto/RenderContainers.md) via the
+- Escape hatches: per-block [headless.php](Documentation/Howto/PostProcessWithHeadlessPhp.rst),
+  [sub data processors](Documentation/Howto/AddSubDataprocessors.rst), and a
+  [PSR-14 event](Documentation/Howto/ModifyFieldsWithEvent.rst) (deprecated).
+- Support for [EXT:container](Documentation/Howto/RenderContainers.rst) via the
   `nb-container-json` processor.
 
 ## Installation

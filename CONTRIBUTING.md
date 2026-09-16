@@ -2,7 +2,7 @@
 
 Thanks for your interest in EXT:nb_headless_content_blocks. This page
 explains how to work on the code. For what the extension does, see the
-[README](README.md) and the [documentation index](Documentation/Index.md);
+[README](README.md) and the [documentation index](Documentation/Index.rst);
 machine-oriented onboarding lives in [AGENTS.md](AGENTS.md).
 
 ## Workflow
@@ -63,12 +63,12 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
   Compatibility) and restore `composer.json` afterwards.
 - Pitfalls of the test setup itself (version switches, `act`, extension
   loading) are collected in
-  [Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.md).
+  [Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.rst).
 - The JSON output contract is frozen by characterization tests
   (`ContentBlocksJsonDataProcessorCharTest`). If a change deliberately
   alters the contract, update the frozen fixtures and document it in the
   [CHANGELOG](CHANGELOG.md) and the
-  [JSON contract](Documentation/Reference/JsonContract.md) in the same PR.
+  [JSON contract](Documentation/Reference/JsonContract.rst) in the same PR.
 
 ## Running the GitHub Actions workflows locally (act)
 
@@ -100,13 +100,13 @@ act -j functional_tests --matrix typo3:^14.3 --matrix php:8.4 --matrix content-b
 > `Can not connect ... Aborting`. Run them strictly one after another.
 
 More `act` pitfalls (composer cache eviction, root-owned test folders):
-[Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.md) and
+[Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.rst) and
 [AGENTS.md](AGENTS.md).
 
 ## Documentation
 
 User-facing documentation lives in `Documentation/` and is organized by topic type
-(concepts, how-to guides, reference — see `Documentation/Index.md`):
+(concepts, how-to guides, reference — see `Documentation/Index.rst`):
 
 - A PR that changes user-facing behavior updates the affected page **in
   the same PR**.

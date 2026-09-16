@@ -55,51 +55,50 @@ Configuration/
 
 Documentation/
 ├── guides.xml                                # render-guides config (docs.typo3.org)
-├── Index.md                                  # documentation index (Diátaxis) — MUST be
-│                                             # named Index.md (capital I): render-guides
-│                                             # maps it to Index.html, which docs.typo3.org
-│                                             # expects as the entry page (issue #29)
-├── GettingStarted.md                         # tutorial: install → include Site Set → verify
-├── Troubleshooting.md                        # symptom → cause → fix (end users)
+├── Index.rst                                 # documentation index (Diátaxis) + hidden
+│                                             # toctree that defines the menu order
+├── GettingStarted.rst                        # tutorial: install → include Site Set → verify
+├── Troubleshooting.rst                       # symptom → cause → fix (end users)
 ├── Concepts/                                 # why it works this way
-│   └── Index.md                              # Architecture
+│   └── Index.rst                             # Architecture
 ├── Contributing/                             # docs for contributors
-│   ├── Index.md                              # overview
-│   └── TestingTroubleshooting.md             # symptom → cause → fix (test setup)
+│   ├── Index.rst                             # overview
+│   └── TestingTroubleshooting.rst            # symptom → cause → fix (test setup)
 ├── Howto/                                    # task guides (image variants, normalizers, ...)
-│   └── Index.md                              # how-to overview
+│   └── Index.rst                             # how-to overview
 ├── Reference/                                # lookup (JSON contract, normalizers, options)
-│   └── Index.md                              # reference overview
+│   └── Index.rst                             # reference overview
 ├── Design/
-│   └── ImproveToArray.md                     # design record: the ToArray rewrite (internal,
-│                                             # no Index.md, stays out of the navigation menu)
-└── _archive/                                 # superseded docs, still rendered (no Index.md,
-                                              # so it stays out of the navigation menu)
+│   └── ImproveToArray.rst                    # design record: the ToArray rewrite (internal,
+│                                             # :orphan:, stays out of the navigation menu)
+└── _archive/                                 # superseded docs, still rendered (:orphan:,
+                                              # stays out of the navigation menu)
 ```
 
-See `Documentation/Design/ImproveToArray.md` for the architecture rationale.
+See `Documentation/Design/ImproveToArray.rst` for the architecture rationale.
 
 ## Documentation Rules
 
 - **Docs change with the code in the same PR/commit** — a behavior change
   without a docs change is incomplete.
 - **One page = one topic type** (tutorial / how-to / reference / concept),
-  with a first-line purpose statement. The docs index is `Documentation/Index.md`.
-  It MUST be named `Index.md` (capital I) — the entry point for Markdown docs
-  per the official "How to Document TYPO3" guide; a lowercase `index.md`
-  renders to lowercase `index.html` and the docs.typo3.org entry URL 404s.
+  with a first-line purpose statement. The docs are reStructuredText
+  (migrated from Markdown, see issue #29): the entry point is
+  `Documentation/Index.rst` — reST is the format recommended by the
+  official "How to Document TYPO3" guide.
 - **Rendered docs**: `Documentation/` renders via the official render-guides
   toolchain to docs.typo3.org (renderdocs webhook / TER upload). Entry point
-  is `Documentation/Index.md`; config in `Documentation/guides.xml`.
+  is `Documentation/Index.rst`; config in `Documentation/guides.xml`.
   Local: `make docs` renders, `make test-docs` fails on warnings (CI runs
   the same via `.github/workflows/test-documentation.yml`).
-  The left navigation on docs.typo3.org is built by
-  `automatic-menu="true"` in `guides.xml`; every folder that should
-  appear in it needs an `Index.md` (single-page folders use their
-  only page as the folder's `Index.md`).
-  Toolchain constraints: relative links inside `Documentation/` must NOT use
-  `#anchor` suffixes (render-guides cannot resolve them — link to the page
-  instead); links to files outside `Documentation/` must be absolute URLs.
+  The left navigation order is defined by the hidden `.. toctree::` in
+  `Index.rst` (Contributing deliberately last); every non-`:orphan:` page
+  MUST appear in the toctree exactly once, pages outside the menu
+  (Design/, _archive/) carry `:orphan:` in their first line.
+  Toolchain constraints: cross-references inside `Documentation/` use
+  `:ref:` labels (a `.. _label:` line above the target heading) — never
+  `#anchor` suffixes; links to files outside `Documentation/` must be
+  absolute URLs.
 - **Design records** (`Documentation/Design/`) open with a status blockquote
   (`> Status: IMPLEMENTED|CURRENT|...`) and are historical records — where
   wording differs from the code, **the code wins**.

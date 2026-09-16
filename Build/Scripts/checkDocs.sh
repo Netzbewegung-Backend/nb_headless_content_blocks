@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
-# checkDocs.sh — link checker for relative Markdown links and anchors.
+# checkDocs.sh — link checker for relative links and anchors.
 # Verifies that every relative link and every #anchor in the project's
-# Markdown files (README, CONTRIBUTING, Documentation/, .github/) resolves.
+# Markdown files (README, CONTRIBUTING, Documentation/, .github/) resolves,
+# and that every relative hyperlink in Documentation's reST files resolves.
 #
 # Usage: Build/Scripts/checkDocs.sh
 # Exits non-zero on the first broken link/anchor found (all findings are
@@ -84,8 +85,37 @@ for file in "${FILES[@]}"; do
         | grep -v '^$')
 done
 
+# reST hyperlinks in Documentation/: `text <relative/path.rst>`_ / `__.
+# Absolute URLs are skipped; "#anchor" targets are invalid in reST
+# (cross-references use :ref: labels) and are reported.
+mapfile -t RST_FILES < <(find Documentation -name '*.rst' -type f 2>/dev/null | sort)
+
+for file in "${RST_FILES[@]}"; do
+    dir=$(dirname "$file")
+
+    while IFS= read -r target; do
+        [ -n "$target" ] || continue
+
+        if [[ "$target" =~ ^[a-z]+: ]]; then
+            continue # absolute URL (http:, mailto:, ...) — not checked
+        fi
+
+        if [[ "$target" == \#* ]]; then
+            echo "BROKEN ANCHOR SYNTAX: $file -> $target (reST needs a :ref: label, not #anchor)"
+            STATUS=1
+            continue
+        fi
+
+        if [ ! -e "$dir/$target" ]; then
+            echo "BROKEN LINK: $file -> $target"
+            STATUS=1
+        fi
+    done < <(grep -oE '`[^`]*<[^>]+>`__?' "$file" 2>/dev/null \
+        | sed -E -e 's/^`[^`]*<//' -e 's/>`__?$//')
+done
+
 if [ "$STATUS" -eq 0 ]; then
-    echo "OK: all relative links and anchors in ${#FILES[@]} markdown files resolve"
+    echo "OK: all relative links and anchors in ${#FILES[@]} markdown and ${#RST_FILES[@]} reST files resolve"
 else
     echo "FAILED: broken links/anchors found (see above)"
 fi

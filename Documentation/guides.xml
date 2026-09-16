@@ -2,9 +2,6 @@
         xsi:schemaLocation="https://www.phpdoc.org/guides ../vendor/phpdocumentor/guides-cli/resources/schema/guides.xsd"
         links-are-relative="true"
         default-code-language="php"
-        input-format="md"
-        automatic-menu="true"
-        index-name="Index"
 >
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
                project-home="https://extensions.typo3.org/extension/nb_headless_content_blocks"
