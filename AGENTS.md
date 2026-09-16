@@ -54,24 +54,26 @@ Configuration/
     └── config.yaml
 
 Documentation/
-├── guides.xml                               # render-guides config (docs.typo3.org)
-├── Index.md                                 # documentation index (Diátaxis) — MUST be
-│                                            # named Index.md (capital I): render-guides
-│                                            # maps it to Index.html, which docs.typo3.org
-│                                            # expects as the entry page (issue #29)
-├── GettingStarted.md                        # tutorial: install → include Site Set → verify
-├── Troubleshooting.md                       # symptom → cause → fix (end users)
-├── TestingTroubleshooting.md                # symptom → cause → fix (test setup, contributors)
-├── Concepts/                                # why it works this way
-│   └── Index.md                             # Architecture
-├── Howto/                                   # task guides (image variants, normalizers, ...)
-│   └── Index.md                             # how-to overview
-├── Reference/                               # lookup (JSON contract, normalizers, options)
-│   └── Index.md                             # reference overview
+├── guides.xml                                # render-guides config (docs.typo3.org)
+├── Index.md                                  # documentation index (Diátaxis) — MUST be
+│                                             # named Index.md (capital I): render-guides
+│                                             # maps it to Index.html, which docs.typo3.org
+│                                             # expects as the entry page (issue #29)
+├── GettingStarted.md                         # tutorial: install → include Site Set → verify
+├── Troubleshooting.md                        # symptom → cause → fix (end users)
+├── Concepts/                                 # why it works this way
+│   └── Index.md                              # Architecture
+├── Contributing/                             # docs for contributors
+│   ├── Index.md                              # overview
+│   └── TestingTroubleshooting.md             # symptom → cause → fix (test setup)
+├── Howto/                                    # task guides (image variants, normalizers, ...)
+│   └── Index.md                              # how-to overview
+├── Reference/                                # lookup (JSON contract, normalizers, options)
+│   └── Index.md                              # reference overview
 ├── Design/
-│   └── ImproveToArray.md                    # design record: the ToArray rewrite (internal,
+│   └── ImproveToArray.md                     # design record: the ToArray rewrite (internal,
 │                                             # no Index.md, stays out of the navigation menu)
-└── _archive/                                # superseded docs, still rendered (no Index.md,
+└── _archive/                                 # superseded docs, still rendered (no Index.md,
                                               # so it stays out of the navigation menu)
 ```
 

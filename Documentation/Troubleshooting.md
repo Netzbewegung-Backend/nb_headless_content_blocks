@@ -3,7 +3,7 @@
 This page lists known failure modes **when using the extension** — each
 entry follows **symptom → cause → fix**. Problems with the extension's own
 test setup are covered in
-[Testing troubleshooting](TestingTroubleshooting.md); if your case is
+[Testing troubleshooting](Contributing/TestingTroubleshooting.md); if your case is
 missing, open an issue.
 
 ## A field is `null` in the JSON and the log mentions an unknown type

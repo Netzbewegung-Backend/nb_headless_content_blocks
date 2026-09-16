@@ -47,7 +47,7 @@ on [docs.typo3.org](https://docs.typo3.org/p/netzbewegung/nb-headless-content-bl
 ## Troubleshooting
 
 - [Troubleshooting](Troubleshooting.md) — symptom → cause → fix
-- [Testing troubleshooting](TestingTroubleshooting.md) — symptom →
+- [Testing troubleshooting](Contributing/TestingTroubleshooting.md) — symptom →
   cause → fix for the extension's own test setup (contributors)
 
 ## Design records (internal)

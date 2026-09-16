@@ -63,7 +63,7 @@ Build/Scripts/runTests.sh -s functional -d sqlite   # functional tests
   Compatibility) and restore `composer.json` afterwards.
 - Pitfalls of the test setup itself (version switches, `act`, extension
   loading) are collected in
-  [Testing troubleshooting](Documentation/TestingTroubleshooting.md).
+  [Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.md).
 - The JSON output contract is frozen by characterization tests
   (`ContentBlocksJsonDataProcessorCharTest`). If a change deliberately
   alters the contract, update the frozen fixtures and document it in the
@@ -100,7 +100,7 @@ act -j functional_tests --matrix typo3:^14.3 --matrix php:8.4 --matrix content-b
 > `Can not connect ... Aborting`. Run them strictly one after another.
 
 More `act` pitfalls (composer cache eviction, root-owned test folders):
-[Testing troubleshooting](Documentation/TestingTroubleshooting.md) and
+[Testing troubleshooting](Documentation/Contributing/TestingTroubleshooting.md) and
 [AGENTS.md](AGENTS.md).
 
 ## Documentation
