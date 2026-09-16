@@ -53,7 +53,7 @@ on [docs.typo3.org](https://docs.typo3.org/p/netzbewegung/nb-headless-content-bl
 ## Design records (internal)
 
 `Design/` holds planning and analysis records — where wording differs from
-the code, the code wins. Notable: [Improve ToArray design record](Design/Index.md)
+the code, the code wins. Notable: [Improve ToArray design record](Design/ImproveToArray.md)
 — the 2026-08 rewrite of the ToArray conversion (normalizer registry, Schema
 API migration, declarative image variants) with its decisions and rationale.
 

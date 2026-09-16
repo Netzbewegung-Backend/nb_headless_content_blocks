@@ -69,12 +69,13 @@ Documentation/
 ├── Reference/                               # lookup (JSON contract, normalizers, options)
 │   └── Index.md                             # reference overview
 ├── Design/
-│   └── Index.md                             # design record: the ToArray rewrite
+│   └── ImproveToArray.md                    # design record: the ToArray rewrite (internal,
+│                                             # no Index.md, stays out of the navigation menu)
 └── _archive/                                # superseded docs, still rendered (no Index.md,
                                               # so it stays out of the navigation menu)
 ```
 
-See `Documentation/Design/Index.md` for the architecture rationale.
+See `Documentation/Design/ImproveToArray.md` for the architecture rationale.
 
 ## Documentation Rules
 
