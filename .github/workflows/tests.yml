@@ -1,4 +1,14 @@
 name: Tests
+
+# Path filtering (docs-only changes skip): push and PR runs first detect
+# what changed (dorny/paths-filter). On docs-only changes the code jobs
+# (CGL, unit, functional, PHPStan) skip with a green 'skipped' conclusion
+# — job-level gating on purpose, NOT workflow-level paths-ignore: the run
+# and its check runs still EXIST for the sha, so required-status checks
+# and branch protection keep working. Schedule and workflow_dispatch
+# always run (weekly drift checks / explicit human intent).
+# test-documentation.yml is deliberately NOT filtered — it is the workflow
+# that SHOULD run on docs changes.
 on:
   workflow_dispatch:
   push:
@@ -8,8 +18,36 @@ on:
   schedule:
     - cron: "0 3 * * 1"
 jobs:
+  # Changed-path detection for the docs-only skip logic (header comment
+  # above). 'code' is true when anything outside the docs-only set changed.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'Classes/**'
+              - 'Configuration/**'
+              - 'Tests/**'
+              - 'Build/**'
+              - 'config/**'
+              - 'composer.json'
+              - 'composer.lock'
+              - 'ext_emconf.php'
+              - '.github/workflows/**'
+
   early_cgl:
     name: CGL
+    needs: changes
+    # docs-only changes skip; schedule/dispatch always run (see header)
+    if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' || needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP
@@ -44,6 +82,9 @@ jobs:
 
   unit_tests:
     name: "Unit Tests TYPO3 ${{ matrix.typo3 }}"
+    needs: changes
+    # docs-only changes skip; schedule/dispatch always run (see header)
+    if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' || needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -92,6 +133,9 @@ jobs:
 
   functional_tests:
     name: "Functional Tests TYPO3 ${{ matrix.typo3 }}"
+    needs: changes
+    # docs-only changes skip; schedule/dispatch always run (see header)
+    if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' || needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -140,6 +184,9 @@ jobs:
 
   phpstan:
     name: PHPStan PHP 8.4
+    needs: changes
+    # docs-only changes skip; schedule/dispatch always run (see header)
+    if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' || needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP
